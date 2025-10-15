@@ -34,6 +34,12 @@ static void init()
 	}
 }
 
+/*
+ *
+ *  Music
+ *
+ */
+
 PlaySound::Music::Music( const std::string & file )
 : m_file( file )
 {
@@ -44,6 +50,11 @@ PlaySound::Music::Music( const std::string & file )
 	}
 }
 
+PlaySound::Music::~Music()
+{
+	Mix_FreeMusic(m_music);
+}
+
 void PlaySound::Music::play()
 {
 	if( !m_started ) {
@@ -51,11 +62,6 @@ void PlaySound::Music::play()
 		Mix_FadeInMusic(m_music,0,1000);
 		m_started = true;
 	}
-}
-
-PlaySound::Music::~Music()
-{
-	Mix_FreeMusic(m_music);
 }
 
 bool PlaySound::Music::finished()
@@ -71,6 +77,59 @@ bool PlaySound::Music::finished()
 	return false;
 }
 
+
+
+/*
+ *
+ *  Effect
+ *
+ */
+
+
+PlaySound::Effect::Effect( const std::string & file )
+: m_file( file )
+{
+	m_chunk = Mix_LoadWAV(file.c_str());
+
+	if( !m_chunk ) {
+		throw std::runtime_error( Tools::format( "cannot play '%s' Error: %s", m_file, Mix_GetError() ));
+	}
+}
+
+PlaySound::Effect::~Effect()
+{
+	Mix_FreeChunk(m_chunk);
+}
+
+void PlaySound::Effect::play()
+{
+	if( !m_started ) {
+		CPPDEBUG( Tools::format( "start playing: %s", m_file ) );
+		Mix_PlayChannel(0, m_chunk,0);
+		m_started = true;
+	}
+}
+
+
+bool PlaySound::Effect::finished()
+{
+	if( !m_started ) {
+		return false;
+	}
+
+	if(Mix_Playing(0) == 1) {
+		return true;
+	}
+
+	return false;
+}
+
+/*
+ *
+ *  PlaySound
+ *
+ */
+
 PlaySound::PlaySound()
 : BasicThread( "PlaySound" )
 {
@@ -83,6 +142,12 @@ void PlaySound::play_music( const std::string & file )
 {
 	auto lock = std::scoped_lock( m_lock );
 	m_music.emplace_back( file );
+}
+
+void PlaySound::play_effect( const std::string & file )
+{
+	auto lock = std::scoped_lock( m_lock );
+	m_effects.emplace_back( file );
 }
 
 void PlaySound::run()

@@ -29,15 +29,35 @@ class PlaySound : public BasicThread
 		bool finished();
 	};
 
+	class Effect
+	{
+		using duration = std::chrono::steady_clock::duration;
+
+	private:
+		std::string 		m_file				{};
+		Mix_Chunk *			m_chunk				{};
+		bool				m_started 			{false};
+
+	public:
+		Effect( const std::string & file );
+		~Effect();
+
+		void play();
+
+		bool finished();
+	};
+
 	std::mutex 		 m_lock;
 
 	std::list<Music> m_music;
+	std::list<Effect> m_effects;
 
 public:
 
 	PlaySound();
 
 	void play_music( const std::string & file );
+	void play_effect( const std::string & file );
 
 	void run() override;
 };
