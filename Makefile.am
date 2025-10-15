@@ -4,33 +4,7 @@ bin_PROGRAMS=\
 broker_SOURCES=\
 		src/main.cc \
 		tools_config.h
-
-test_cpputilsshared_SOURCES=\
-		src_test_cpputilsshared/test_string_utils.cc \
-		src_test_cpputilsshared/test_string_utils.h \
-		src_test_cpputilsshared/test_cpputilsshared.cc \
-		src_test_cpputilsshared/test_cyclicarray.h \
-		src_test_cpputilsshared/test_cyclicarray.cc \
-		src_test_cpputilsshared/test_static_vector.h \
-		src_test_cpputilsshared/test_static_vector.cc \
-		src_test_cpputilsshared/test_static_list.h \
-		src_test_cpputilsshared/test_static_list.cc \
-		src_test_cpputilsshared/test_static_string.h \
-		src_test_cpputilsshared/test_static_string.cc \
-		src_test_cpputilsshared/test_span_vector.cc \
-		src_test_cpputilsshared/test_span_vector.h \
-		src_test_cpputilsshared/test_string_adapter.cc \
-		src_test_cpputilsshared/test_string_adapter.h \
-		src_test_cpputilsshared/test_LeoIni.h \
-		src_test_cpputilsshared/test_LeoIni.cc \
-		tools_config.h
 		
-test_io_SOURCES=\
-		src_test_io/test_io.cc \
-		src_test_io/test_read_file.cc \
-		src_test_io/test_read_file.h \
-		tools_config.h		
-
 AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-I$(top_srcdir)/cpputils/cpputilsshared  \
 	-I$(top_srcdir)/cpputils/cpputilsshared/cpputilsformat \
@@ -119,8 +93,12 @@ common_libcommon_a_SOURCES=\
 	common/ColBuilder.h \
 	common/ColBuilder.cc
 
-broker_LDADD = cpputils/cpputilsshared/cpputilsformat/libcpputilsformat.a \
-	cpputils/io/libcpputilsio.a
+broker_LDADD = \
+	common/libcommon.a \
+	cpputils/io/libcpputilsio.a \
+	cpputils/cpputilsshared/libcpputilsshared.a \
+	cpputils/cpputilsshared/cpputilsformat/libcpputilsformat.a
+	
 
 LIBS=
     
