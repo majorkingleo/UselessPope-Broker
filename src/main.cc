@@ -3,6 +3,8 @@
 #include <OutDebug.h>
 #include <DetectLocale.h>
 #include <format.h>
+#include "PlaySound.h"
+#include "App.h"
 
 using namespace Tools;
 
@@ -29,6 +31,10 @@ static void usage( const std::string & prog )
 int main( int argc, char **argv )
 {
 	Co co;
+
+	std::optional<PlaySound> play;
+
+	std::list<std::thread> threads;
 
 	try {
 		Arg::Arg arg( argc, argv );
@@ -59,6 +65,12 @@ int main( int argc, char **argv )
 		o_debug.setRequired(false);
 		arg.addOptionR( &o_debug );
 
+		Arg::StringOption o_play("play");
+		o_play.setDescription("play a file");
+		o_play.setRequired(false);
+		o_play.setMinValues(1);
+		arg.addOptionR( &o_play );
+
 		DetectLocale dl;
 
 		const unsigned int console_width = 80;
@@ -87,6 +99,37 @@ int main( int argc, char **argv )
 		if( o_debug.getState() )
 		{
 			Tools::x_debug = new OutDebug();
+		}
+
+		bool does_something = false;
+
+		if( o_play.isSet() ) {
+			play.emplace();
+
+			for( const auto & file : *o_play.getValues() ) {
+				 play->play_music( file );
+			}
+
+			does_something = true;
+		}
+
+		if( does_something ) {
+
+			if( play ) {
+				threads.emplace_back([&play]() {
+					play->run();
+				});
+			}
+
+			while (!SDL_QuitRequested()) {
+				SDL_Delay(250);
+			}
+
+			APP.quit_request = true;
+
+			for( auto & t : threads ) {
+				t.join();
+			}
 		}
 
 	} catch( std::exception & err ) {

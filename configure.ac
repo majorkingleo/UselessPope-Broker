@@ -50,6 +50,9 @@ case $host_os in
 esac
 AM_CONDITIONAL([CYGWIN], [test x$cygwin = xtrue])
 
+PKG_CHECK_EXISTS([SDL2_mixer],[],[
+    AC_MSG_ERROR(can't find SDL2_mixer)
+])
 
 AC_PROG_CC
 #  po/Makefile.in
@@ -65,7 +68,7 @@ AC_PROG_INSTALL
 ac_extra_cxxx_flags=""
 EXTRA_LDFLAGS=""
 
-CXX_FLAGS_CHECK([-std=gnu++20])
+CXX_FLAGS_CHECK([-std=gnu++23])
 #CXX_FLAGS_CHECK([-fopenmp])
 
 

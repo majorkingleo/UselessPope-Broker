@@ -3,6 +3,10 @@ bin_PROGRAMS=\
 	
 broker_SOURCES=\
 		src/main.cc \
+		src/PlaySound.h \
+		src/PlaySound.cc \
+		src/App.h \
+		src/App.cc \
 		tools_config.h
 		
 AM_CPPFLAGS = -I$(top_srcdir)/tools \
@@ -13,6 +17,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-std=gnu++23 \
 	-fstack-protector \
 	-D_GLIBCXX_USE_CXX11_ABI=1 \
+	`pkg-config --cflags SDL2_mixer` \
 	-D_XOPEN_SOURCE=700 # for cyggwin fileno()
 
 noinst_LIBRARIES=cpputils/io/libcpputilsio.a \
@@ -102,7 +107,8 @@ broker_LDADD = \
 
 LIBS=
     
-AM_LDFLAGS=
+AM_LDFLAGS= \
+	`pkg-config --libs SDL2_mixer`
     
 if MINGW
 #AM_LDFLAGS += -mwindows

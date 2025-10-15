@@ -1,0 +1,111 @@
+#include "PlaySound.h"
+#include <stdexcept>
+#include <CpputilsDebug.h>
+#include <format.h>
+#include <chrono>
+#include <thread>
+#include "App.h"
+
+
+using namespace Tools;
+using namespace std::chrono_literals;
+using namespace std::chrono;
+
+static void init()
+{
+	static bool inited = false;
+
+	if( inited ) {
+		return;
+	}
+
+	inited = true;
+
+	int result = 0;
+	int flags = MIX_INIT_MP3 | MIX_INIT_OGG;
+
+	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+		throw std::runtime_error("Failed to init SDL");
+	}
+
+	if (flags != (result = Mix_Init(flags))) {
+		CPPDEBUG( format("Could not initialize mixer (result: %d).\n", result) );
+		throw std::runtime_error( format("Mix_Init: %s", Mix_GetError()) );
+	}
+}
+
+PlaySound::Music::Music( const std::string & file )
+: m_file( file )
+{
+	m_music = Mix_LoadMUS(file.c_str());
+
+	if( !m_music ) {
+		throw std::runtime_error( Tools::format( "cannot play '%s' Error: %s", m_file, Mix_GetError() ));
+	}
+}
+
+void PlaySound::Music::play()
+{
+	if( !m_started ) {
+		CPPDEBUG( Tools::format( "start playing: %s", m_file ) );
+		Mix_FadeInMusic(m_music,0,1000);
+		m_started = true;
+	}
+}
+
+PlaySound::Music::~Music()
+{
+	Mix_FreeMusic(m_music);
+}
+
+bool PlaySound::Music::finished()
+{
+	if( !m_started ) {
+		return false;
+	}
+
+	if(Mix_PlayingMusic() == 1) {
+		return true;
+	}
+
+	return false;
+}
+
+PlaySound::PlaySound()
+: BasicThread( "PlaySound" )
+{
+	init();
+
+	Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
+}
+
+void PlaySound::play_music( const std::string & file )
+{
+	auto lock = std::scoped_lock( m_lock );
+	m_music.emplace_back( file );
+}
+
+void PlaySound::run()
+{
+	while( !APP.quit_request ) {
+
+		{
+			auto lock = std::scoped_lock( m_lock );
+			if( !m_music.empty() ) {
+
+				Music & music = m_music.front();
+				if( music.finished() ) {
+					//CPPDEBUG( "pop");
+					//m_music.pop_front();
+				} else {
+					//CPPDEBUG( "calling play");
+					music.play();
+				}
+			}
+		}
+
+		std::this_thread::sleep_for( 500ms );
+	}
+
+	CPPDEBUG( "done" );
+}
