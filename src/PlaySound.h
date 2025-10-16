@@ -49,6 +49,10 @@ class PlaySound : public BasicThread
 		const time_point_t & get_started_at() const {
 			return m_started_at;
 		}
+
+		const std::string & get_file() const {
+			return m_file;
+		}
 	};
 
 	std::mutex 		 m_lock_music;

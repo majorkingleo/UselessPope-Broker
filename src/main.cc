@@ -5,6 +5,7 @@
 #include <format.h>
 #include "PlaySound.h"
 #include "App.h"
+#include <filesystem>
 
 using namespace Tools;
 
@@ -107,8 +108,7 @@ int main( int argc, char **argv )
 			play.emplace();
 
 			for( const auto & file : *o_play.getValues() ) {
-				 //play->play_music( file );
-				play->play_effect( file );
+				play->play_music( file );
 			}
 
 			does_something = true;

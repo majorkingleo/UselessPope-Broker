@@ -180,7 +180,7 @@ void PlaySound::run()
 					effect.play();
 				}
 
-				const auto now = std::chrono::time_point::now();
+				const auto now = std::chrono::steady_clock::now();
 				const bool current_effect_first_seconds 		= effect.get_started_at() + 5s > now;
 				const bool current_effect_may_interrupted_part 	= effect.get_started_at() + 5s < now;
 				const bool current_effect_is_old				= effect.get_started_at() + 30s < now;
@@ -188,11 +188,26 @@ void PlaySound::run()
 				// drop everything within the first 5 seconds
 				if( current_effect_first_seconds ) {
 					while( m_effects.size() > 1 ) {
+
+						Effect & dropping_effect = m_effects.back();
+						CPPDEBUG( Tools::format( "dropping effect %s because current effect started only %d seconds ago.",
+								dropping_effect.get_file(),
+								duration_cast<std::chrono::seconds>(now - effect.get_started_at()).count() ));
+
 						m_effects.pop_back();
 					}
 				} else if( current_effect_may_interrupted_part && m_effects.size() > 1 ) {
+					m_effects.pop_front();
 
+					CPPDEBUG( Tools::format( "dropping effect %s because current another effect got in queue.",
+													effect.get_file() ));
+
+					continue;
 				} else if( current_effect_is_old ) {
+
+					CPPDEBUG( Tools::format( "dropping effect %s because it's already played to long.",
+													effect.get_file() ));
+
 					m_effects.pop_front();
 				}
 			}
