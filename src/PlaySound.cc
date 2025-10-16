@@ -140,13 +140,13 @@ PlaySound::PlaySound()
 
 void PlaySound::play_music( const std::string & file )
 {
-	auto lock = std::scoped_lock( m_lock );
+	auto lock = std::scoped_lock( m_lock_music );
 	m_music.emplace_back( file );
 }
 
 void PlaySound::play_effect( const std::string & file )
 {
-	auto lock = std::scoped_lock( m_lock );
+	auto lock = std::scoped_lock( m_lock_effects );
 	m_effects.emplace_back( file );
 }
 
@@ -155,7 +155,7 @@ void PlaySound::run()
 	while( !APP.quit_request ) {
 
 		{
-			auto lock = std::scoped_lock( m_lock );
+			auto lock = std::scoped_lock( m_lock_music );
 			if( !m_music.empty() ) {
 
 				Music & music = m_music.front();
@@ -169,7 +169,22 @@ void PlaySound::run()
 			}
 		}
 
-		std::this_thread::sleep_for( 500ms );
+		{
+			auto lock = std::scoped_lock( m_lock_effects );
+			if( !m_effects.empty() ) {
+
+				Effect & effect = m_effects.front();
+				if( effect.finished() ) {
+					//CPPDEBUG( "pop");
+					//m_music.pop_front();
+				} else {
+					//CPPDEBUG( "calling play");
+					effect.play();
+				}
+			}
+		}
+
+		std::this_thread::sleep_for( 300ms );
 	}
 
 	CPPDEBUG( "done" );

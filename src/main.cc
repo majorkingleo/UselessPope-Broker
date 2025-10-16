@@ -107,7 +107,8 @@ int main( int argc, char **argv )
 			play.emplace();
 
 			for( const auto & file : *o_play.getValues() ) {
-				 play->play_music( file );
+				 //play->play_music( file );
+				play->play_effect( file );
 			}
 
 			does_something = true;

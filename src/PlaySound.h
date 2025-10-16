@@ -47,10 +47,11 @@ class PlaySound : public BasicThread
 		bool finished();
 	};
 
-	std::mutex 		 m_lock;
+	std::mutex 		 m_lock_music;
+	std::mutex 		 m_lock_effects;
 
-	std::list<Music> m_music;
-	std::list<Effect> m_effects;
+	std::list<Music> 	m_music;
+	std::list<Effect> 	m_effects;
 
 public:
 
