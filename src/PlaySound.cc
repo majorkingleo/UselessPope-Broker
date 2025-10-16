@@ -104,6 +104,7 @@ PlaySound::Effect::~Effect()
 void PlaySound::Effect::play()
 {
 	if( !m_started ) {
+		m_started_at = std::chrono::steady_clock::now();
 		CPPDEBUG( Tools::format( "start playing: %s", m_file ) );
 		Mix_PlayChannel(0, m_chunk,0);
 		m_started = true;
@@ -160,10 +161,8 @@ void PlaySound::run()
 
 				Music & music = m_music.front();
 				if( music.finished() ) {
-					//CPPDEBUG( "pop");
-					//m_music.pop_front();
+					m_music.pop_front();
 				} else {
-					//CPPDEBUG( "calling play");
 					music.play();
 				}
 			}
@@ -175,11 +174,26 @@ void PlaySound::run()
 
 				Effect & effect = m_effects.front();
 				if( effect.finished() ) {
-					//CPPDEBUG( "pop");
-					//m_music.pop_front();
+					m_effects.pop_front();
+					continue;
 				} else {
-					//CPPDEBUG( "calling play");
 					effect.play();
+				}
+
+				const auto now = std::chrono::time_point::now();
+				const bool current_effect_first_seconds 		= effect.get_started_at() + 5s > now;
+				const bool current_effect_may_interrupted_part 	= effect.get_started_at() + 5s < now;
+				const bool current_effect_is_old				= effect.get_started_at() + 30s < now;
+
+				// drop everything within the first 5 seconds
+				if( current_effect_first_seconds ) {
+					while( m_effects.size() > 1 ) {
+						m_effects.pop_back();
+					}
+				} else if( current_effect_may_interrupted_part && m_effects.size() > 1 ) {
+
+				} else if( current_effect_is_old ) {
+					m_effects.pop_front();
 				}
 			}
 		}

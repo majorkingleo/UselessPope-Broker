@@ -13,8 +13,6 @@ class PlaySound : public BasicThread
 {
 	class Music
 	{
-		using duration = std::chrono::steady_clock::duration;
-
 	private:
 		std::string 		m_file				{};
 		Mix_Music *			m_music				{};
@@ -31,12 +29,14 @@ class PlaySound : public BasicThread
 
 	class Effect
 	{
-		using duration = std::chrono::steady_clock::duration;
+		using duration_t = std::chrono::steady_clock::duration;
+		using time_point_t = std::chrono::steady_clock::time_point;
 
 	private:
 		std::string 		m_file				{};
 		Mix_Chunk *			m_chunk				{};
 		bool				m_started 			{false};
+		time_point_t		m_started_at		{};
 
 	public:
 		Effect( const std::string & file );
@@ -45,6 +45,10 @@ class PlaySound : public BasicThread
 		void play();
 
 		bool finished();
+
+		const time_point_t & get_started_at() const {
+			return m_started_at;
+		}
 	};
 
 	std::mutex 		 m_lock_music;
