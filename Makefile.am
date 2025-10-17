@@ -9,6 +9,8 @@ broker_SOURCES=\
 		src/App.cc \
 		src/Configfile2.h \
 		src/Configfile2.cc \
+		src/ConfigGlobal.h \
+		src/ConfigGlobal.cc \
 		tools_config.h
 		
 AM_CPPFLAGS = -I$(top_srcdir)/tools \
