@@ -5,6 +5,7 @@
 #include <cppdir.h>
 #include "ConfigGlobal.h"
 #include "ConfigDatabase.h"
+#include <filesystem>
 
 using namespace Tools;
 using namespace Leo;
@@ -103,6 +104,11 @@ void Configfile2::read( bool autoUpdateIniFile )
 	std::ios_base::openmode mode = std::ios_base::in;
 
 	if( autoUpdateIniFile ) {
+		if( !std::filesystem::exists(cfgFile) ) {
+			// touch it
+			std::ofstream out( cfgFile );
+		}
+
 		mode |=  std::ios_base::out;
 	}
 

@@ -9,8 +9,8 @@ Configfile2::SectionKey<ConfigSectionDatabase> ConfigSectionDatabase::KEY( "data
 
 ConfigSectionDatabase::ConfigSectionDatabase( const std::string & name_, Configfile2 *config_file_ )
 : Section( name_, config_file_ ),
-  UserName( "username", "" ),
-  Password( "password", "" )
+  UserName( "username", "broker" ),
+  Password( "password", "broker" )
 {
 	registerValue( &UserName );
 	registerValue( &Password );

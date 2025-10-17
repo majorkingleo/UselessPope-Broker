@@ -6,6 +6,7 @@
 #include "PlaySound.h"
 #include "App.h"
 #include <filesystem>
+#include "Configfile2.h"
 
 using namespace Tools;
 
@@ -101,6 +102,8 @@ int main( int argc, char **argv )
 		{
 			Tools::x_debug = new OutDebug();
 		}
+
+		Configfile2::createDefaultInstaceWithAllModules()->read(true);
 
 		bool does_something = false;
 

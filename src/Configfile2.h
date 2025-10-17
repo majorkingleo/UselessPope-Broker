@@ -210,8 +210,8 @@ public:
 	static std::string makePathsAbsolute(const std::string & sIn);
 
 	static Configfile2* getIncance();
-	static Configfile2* createInstance( const std::string & config_file = "~/.homemon.cfg" );
-	static Configfile2* createDefaultInstaceWithAllModules( const std::string & config_file = "~/.homemon.cfg" );
+	static Configfile2* createInstance( const std::string & config_file = "~/.UselessPope-Broker.ini" );
+	static Configfile2* createDefaultInstaceWithAllModules( const std::string & config_file = "~/.UselessPope-Broker.ini" );
 };
 
 
