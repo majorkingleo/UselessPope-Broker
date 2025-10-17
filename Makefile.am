@@ -7,6 +7,8 @@ broker_SOURCES=\
 		src/PlaySound.cc \
 		src/App.h \
 		src/App.cc \
+		src/Configfile2.h \
+		src/Configfile2.cc \
 		tools_config.h
 		
 AM_CPPFLAGS = -I$(top_srcdir)/tools \
