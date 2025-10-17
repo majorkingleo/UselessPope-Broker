@@ -11,6 +11,8 @@ broker_SOURCES=\
 		src/Configfile2.cc \
 		src/ConfigGlobal.h \
 		src/ConfigGlobal.cc \
+		src/ConfigDatabase.h \
+		src/ConfigDatabase.cc \
 		tools_config.h
 		
 AM_CPPFLAGS = -I$(top_srcdir)/tools \
@@ -21,8 +23,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-std=gnu++23 \
 	-fstack-protector \
 	-D_GLIBCXX_USE_CXX11_ABI=1 \
-	`pkg-config --cflags SDL2_mixer` \
-	-D_XOPEN_SOURCE=700 # for cyggwin fileno()
+	`pkg-config --cflags SDL2_mixer`	
 
 noinst_LIBRARIES=cpputils/io/libcpputilsio.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \

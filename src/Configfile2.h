@@ -1,10 +1,12 @@
 #pragma once
+
 #include <tuple>
 #include <string>
 #include <leoini.h>
 #include <CpputilsDebug.h>
 #include <string_utils.h>
 #include <stderr_exception.h>
+#include <map>
 
 #define CONFIG_SIMPLE_DECLARE_STR( name ) \
 	ValueType<std::string> name; \
@@ -213,6 +215,3 @@ public:
 };
 
 
-// std::string ConfigSectionGlobal::KEY::name( "global" );
-
-#endif /* LIBWIDGETS_CONFIGFILE2_H_ */

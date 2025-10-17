@@ -3,14 +3,8 @@
 #include <unistd.h>
 #include <pwd.h>
 #include <cppdir.h>
-#include "ConfigOutput.h"
-#include "ConfigWeather.h"
 #include "ConfigGlobal.h"
-#include "ConfigClockDigital.h"
-#include "ConfigLastUpdated.h"
-#include "ConfigBattery.h"
-#include "ConfigPubTransport.h"
-#include "ConfigCalendar.h"
+#include "ConfigDatabase.h"
 
 using namespace Tools;
 using namespace Leo;
@@ -47,7 +41,7 @@ void Configfile2::Section::createRealtiveOrAbsolutPathFor( const std::string & I
 
 	Icon.value = icon_abs_path;
 
-	DEBUG( format( "%s/%s=%s", name, Icon.name, Icon.value ));
+	CPPDEBUG( Tools::format( "%s/%s=%s", name, Icon.name, Icon.value ));
 }
 
 Configfile2* Configfile2::instance = NULL;
@@ -106,7 +100,7 @@ void Configfile2::read( bool autoUpdateIniFile )
 	/* Call leoini */
 	std::string cfgFile = makePathsAbsolute(config_file);
 
-	int mode = std::ios_base::in;
+	std::ios_base::openmode mode = std::ios_base::in;
 
 	if( autoUpdateIniFile ) {
 		mode |=  std::ios_base::out;
@@ -115,9 +109,9 @@ void Configfile2::read( bool autoUpdateIniFile )
 	Ini ini (cfgFile, mode );
 
 	if (!ini) {
-		throw STDERR_EXCEPTION( format( "Error opening config-file '%s'", cfgFile ) );
+		throw STDERR_EXCEPTION( Tools::format( "Error opening config-file '%s'", cfgFile ) );
 	} else {
-		DEBUG( format( "Config file '%s' successfully opened.", cfgFile ) );
+		CPPDEBUG( Tools::format( "Config file '%s' successfully opened.", cfgFile ) );
 	}
 
 	// official comment sign is only ';'
@@ -142,13 +136,7 @@ Configfile2* Configfile2::createDefaultInstaceWithAllModules( const std::string 
 	Configfile2* instance = createInstance( config_file );
 
 	ConfigSectionGlobal::registerSection( instance );
-	ConfigSectionWeather::registerSection( instance );
-	ConfigSectionOutput::registerSection( instance );
-	ConfigSectionClockDigital::registerSection( instance );
-	ConfigSectionLastUpdated::registerSection( instance );
-	ConfigSectionBattery::registerSection( instance );
-	ConfigSectionPubTransport::registerSection( instance );
-	ConfigSectionCalendar::registerSection( instance );
+	ConfigSectionDatabase::registerSection( instance );
 
 	return instance;
 }
