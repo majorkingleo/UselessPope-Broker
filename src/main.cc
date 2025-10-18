@@ -8,6 +8,7 @@
 #include <filesystem>
 #include "Configfile2.h"
 #include "ConfigDatabase.h"
+#include "bindtypes.h"
 
 using namespace Tools;
 
@@ -74,6 +75,11 @@ int main( int argc, char **argv )
 		o_play.setMinValues(1);
 		arg.addOptionR( &o_play );
 
+		Arg::FlagOption o_create_sql("create-sql");
+		o_create_sql.setDescription("print create sql script");
+		o_create_sql.setRequired(false);
+		arg.addOptionR( &o_create_sql );
+
 		DetectLocale dl;
 
 		const unsigned int console_width = 80;
@@ -102,6 +108,10 @@ int main( int argc, char **argv )
 		if( o_debug.getState() )
 		{
 			Tools::x_debug = new OutDebug();
+		}
+
+		if( o_create_sql.getState() ) {
+			std::cout << create_sql() << std::endl;
 		}
 
 		Configfile2::createDefaultInstaceWithAllModules()->read(true);
