@@ -1,19 +1,3 @@
-/*
- * $Log: database.cpp,v $
- * Revision 1.3  2007/08/27 17:22:51  wamas
- * Updated odbc Driver
- *
- * Revision 1.2  2006/11/24 09:47:27  wamas
- * -Wshadow Warnings ausgebaut
- *
- * Revision 1.1.1.1  2006/03/17 19:49:16  wamas
- * own tools reponsitority
- *
- * Revision 1.2  2006/03/09 00:48:26  wamas
- * Added CVS Log Info
- *
- */
-
 #include "database.h"
 #include "mysql_db.h"
 #include "oracle_db.h"
@@ -178,7 +162,7 @@ DBErg<DBRowList> Database::select( const std::string &table, const DBRow &which,
       what += which.names[i];
     }
 
-  sql = format( "SELECT %s FROM %s %s", what, table, extra );
+  sql = Tools::format( "SELECT %s FROM %s %s", what, table, extra );
 
   return exec( sql );
 }

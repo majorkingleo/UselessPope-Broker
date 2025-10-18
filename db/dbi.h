@@ -1,27 +1,4 @@
-/*
- * $Log: dbi.h,v $
- * Revision 1.5  2007/12/15 18:00:23  wamas
- * Made destructur virtual so we can use polmorphic types.
- *
- * Revision 1.4  2007/08/27 17:22:51  wamas
- * Updated odbc Driver
- *
- * Revision 1.3  2006/11/24 09:47:27  wamas
- * -Wshadow Warnings ausgebaut
- *
- * Revision 1.2  2006/11/22 22:46:30  wamas
- * mysql fixes
- *
- * Revision 1.1.1.1  2006/03/17 19:49:15  wamas
- * own tools reponsitority
- *
- * Revision 1.2  2006/03/09 00:48:27  wamas
- * Added CVS Log Info
- *
- */
-
-#ifndef TOOLS_DBI_H
-#define TOOLS_DBI_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -485,4 +462,3 @@ bool StdSqlUpdate( Database &db, const DBBindType &in, const std::string &where 
 		  
 #endif
 
-#endif

@@ -1,25 +1,4 @@
-/*
- * $Log: database.h,v $
- * Revision 1.3  2007/08/27 17:22:51  wamas
- * Updated odbc Driver
- *
- * Revision 1.2  2006/11/24 09:47:27  wamas
- * -Wshadow Warnings ausgebaut
- *
- * Revision 1.1.1.1  2006/03/17 19:49:16  wamas
- * own tools reponsitority
- *
- * Revision 1.3  2006/03/13 07:35:32  wamas
- * Anwesenheitsliste ist nun konfigurierbar
- *
- * Revision 1.2  2006/03/09 00:48:26  wamas
- * Added CVS Log Info
- *
- */
-
-#ifndef TOOLS_DATABASE_H
-#define TOOLS_DATABASE_H
-
+#pragma once
 #include "db.h"
 
 #ifdef TOOLS_USE_DB
@@ -101,4 +80,3 @@ class Database
 
 #endif
 
-#endif

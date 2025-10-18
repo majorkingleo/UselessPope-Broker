@@ -1,13 +1,3 @@
-/*
- * $Log: oracle_db.cpp,v $
- * Revision 1.1.1.1  2006/03/17 19:49:15  wamas
- * own tools reponsitority
- *
- * Revision 1.2  2006/03/09 00:48:27  wamas
- * Added CVS Log Info
- *
- */
-
 #include "oracle_db.h"
 
 #ifdef TOOLS_USE_ORACLE

@@ -1,27 +1,8 @@
-/*
- * $Log: dbi.cpp,v $
- * Revision 1.4  2007/09/19 23:05:08  wamas
- * fixed ODBC driver
- *
- * Revision 1.3  2007/08/27 17:22:51  wamas
- * Updated odbc Driver
- *
- * Revision 1.2  2006/11/22 22:46:30  wamas
- * mysql fixes
- *
- * Revision 1.1.1.1  2006/03/17 19:49:15  wamas
- * own tools reponsitority
- *
- * Revision 1.2  2006/03/09 00:48:27  wamas
- * Added CVS Log Info
- *
- */
-
 #include "string_utils.h"
 #include "format.h"
 #include "db.h"
 #include "dbi.h"
-#include "debug.h"
+#include "CpputilsDebug.h"
 
 #ifdef TOOLS_USE_DB
 
