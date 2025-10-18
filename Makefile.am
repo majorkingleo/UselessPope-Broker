@@ -28,7 +28,21 @@ AM_CPPFLAGS = -I$(top_srcdir)/tools \
 noinst_LIBRARIES=cpputils/io/libcpputilsio.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \
 	cpputils/cpputilsshared/cpputilsformat/libcpputilsformat.a \
-	common/libcommon.a
+	common/libcommon.a \
+	db/libdb.a
+	
+db_libdb_a_SOURCES= \
+		db/db.h \
+		db/db.cc \
+		db/dbi.h \
+		db/dbi.cc \
+		db/database.cc \
+		db/database.h \
+		db/mysql_db.cc \
+		db/oracle_db.h \
+		db/oracle_db.cc \
+		db/odbc_db.h \
+		db/odbc_db.cc
 
 cpputils_io_libcpputilsio_a_SOURCES= \
 	cpputils/io/ColoredOutput.h \
@@ -105,6 +119,7 @@ common_libcommon_a_SOURCES=\
 
 broker_LDADD = \
 	common/libcommon.a \
+	db/libdb.a \
 	cpputils/io/libcpputilsio.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \
 	cpputils/cpputilsshared/cpputilsformat/libcpputilsformat.a
