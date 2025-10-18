@@ -82,12 +82,12 @@ bool PlaySound::Music::finished()
 
 /*
  *
- *  Effect
+ *  Chunk
  *
  */
 
 
-PlaySound::Effect::Effect( const std::string & file )
+PlaySound::Chunk::Chunk( const std::string & file )
 : m_file( file )
 {
 	m_chunk = Mix_LoadWAV(file.c_str());
@@ -97,12 +97,12 @@ PlaySound::Effect::Effect( const std::string & file )
 	}
 }
 
-PlaySound::Effect::~Effect()
+PlaySound::Chunk::~Chunk()
 {
 	Mix_FreeChunk(m_chunk);
 }
 
-void PlaySound::Effect::play()
+void PlaySound::Chunk::play()
 {
 	if( !m_started ) {
 		m_started_at = std::chrono::steady_clock::now();
@@ -113,7 +113,7 @@ void PlaySound::Effect::play()
 }
 
 
-bool PlaySound::Effect::finished()
+bool PlaySound::Chunk::finished()
 {
 	if( !m_started ) {
 		return false;
@@ -146,10 +146,10 @@ void PlaySound::play_music( const std::string & file )
 	m_music.emplace_back( file );
 }
 
-void PlaySound::play_effect( const std::string & file )
+void PlaySound::play_chunk( const std::string & file )
 {
-	auto lock = std::scoped_lock( m_lock_effects );
-	m_effects.emplace_back( file );
+	auto lock = std::scoped_lock( m_lock_chunks );
+	m_chunks.emplace_back( file );
 }
 
 void PlaySound::run()
@@ -170,46 +170,46 @@ void PlaySound::run()
 		}
 
 		{
-			auto lock = std::scoped_lock( m_lock_effects );
-			if( !m_effects.empty() ) {
+			auto lock = std::scoped_lock( m_lock_chunks );
+			if( !m_chunks.empty() ) {
 
-				Effect & effect = m_effects.front();
-				if( effect.finished() ) {
-					m_effects.pop_front();
+				Chunk & chunk = m_chunks.front();
+				if( chunk.finished() ) {
+					m_chunks.pop_front();
 					continue;
 				} else {
-					effect.play();
+					chunk.play();
 				}
 
 				const auto now = std::chrono::steady_clock::now();
-				const bool current_effect_first_seconds 		= effect.get_started_at() + 5s > now;
-				const bool current_effect_may_interrupted_part 	= effect.get_started_at() + 5s < now;
-				const bool current_effect_is_old				= effect.get_started_at() + 30s < now;
+				const bool current_chunk_first_seconds 			= chunk.get_started_at() + 5s > now;
+				const bool current_chunk_may_interrupted_part 	= chunk.get_started_at() + 5s < now;
+				const bool current_chunk_is_old					= chunk.get_started_at() + 30s < now;
 
 				// drop everything within the first 5 seconds
-				if( current_effect_first_seconds ) {
-					while( m_effects.size() > 1 ) {
+				if( current_chunk_first_seconds ) {
+					while( m_chunks.size() > 1 ) {
 
-						Effect & dropping_effect = m_effects.back();
-						CPPDEBUG( Tools::format( "dropping effect %s because current effect started only %d seconds ago.",
+						Chunk & dropping_effect = m_chunks.back();
+						CPPDEBUG( Tools::format( "dropping chunk %s because current chunk started only %d seconds ago.",
 								dropping_effect.get_file(),
-								duration_cast<std::chrono::seconds>(now - effect.get_started_at()).count() ));
+								duration_cast<std::chrono::seconds>(now - chunk.get_started_at()).count() ));
 
-						m_effects.pop_back();
+						m_chunks.pop_back();
 					}
-				} else if( current_effect_may_interrupted_part && m_effects.size() > 1 ) {
-					m_effects.pop_front();
+				} else if( current_chunk_may_interrupted_part && m_chunks.size() > 1 ) {
+					m_chunks.pop_front();
 
 					CPPDEBUG( Tools::format( "dropping effect %s because current another effect got in queue.",
-													effect.get_file() ));
+													chunk.get_file() ));
 
 					continue;
-				} else if( current_effect_is_old ) {
+				} else if( current_chunk_is_old ) {
 
 					CPPDEBUG( Tools::format( "dropping effect %s because it's already played to long.",
-													effect.get_file() ));
+													chunk.get_file() ));
 
-					m_effects.pop_front();
+					m_chunks.pop_front();
 				}
 			}
 		}

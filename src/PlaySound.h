@@ -27,7 +27,7 @@ class PlaySound : public BasicThread
 		bool finished();
 	};
 
-	class Effect
+	class Chunk
 	{
 		using duration_t = std::chrono::steady_clock::duration;
 		using time_point_t = std::chrono::steady_clock::time_point;
@@ -39,8 +39,8 @@ class PlaySound : public BasicThread
 		time_point_t		m_started_at		{};
 
 	public:
-		Effect( const std::string & file );
-		~Effect();
+		Chunk( const std::string & file );
+		~Chunk();
 
 		void play();
 
@@ -56,17 +56,17 @@ class PlaySound : public BasicThread
 	};
 
 	std::mutex 		 m_lock_music;
-	std::mutex 		 m_lock_effects;
+	std::mutex 		 m_lock_chunks;
 
 	std::list<Music> 	m_music;
-	std::list<Effect> 	m_effects;
+	std::list<Chunk> 	m_chunks;
 
 public:
 
 	PlaySound();
 
 	void play_music( const std::string & file );
-	void play_effect( const std::string & file );
+	void play_chunk( const std::string & file );
 
 	void run() override;
 };
