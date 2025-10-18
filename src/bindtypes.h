@@ -1,7 +1,6 @@
-#ifndef BINDTYPES_H
-#define BINDTYPES_H
+#pragma once
 
-#include "tools/dbi.h"
+#include <dbi.h>
 
 using namespace Tools;
 
@@ -315,6 +314,4 @@ class CONFIG : public DBBindType, public TableType
 
 std::string create_sql();
 std::string create_sql_statement( DBBindType *table );
-
-#endif
 

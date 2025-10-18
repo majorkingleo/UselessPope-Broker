@@ -13,6 +13,8 @@ broker_SOURCES=\
 		src/ConfigGlobal.cc \
 		src/ConfigDatabase.h \
 		src/ConfigDatabase.cc \
+		src/bindtypes.h \
+		src/bindtypes.cc \
 		tools_config.h
 		
 AM_CPPFLAGS = -I$(top_srcdir)/tools \
@@ -20,10 +22,12 @@ AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-I$(top_srcdir)/cpputils/cpputilsshared/cpputilsformat \
 	-I$(top_srcdir)/cpputils/io \
 	-I$(top_srcdir)/common \
+	-I$(top_srcdir)/db \
 	-std=gnu++23 \
 	-fstack-protector \
 	-D_GLIBCXX_USE_CXX11_ABI=1 \
-	`pkg-config --cflags SDL2_mixer`	
+	`pkg-config --cflags SDL2_mixer` \
+	`pkg-config --cflags mysqlclient`
 
 noinst_LIBRARIES=cpputils/io/libcpputilsio.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \
@@ -128,7 +132,8 @@ broker_LDADD = \
 LIBS=
     
 AM_LDFLAGS= \
-	`pkg-config --libs SDL2_mixer`
+	`pkg-config --libs SDL2_mixer` \
+	`pkg-config --libs mysqlclient`
     
 if MINGW
 #AM_LDFLAGS += -mwindows

@@ -224,7 +224,7 @@ std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > 
 		  break;
 
 		case DBType::TYPE::VARCHAR:
-		  s += format("VARCHAR(%s) CHARACTER SET utf8 COLLATE utf8_general_ci ", tl[i]->get_size() );
+		  s += Tools::format("VARCHAR(%s) CHARACTER SET utf8 COLLATE utf8_general_ci ", tl[i]->get_size() );
 		  break;
 
 		case DBType::TYPE::ENUM:
@@ -240,7 +240,7 @@ std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > 
 					if( j > eb->get_first_case() )
 					  s += ", ";
 					
-					s += format( "'%s'", eb->get_case(j));
+					s += Tools::format( "'%s'", eb->get_case(j));
 				  }			  
 			  }
 			
@@ -277,11 +277,11 @@ std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > 
 		}
 	}
 
-  s += format( "\n) ENGINE = %s;\n", engine );
-  s += format("ALTER TABLE `%s` ADD PRIMARY KEY ( `idx` );\n",table->get_table()); 
-  s += format("ALTER TABLE `%s` CHANGE `idx` `idx` INT( 11 ) NOT NULL AUTO_INCREMENT;\n",
+  s += Tools::format( "\n) ENGINE = %s;\n", engine );
+  s += Tools::format("ALTER TABLE `%s` ADD PRIMARY KEY ( `idx` );\n",table->get_table());
+  s += Tools::format("ALTER TABLE `%s` CHANGE `idx` `idx` INT( 11 ) NOT NULL AUTO_INCREMENT;\n",
 			  table->get_table());
-  s += format("ALTER TABLE `%s`  DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;\n",table->get_table()); 
+  s += Tools::format("ALTER TABLE `%s`  DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;\n",table->get_table());
 
   Forkeys *fk = dynamic_cast<Forkeys*>( table );
 
@@ -329,7 +329,7 @@ std::string create_sql()
 		{
 		  std::string ss;
 
-		  ss = format( "ALTER TABLE `%s` ADD INDEX `%s_%s_%s`(`%s`);\n",
+		  ss = Tools::format( "ALTER TABLE `%s` ADD INDEX `%s_%s_%s`(`%s`);\n",
 					   forkeys[i]->target_table,
 					   "idx",
 					   forkeys[i]->target_table,
@@ -347,7 +347,7 @@ std::string create_sql()
   // Forkeys anlegen
   for( unsigned i = 0; i < forkeys.size(); i++ )
 	{
-	  s += format( "ALTER TABLE `%s` add FOREIGN KEY (`%s`) REFERENCES `%s`(`%s`);\n",
+	  s += Tools::format( "ALTER TABLE `%s` add FOREIGN KEY (`%s`) REFERENCES `%s`(`%s`);\n",
 				   forkeys[i]->own_table,
 				   forkeys[i]->field,
 				   forkeys[i]->target_table,

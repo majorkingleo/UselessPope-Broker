@@ -53,6 +53,7 @@ PlaySound::Music::Music( const std::string & file )
 PlaySound::Music::~Music()
 {
 	Mix_FreeMusic(m_music);
+	CPPDEBUG( Tools::format( "finished playing: %s", m_file ) );
 }
 
 void PlaySound::Music::play()
@@ -70,7 +71,7 @@ bool PlaySound::Music::finished()
 		return false;
 	}
 
-	if(Mix_PlayingMusic() == 1) {
+	if(Mix_PlayingMusic() == 0) {
 		return true;
 	}
 

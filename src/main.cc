@@ -7,6 +7,7 @@
 #include "App.h"
 #include <filesystem>
 #include "Configfile2.h"
+#include "ConfigDatabase.h"
 
 using namespace Tools;
 
@@ -104,6 +105,17 @@ int main( int argc, char **argv )
 		}
 
 		Configfile2::createDefaultInstaceWithAllModules()->read(true);
+		const ConfigSectionDatabase & cfg_db = Configfile2::get(ConfigSectionDatabase::KEY);
+
+		APP.db = std::make_shared<Database>( cfg_db.Host,
+											 cfg_db.UserName,
+											 cfg_db.Password,
+											 cfg_db.Instance,
+											 Database::DB_MYSQL );
+
+		if( !APP.db->valid() ) {
+			throw STDERR_EXCEPTION( Tools::format( "cannot connect to database: '%s'", APP.db->get_error()));
+		}
 
 		bool does_something = false;
 
