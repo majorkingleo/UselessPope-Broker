@@ -9,6 +9,7 @@
 #include "Configfile2.h"
 #include "ConfigDatabase.h"
 #include "bindtypes.h"
+#include <dbi.h>
 
 using namespace Tools;
 
@@ -80,6 +81,13 @@ int main( int argc, char **argv )
 		o_create_sql.setRequired(false);
 		arg.addOptionR( &o_create_sql );
 
+		Arg::StringOption o_play_chunk("play-chunk");
+		o_play_chunk.setDescription("add a chunk file to queue");
+		o_play_chunk.setRequired(false);
+		o_play_chunk.setMinValues(1);
+		o_play_chunk.setMaxValues(1);
+		arg.addOptionR( &o_play_chunk );
+
 		DetectLocale dl;
 
 		const unsigned int console_width = 80;
@@ -97,16 +105,14 @@ int main( int argc, char **argv )
 			}
 		}
 
-		if( o_help.getState() )
-		{
+		if( o_help.getState() ) {
 			usage(argv[0]);
 			std::cout << arg.getHelp(5,20,30, console_width ) << std::endl;
 			return 0;
 		}
 
 
-		if( o_debug.getState() )
-		{
+		if( o_debug.getState() ) {
 			Tools::x_debug = new OutDebug();
 		}
 
@@ -125,6 +131,25 @@ int main( int argc, char **argv )
 
 		if( !APP.db->valid() ) {
 			throw STDERR_EXCEPTION( Tools::format( "cannot connect to database: '%s'", APP.db->get_error()));
+		}
+
+		if( o_play_chunk.isSet() ) {
+			for( const auto & file : *o_play_chunk.getValues() ) {
+				if( !std::filesystem::exists(file) ) {
+					throw STDERR_EXCEPTION( Tools::format( "file '%s' does not exists", file ) );
+				}
+
+				PLAY_QUEUE_CHUNKS pqc {};
+				pqc.file = std::filesystem::absolute( file ).string();
+				pqc.setHist(BASE::HIST_TYPE::HIST_AN);
+				pqc.setHist(BASE::HIST_TYPE::HIST_AE);
+				pqc.setHist(BASE::HIST_TYPE::HIST_LO);
+
+				if( !StdSqlInsert( *APP.db, pqc ) ) {
+					throw STDERR_EXCEPTION( Tools::format( "cannot enqueue file '%s' '%s'", file, APP.db->get_error() ) );
+				}
+				APP.db->commit();
+			}
 		}
 
 		bool does_something = false;

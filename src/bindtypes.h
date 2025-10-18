@@ -96,6 +96,15 @@ class Forkeys
 
 class BASE : public DBBindType, public TableType, public Forkeys
 {
+public:
+  enum class HIST_TYPE {
+	HIST_AN,
+	HIST_AE,
+	HIST_LO
+  };
+
+
+
  public:
   DBTypeInt      idx;
   DBTypeDateTime hist_an_zeit;
@@ -112,6 +121,8 @@ class BASE : public DBBindType, public TableType, public Forkeys
 	  DBBindType::operator=(b); 
 	  return *this;
 	}
+
+  void setHist( HIST_TYPE hist_type, const std::string & user = std::string() );
 };
 
 class PLAY_QUEUE_CHUNKS : public BASE

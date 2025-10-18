@@ -25,6 +25,40 @@ BASE::BASE( const std::string & name, DBBindType *base )
 
 }
 
+void BASE::setHist( HIST_TYPE hist_type, const std::string & user )
+{
+  std::string db_time;
+  struct tm *tm;
+  time_t t = time(NULL);
+
+  tm = localtime( & t );
+
+  db_time = format( "%d-%02d-%02d %02d:%02d:%02d",
+                    tm->tm_year + 1900,
+                    tm->tm_mon + 1,
+                    tm->tm_mday,
+                    tm->tm_hour + 1,
+                    tm->tm_min + 1,
+                    tm->tm_sec + 1 );
+
+  switch( hist_type )
+  {
+  using enum HIST_TYPE;
+  case HIST_AN:
+	  hist_an_zeit = db_time;
+	  hist_an_user = user;
+	  break;
+  case HIST_AE:
+	  hist_ae_zeit = db_time;
+	  hist_ae_user = user;
+	  break;
+  case HIST_LO:
+	  hist_lo_zeit = db_time;
+	  hist_lo_user = user;
+	  break;
+  }
+}
+
 PLAY_QUEUE_CHUNKS::PLAY_QUEUE_CHUNKS()
   : BASE( "PLAY_QUEUE_CHUNKS", this ),
 	file( this, "file", FILE_LEN )
