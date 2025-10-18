@@ -139,6 +139,20 @@ class PLAY_QUEUE_CHUNKS : public BASE
 	}
 };
 
+class PLAY_QUEUE_MUSIC : public BASE
+{
+ public:
+  DBTypeVarChar file;
+
+  PLAY_QUEUE_MUSIC();
+
+  PLAY_QUEUE_MUSIC & operator=( const PLAY_QUEUE_MUSIC & b )
+	{
+	  BASE::operator=(b);
+	  return *this;
+	}
+};
+
 std::string create_sql();
 std::string create_sql_statement( DBBindType *table );
 

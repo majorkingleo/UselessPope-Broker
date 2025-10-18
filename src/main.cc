@@ -37,8 +37,6 @@ int main( int argc, char **argv )
 {
 	Co co;
 
-	std::optional<PlaySound> play;
-
 	std::list<std::thread> threads;
 
 	try {
@@ -70,23 +68,28 @@ int main( int argc, char **argv )
 		o_debug.setRequired(false);
 		arg.addOptionR( &o_debug );
 
-		Arg::StringOption o_play("play");
-		o_play.setDescription("play a file");
-		o_play.setRequired(false);
-		o_play.setMinValues(1);
-		arg.addOptionR( &o_play );
+		Arg::StringOption o_enqueue_music("enqueue-music");
+		o_enqueue_music.setDescription("add music to queue");
+		o_enqueue_music.setRequired(false);
+		o_enqueue_music.setMinValues(1);
+		arg.addOptionR( &o_enqueue_music );
 
 		Arg::FlagOption o_create_sql("create-sql");
 		o_create_sql.setDescription("print create sql script");
 		o_create_sql.setRequired(false);
 		arg.addOptionR( &o_create_sql );
 
-		Arg::StringOption o_play_chunk("play-chunk");
-		o_play_chunk.setDescription("add a chunk file to queue");
-		o_play_chunk.setRequired(false);
-		o_play_chunk.setMinValues(1);
-		o_play_chunk.setMaxValues(1);
-		arg.addOptionR( &o_play_chunk );
+		Arg::StringOption o_enqueue_chunk("enqueue-chunk");
+		o_enqueue_chunk.setDescription("add a chunk file to queue");
+		o_enqueue_chunk.setRequired(false);
+		o_enqueue_chunk.setMinValues(1);
+		o_enqueue_chunk.setMaxValues(1);
+		arg.addOptionR( &o_enqueue_chunk );
+
+		Arg::FlagOption o_master("master");
+		o_master.setDescription("execute as master daemon program");
+		o_master.setRequired(false);
+		arg.addOptionR( &o_master );
 
 		DetectLocale dl;
 
@@ -133,8 +136,8 @@ int main( int argc, char **argv )
 			throw STDERR_EXCEPTION( Tools::format( "cannot connect to database: '%s'", APP.db->get_error()));
 		}
 
-		if( o_play_chunk.isSet() ) {
-			for( const auto & file : *o_play_chunk.getValues() ) {
+		if( o_enqueue_chunk.isSet() ) {
+			for( const auto & file : *o_enqueue_chunk.getValues() ) {
 				if( !std::filesystem::exists(file) ) {
 					throw STDERR_EXCEPTION( Tools::format( "file '%s' does not exists", file ) );
 				}
@@ -152,25 +155,33 @@ int main( int argc, char **argv )
 			}
 		}
 
-		bool does_something = false;
+		if( o_enqueue_music.isSet() ) {
+			for( const auto & file : *o_enqueue_music.getValues() ) {
+				if( !std::filesystem::exists(file) ) {
+					throw STDERR_EXCEPTION( Tools::format( "file '%s' does not exists", file ) );
+				}
 
-		if( o_play.isSet() ) {
-			play.emplace();
+				PLAY_QUEUE_MUSIC pqm {};
+				pqm.file = std::filesystem::absolute( file ).string();
+				pqm.setHist(BASE::HIST_TYPE::HIST_AN);
+				pqm.setHist(BASE::HIST_TYPE::HIST_AE);
+				pqm.setHist(BASE::HIST_TYPE::HIST_LO);
 
-			for( const auto & file : *o_play.getValues() ) {
-				play->play_music( file );
+				if( !StdSqlInsert( *APP.db, pqm ) ) {
+					throw STDERR_EXCEPTION( Tools::format( "cannot enqueue file '%s' '%s'", file, APP.db->get_error() ) );
+				}
+				APP.db->commit();
 			}
-
-			does_something = true;
 		}
 
-		if( does_something ) {
+		bool does_something = false;
 
-			if( play ) {
-				threads.emplace_back([&play]() {
-					play->run();
-				});
-			}
+		if( o_master.isSet() ) {
+			PlaySound play {};
+
+			threads.emplace_back([&play]() {
+				play.run();
+			});
 
 			while (!SDL_QuitRequested()) {
 				SDL_Delay(250);
