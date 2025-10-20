@@ -26,8 +26,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-std=gnu++23 \
 	-fstack-protector \
 	-D_GLIBCXX_USE_CXX11_ABI=1 \
-	`pkg-config --cflags SDL2_mixer` \
-	`pkg-config --cflags mysqlclient`
+	$(SDL2_MIXER_CFLAGS) \
+	$(MYSQLCLIENT_CFLAGS)
 
 noinst_LIBRARIES=cpputils/io/libcpputilsio.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \
@@ -126,14 +126,13 @@ broker_LDADD = \
 	db/libdb.a \
 	cpputils/io/libcpputilsio.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \
-	cpputils/cpputilsshared/cpputilsformat/libcpputilsformat.a
-	
+	cpputils/cpputilsshared/cpputilsformat/libcpputilsformat.a \
+	$(SDL2_MIXER_LIBS) \
+	$(MYSQLCLIENT_LIBS)
 
 LIBS=
     
-AM_LDFLAGS= \
-	`pkg-config --libs SDL2_mixer` \
-	`pkg-config --libs mysqlclient`
+
     
 if MINGW
 #AM_LDFLAGS += -mwindows

@@ -35,6 +35,8 @@ AC_DEFUN([LD_FLAGS_CHECK],
 AC_INIT(broker, 0.0.1)
 AM_INIT_AUTOMAKE([subdir-objects -Wall])
 
+# Check for pkg-config tool itself
+PKG_PROG_PKG_CONFIG
 
 AC_CANONICAL_HOST
 case $host_os in
@@ -50,9 +52,13 @@ case $host_os in
 esac
 AM_CONDITIONAL([CYGWIN], [test x$cygwin = xtrue])
 
-PKG_CHECK_EXISTS([SDL2_mixer],[],[
-    AC_MSG_ERROR(can't find SDL2_mixer)
-])
+
+# Check for SDL2_mixer module. 
+# NOTE: The prefix 'SDL2_MIXER' is what defines the output variables.
+PKG_CHECK_MODULES([SDL2_MIXER], [SDL2_mixer >= 2.0.0], [], [AC_MSG_ERROR([SDL2_mixer >= 2.0.0 not found])])
+
+PKG_CHECK_MODULES([MYSQLCLIENT], [mysqlclient], [], [AC_MSG_ERROR([mysqlclient not found])])
+
 
 AC_PROG_CC
 #  po/Makefile.in
@@ -69,7 +75,6 @@ ac_extra_cxxx_flags=""
 EXTRA_LDFLAGS=""
 
 CXX_FLAGS_CHECK([-std=gnu++23])
-#CXX_FLAGS_CHECK([-fopenmp])
 
 
 #AM_GNU_GETTEXT([external])
