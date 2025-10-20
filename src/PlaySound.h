@@ -55,8 +55,8 @@ class PlaySound : public BasicThread
 		}
 	};
 
-	std::mutex 		 m_lock_music;
-	std::mutex 		 m_lock_chunks;
+	mutable std::mutex 	m_lock_music;
+	mutable std::mutex 	m_lock_chunks;
 
 	std::list<Music> 	m_music;
 	std::list<Chunk> 	m_chunks;
@@ -67,6 +67,11 @@ public:
 
 	void play_music( const std::string & file );
 	void play_chunk( const std::string & file );
+
+	unsigned countMusicInQueue() const {
+		auto lock = std::scoped_lock( m_lock_music );
+		return m_music.size();
+	}
 
 	void run() override;
 };

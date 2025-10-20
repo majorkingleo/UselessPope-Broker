@@ -10,6 +10,7 @@
 #include "ConfigDatabase.h"
 #include "bindtypes.h"
 #include <dbi.h>
+#include "FetchSound.h"
 
 using namespace Tools;
 
@@ -178,9 +179,14 @@ int main( int argc, char **argv )
 
 		if( o_master.isSet() ) {
 			PlaySound play {};
+			FetchSound fetch( play );
 
 			threads.emplace_back([&play]() {
 				play.run();
+			});
+
+			threads.emplace_back([&fetch]() {
+				fetch.run();
 			});
 
 			while (!SDL_QuitRequested()) {
