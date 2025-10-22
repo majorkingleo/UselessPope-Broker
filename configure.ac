@@ -34,6 +34,7 @@ AC_DEFUN([LD_FLAGS_CHECK],
 
 AC_INIT(broker, 0.0.1)
 AM_INIT_AUTOMAKE([subdir-objects -Wall])
+AX_BOOST_BASE( 1.80 )
 
 # Check for pkg-config tool itself
 PKG_PROG_PKG_CONFIG
@@ -58,6 +59,12 @@ AM_CONDITIONAL([CYGWIN], [test x$cygwin = xtrue])
 PKG_CHECK_MODULES([SDL2_MIXER], [SDL2_mixer >= 2.0.0], [], [AC_MSG_ERROR([SDL2_mixer >= 2.0.0 not found])])
 
 PKG_CHECK_MODULES([MYSQLCLIENT], [mysqlclient], [], [AC_MSG_ERROR([mysqlclient not found])])
+
+dnl Prüfen auf Boost-Installation
+AX_BOOST_BASE([1.70],, [
+    AC_MSG_ERROR([Boost library version 1.70 or higher is required])
+])
+AX_BOOST_ASIO
 
 
 AC_PROG_CC
