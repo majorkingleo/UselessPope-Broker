@@ -95,7 +95,7 @@ int main( int argc, char **argv )
 		arg.addOptionR( &o_master );
 
 		Arg::FlagOption o_listen("listen");
-		o_listen.setDescription("listen only to buttons");
+		o_listen.setDescription("listen to buttons");
 		o_listen.setRequired(false);
 		arg.addOptionR( &o_listen );
 
