@@ -1,26 +1,8 @@
-/*
- * $Log: mysql_db.cpp,v $
- * Revision 1.4  2008/02/27 23:48:38  wamas
- * nothing
- *
- * Revision 1.3  2007/08/27 17:22:51  wamas
- * Updated odbc Driver
- *
- * Revision 1.2  2006/11/22 22:46:31  wamas
- * mysql fixes
- *
- * Revision 1.1.1.1  2006/03/17 19:49:16  wamas
- * own tools reponsitority
- *
- * Revision 1.2  2006/03/09 00:48:27  wamas
- * Added CVS Log Info
- *
- */
-
 #include "mysql_db.h"
 
 #ifdef TOOLS_USE_MYSQL
-
+#include <CpputilsDebug.h>
+#include <format.h>
 #include <mysql/mysql.h>
 
 #define C( db ) static_cast<MYSQL*>(db)
@@ -82,13 +64,18 @@ DBErg<DBRowList> MySqlDB::select( const std::string &sql, bool table_names )
   MYSQL_RES *res;
   MYSQL_ROW row;
 
+  int ret = mysql_real_query( C(db), sql.c_str(), sql.size() );
 
-  if( mysql_real_query( C(db), sql.c_str(), sql.size() ) )
+  if( ret != 0 )
     {     
       DBErg<DBRowList> erg;
 
-      if( error() == NULL )
+      if( error() == NULL ) {
 		  erg.success = true;
+      } else {
+    	  CPPDEBUG( Tools::format( "sql: '%s' ret: %d", sql, ret ));
+    	  CPPDEBUG( Tools::format( "SqlError: %s", error() ) );
+      }
 
       return erg;
     } else if( sql.find( "delete " ) == 0 ) {
