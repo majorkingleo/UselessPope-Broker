@@ -37,6 +37,7 @@ class PlaySound : public BasicThread
 		Mix_Chunk *			m_chunk				{};
 		bool				m_started 			{false};
 		time_point_t		m_started_at		{};
+		int					m_channel			{-1};
 
 	public:
 		Chunk( const std::string & file );

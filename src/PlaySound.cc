@@ -107,7 +107,7 @@ void PlaySound::Chunk::play()
 	if( !m_started ) {
 		m_started_at = std::chrono::steady_clock::now();
 		CPPDEBUG( Tools::format( "start playing: %s", m_file ) );
-		Mix_PlayChannel(0, m_chunk,0);
+		m_channel = Mix_PlayChannel(-1, m_chunk,0);
 		m_started = true;
 	}
 }
@@ -119,7 +119,9 @@ bool PlaySound::Chunk::finished()
 		return false;
 	}
 
-	if(Mix_Playing(0) == 1) {
+	int ret = Mix_Playing(m_channel);
+
+	if( ret == -1) {
 		return true;
 	}
 
@@ -137,7 +139,7 @@ PlaySound::PlaySound()
 {
 	init();
 
-	Mix_OpenAudio(22050, AUDIO_S16SYS, 2, 640);
+	Mix_OpenAudio(44100, AUDIO_S32SYS, 2, 640);
 }
 
 void PlaySound::play_music( const std::string & file )
@@ -175,6 +177,7 @@ void PlaySound::run()
 
 				Chunk & chunk = m_chunks.front();
 				if( chunk.finished() ) {
+					CPPDEBUG( Tools::format( "chunk %s finished", chunk.get_file() ) );
 					m_chunks.pop_front();
 					continue;
 				} else {
@@ -198,14 +201,12 @@ void PlaySound::run()
 						m_chunks.pop_back();
 					}
 				} else if( current_chunk_may_interrupted_part && m_chunks.size() > 1 ) {
-					m_chunks.pop_front();
-
 					CPPDEBUG( Tools::format( "dropping effect %s because current another effect got in queue.",
 													chunk.get_file() ));
 
+					m_chunks.pop_front();
 					continue;
 				} else if( current_chunk_is_old ) {
-
 					CPPDEBUG( Tools::format( "dropping effect %s because it's already played to long.",
 													chunk.get_file() ));
 
