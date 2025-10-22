@@ -139,14 +139,30 @@ class PLAY_QUEUE_CHUNKS : public BASE
 	}
 };
 
-class PLAY_QUEUE_MUSIC : public BASE
+class P_PLAY_QUEUE_CHUNKS : public PLAY_QUEUE_CHUNKS
 {
  public:
-  DBTypeVarChar file;
+  P_PLAY_QUEUE_CHUNKS();
 
+  P_PLAY_QUEUE_CHUNKS & operator=( const PLAY_QUEUE_CHUNKS & b )
+	{
+	  BASE::operator=(b);
+	  return *this;
+	}
+};
+
+class PLAY_QUEUE_MUSIC : public PLAY_QUEUE_CHUNKS
+{
+ public:
   PLAY_QUEUE_MUSIC();
+};
 
-  PLAY_QUEUE_MUSIC & operator=( const PLAY_QUEUE_MUSIC & b )
+class P_PLAY_QUEUE_MUSIC : public PLAY_QUEUE_MUSIC
+{
+public:
+	P_PLAY_QUEUE_MUSIC();
+
+	P_PLAY_QUEUE_MUSIC & operator=( const PLAY_QUEUE_MUSIC & b )
 	{
 	  BASE::operator=(b);
 	  return *this;

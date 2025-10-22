@@ -40,6 +40,14 @@ void FetchSound::fetch_music()
     
     play_sound.play_music( music.file() );
 
+    P_PLAY_QUEUE_MUSIC p_music;
+    p_music = music;
+    p_music.setHist(BASE::HIST_TYPE::HIST_LO, "broker" );
+
+    if( !StdSqlInsert( *APP.db, p_music ) <= 0 ) {
+    	CPPDEBUG( Tools::format( "cannot insert into DB: %s", APP.db->get_error() ) );
+    }
+
     APP.db->exec( Tools::format( "delete from %s where idx = %d", music.get_table_name(), music.idx() ) );
     APP.db->commit();
 }
@@ -55,6 +63,15 @@ void FetchSound::fetch_chunk()
     }
 
     play_sound.play_chunk( chunk.file() );
+
+    P_PLAY_QUEUE_CHUNKS p_chunk;
+    p_chunk = chunk;
+    p_chunk.setHist(BASE::HIST_TYPE::HIST_LO, "broker" );
+
+    if( !StdSqlInsert( *APP.db, p_chunk ) <= 0 ) {
+    	CPPDEBUG( Tools::format( "cannot insert into DB: %s", APP.db->get_error() ) );
+    }
+
 
     APP.db->exec( Tools::format( "delete from %s where idx = %d", chunk.get_table_name(), chunk.idx() ) );
     APP.db->commit();

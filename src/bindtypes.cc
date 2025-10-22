@@ -64,10 +64,23 @@ PLAY_QUEUE_CHUNKS::PLAY_QUEUE_CHUNKS()
 	file( this, "file", FILE_LEN )
 {}
 
+P_PLAY_QUEUE_CHUNKS::P_PLAY_QUEUE_CHUNKS()
+: PLAY_QUEUE_CHUNKS()
+{
+	set_table_name( "P_PLAY_QUEUE_CHUNKS" );
+}
+
 PLAY_QUEUE_MUSIC::PLAY_QUEUE_MUSIC()
-  : BASE( "PLAY_QUEUE_MUSIC", this ),
-	file( this, "file", FILE_LEN )
-{}
+  : PLAY_QUEUE_CHUNKS()
+{
+	set_table_name( "PLAY_QUEUE_MUSIC" );
+}
+
+P_PLAY_QUEUE_MUSIC::P_PLAY_QUEUE_MUSIC()
+: PLAY_QUEUE_MUSIC()
+{
+	set_table_name( "P_PLAY_QUEUE_MUSIC" );
+}
 	
 
 std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > & forkeys )
@@ -172,13 +185,17 @@ std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > 
 std::string create_sql()
 {
   std::string s;
-  PLAY_QUEUE_CHUNKS play_queue_chunks;
-  PLAY_QUEUE_MUSIC play_queue_music;
+  PLAY_QUEUE_CHUNKS 	play_queue_chunks;
+  P_PLAY_QUEUE_CHUNKS 	p_play_queue_chunks;
+  PLAY_QUEUE_MUSIC 		play_queue_music;
+  P_PLAY_QUEUE_MUSIC 	p_play_queue_music;
 
   std::vector< Ref<Forkey> > forkeys;
 
-  s += create_sql_statement( &play_queue_chunks, forkeys );
-  s += create_sql_statement( &play_queue_music,  forkeys );
+  s += create_sql_statement( &play_queue_chunks, 	forkeys );
+  s += create_sql_statement( &p_play_queue_chunks, 	forkeys );
+  s += create_sql_statement( &play_queue_music,  	forkeys );
+  s += create_sql_statement( &p_play_queue_music,	forkeys );
 
   // notwendige indexe anlegen
   for( unsigned i = 0; i < forkeys.size(); i++ )
