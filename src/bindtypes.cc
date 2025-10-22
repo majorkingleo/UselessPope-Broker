@@ -37,9 +37,9 @@ void BASE::setHist( HIST_TYPE hist_type, const std::string & user )
                     tm->tm_year + 1900,
                     tm->tm_mon + 1,
                     tm->tm_mday,
-                    tm->tm_hour + 1,
-                    tm->tm_min + 1,
-                    tm->tm_sec + 1 );
+                    tm->tm_hour,
+                    tm->tm_min,
+                    tm->tm_sec );
 
   switch( hist_type )
   {
