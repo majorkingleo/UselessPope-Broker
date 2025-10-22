@@ -13,10 +13,14 @@ broker_SOURCES=\
 		src/ConfigGlobal.cc \
 		src/ConfigDatabase.h \
 		src/ConfigDatabase.cc \
+		src/ConfigNetwork.h \
+		src/ConfigNetwork.cc \
 		src/bindtypes.h \
 		src/bindtypes.cc \
 		src/FetchSound.h \
 		src/FetchSound.cc \
+		src/ButtonListener.h \
+		src/ButtonListener.cc \
 		tools_config.h
 		
 AM_CPPFLAGS = -I$(top_srcdir)/tools \

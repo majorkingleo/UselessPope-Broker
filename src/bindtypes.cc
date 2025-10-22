@@ -81,7 +81,24 @@ P_PLAY_QUEUE_MUSIC::P_PLAY_QUEUE_MUSIC()
 {
 	set_table_name( "P_PLAY_QUEUE_MUSIC" );
 }
+
+BUTTON_QUEUE::BUTTON_QUEUE()
+: BASE( "BUTTON_QUEUE", this ),
+  time_stamp( this, "time_stamp" ),
+  seq( this, "seq" ),
+  mac_address( this, "mac_address", MAC_ADDRESS_LEN ),
+  ip_address( this, "ip_address", IP_ADDRESS_LEN ),
+  action( this, "action", ACTION_LEN )
+{
 	
+}
+
+P_BUTTON_QUEUE::P_BUTTON_QUEUE()
+: BUTTON_QUEUE()
+{
+	set_table_name( "P_BUTTON_QUEUE" );
+}
+
 
 std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > & forkeys )
 {
@@ -186,16 +203,22 @@ std::string create_sql()
 {
   std::string s;
   PLAY_QUEUE_CHUNKS 	play_queue_chunks;
-  P_PLAY_QUEUE_CHUNKS 	p_play_queue_chunks;
   PLAY_QUEUE_MUSIC 		play_queue_music;
+  BUTTON_QUEUE			button_queue;
+
+  P_PLAY_QUEUE_CHUNKS 	p_play_queue_chunks;
   P_PLAY_QUEUE_MUSIC 	p_play_queue_music;
+  P_BUTTON_QUEUE		p_button_queue;
 
   std::vector< Ref<Forkey> > forkeys;
 
   s += create_sql_statement( &play_queue_chunks, 	forkeys );
-  s += create_sql_statement( &p_play_queue_chunks, 	forkeys );
   s += create_sql_statement( &play_queue_music,  	forkeys );
+  s += create_sql_statement( &button_queue,			forkeys );
+
+  s += create_sql_statement( &p_play_queue_chunks, 	forkeys );
   s += create_sql_statement( &p_play_queue_music,	forkeys );
+  s += create_sql_statement( &p_button_queue,		forkeys );
 
   // notwendige indexe anlegen
   for( unsigned i = 0; i < forkeys.size(); i++ )

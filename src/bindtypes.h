@@ -8,6 +8,9 @@ const unsigned USER_NAME_LEN=20;
 const unsigned TIME_LEN=19;
 const unsigned NAME_LEN=20;
 const unsigned FILE_LEN=1024;
+const unsigned MAC_ADDRESS_LEN=17;
+const unsigned IP_ADDRESS_LEN=15;
+const unsigned ACTION_LEN=50;
 
 struct JANEIN
 {
@@ -163,6 +166,32 @@ public:
 	P_PLAY_QUEUE_MUSIC();
 
 	P_PLAY_QUEUE_MUSIC & operator=( const PLAY_QUEUE_MUSIC & b )
+	{
+	  BASE::operator=(b);
+	  return *this;
+	}
+};
+
+// TIME=650922;SEQ=161;MAC=D8:BC:38:FA:EF:20;IP=192.168.1.137;ACTION=ButtonReleased
+class BUTTON_QUEUE : public BASE
+{
+public:
+	DBTypeInt		time_stamp;
+	DBTypeInt		seq;
+	DBTypeVarChar 	mac_address;
+	DBTypeVarChar	ip_address;
+	DBTypeVarChar	action;
+
+public:
+	BUTTON_QUEUE();
+};
+
+class P_BUTTON_QUEUE : public BUTTON_QUEUE
+{
+public:
+	P_BUTTON_QUEUE();
+
+	P_BUTTON_QUEUE & operator=( const BUTTON_QUEUE & b )
 	{
 	  BASE::operator=(b);
 	  return *this;

@@ -8,9 +8,11 @@
 #include <filesystem>
 #include "Configfile2.h"
 #include "ConfigDatabase.h"
+#include "ConfigNetwork.h"
 #include "bindtypes.h"
 #include <dbi.h>
 #include "FetchSound.h"
+#include "ButtonListener.h"
 
 using namespace Tools;
 
@@ -126,6 +128,7 @@ int main( int argc, char **argv )
 
 		Configfile2::createDefaultInstaceWithAllModules()->read(true);
 		const ConfigSectionDatabase & cfg_db = Configfile2::get(ConfigSectionDatabase::KEY);
+		const ConfigSectionNetwork  & cfg_net = Configfile2::get(ConfigSectionNetwork::KEY);
 
 		APP.db = std::make_shared<Database>( cfg_db.Host,
 											 cfg_db.UserName,
@@ -180,6 +183,7 @@ int main( int argc, char **argv )
 		if( o_master.isSet() ) {
 			PlaySound play {};
 			FetchSound fetch( play );
+			ButtonListener listener( cfg_net.UDPListenPort );
 
 			threads.emplace_back([&play]() {
 				play.run();
@@ -187,6 +191,10 @@ int main( int argc, char **argv )
 
 			threads.emplace_back([&fetch]() {
 				fetch.run();
+			});
+
+			threads.emplace_back([&listener]() {
+				listener.run();
 			});
 
 			while (!SDL_QuitRequested()) {
