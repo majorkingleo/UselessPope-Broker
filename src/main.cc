@@ -94,6 +94,11 @@ int main( int argc, char **argv )
 		o_master.setRequired(false);
 		arg.addOptionR( &o_master );
 
+		Arg::FlagOption o_listen("listen");
+		o_listen.setDescription("listen only to buttons");
+		o_listen.setRequired(false);
+		arg.addOptionR( &o_listen );
+
 		DetectLocale dl;
 
 		const unsigned int console_width = 80;
@@ -180,10 +185,16 @@ int main( int argc, char **argv )
 
 		bool does_something = false;
 
+		if( o_listen.isSet() ) {
+			ButtonListener listener( cfg_net.UDPListenPort );
+			listener.run();
+			return 0;
+		}
+
 		if( o_master.isSet() ) {
 			PlaySound play {};
 			FetchSound fetch( play );
-			ButtonListener listener( cfg_net.UDPListenPort );
+			//ButtonListener listener( cfg_net.UDPListenPort );
 
 			threads.emplace_back([&play]() {
 				play.run();
@@ -193,9 +204,10 @@ int main( int argc, char **argv )
 				fetch.run();
 			});
 
+			/*
 			threads.emplace_back([&listener]() {
 				listener.run();
-			});
+			});*/
 
 			while (!SDL_QuitRequested()) {
 				SDL_Delay(250);

@@ -81,12 +81,71 @@ void ButtonListener::run()
 
 void ButtonListener::received_data( const std::string & data )
 {
-	auto sl_lines = split_and_strip_simple_view( data, "\n" );
+	const auto sl_lines = split_and_strip_simple_view( data, "\n" );
 
-	for( auto & line : lines )
+	for( const auto & line : sl_lines )
 	{
 		//TIME=650922;SEQ=161;MAC=D8:BC:38:FA:EF:20;IP=192.168.1.137;ACTION=ButtonReleased
-		auto chunks = split_and_strip_simple_view( line, ";" );
+		const auto chunks = split_and_strip_simple_view( line, ";" );
 
+		std::map<std::string,std::string> message;
+
+		for( const auto & chunk : chunks ) {
+
+			// TIME=650922
+			const auto key_value = split_and_strip_simple_view( chunk, "=" );
+
+			for( unsigned i = 0; i+1 < key_value.size(); i += 2 ) {
+				const std::string_view & key( key_value[i] );
+				const std::string_view & value( key_value[i+1] );
+
+				message[std::string(key)] = value;
+			} // for
+		} // for
+
+		auto o_button_queue = message_to_table( message );
+
+		if( o_button_queue ) {
+			if( !StdSqlInsert( *APP.db, *o_button_queue ) ) {
+				CPPDEBUG( Tools::format( "SqlError: '%s'", APP.db->get_error() ));
+			}
+			APP.db->commit();
+		}
 	}
+}
+
+std::optional<BUTTON_QUEUE> ButtonListener::message_to_table( const std::map<std::string,std::string> & message ) const
+{
+	BUTTON_QUEUE button{};
+
+	button.setHist(BASE::HIST_TYPE::HIST_AN);
+	button.setHist(BASE::HIST_TYPE::HIST_AE);
+	button.setHist(BASE::HIST_TYPE::HIST_LO);
+
+	static const std::string KEY_TIME 	= "TIME";
+	static const std::string KEY_SEQ  	= "SEQ";
+	static const std::string KEY_IP   	= "IP";
+	static const std::string KEY_MAC  	= "MAC";
+	static const std::string KEY_ACTION = "ACTION";
+
+	for( auto & p : message ) {
+
+		// TIME=650922;SEQ=161;MAC=D8:BC:38:FA:EF:20;IP=192.168.1.137;ACTION=ButtonReleased
+		if( p.first == KEY_TIME ) {
+			button.time_stamp.data = s2x<unsigned>(p.second,0);
+		} else if( p.first == KEY_SEQ ) {
+			button.seq = s2x<unsigned>(p.second,0);
+		} else if( p.first == KEY_IP ) {
+			button.ip_address = p.second;
+		} else if( p.first == KEY_MAC ) {
+			button.mac_address = p.second;
+		} else if( p.first == KEY_ACTION ) {
+			button.action = p.second;
+		} else {
+			CPPDEBUG( Tools::format( "unknown key: '%s'", p.first ));
+			return {};
+		}
+	}
+
+	return button;
 }
