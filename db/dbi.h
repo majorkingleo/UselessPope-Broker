@@ -105,6 +105,10 @@ class DBBindType
 
   DBType* get_cell_by_name( const std::string &name );
   const DBType* get_cell_by_name( const std::string &name ) const;
+
+  void set_table_name( const std::string & table_name_ ) {
+	  table_name = table_name_;
+  }
 }; 
 
 
