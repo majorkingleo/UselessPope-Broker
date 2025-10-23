@@ -76,3 +76,4 @@ void FetchSound::fetch_chunk()
     APP.db->exec( Tools::format( "delete from %s where idx = %d", chunk.get_table_name(), chunk.idx() ) );
     APP.db->commit();
 }
+

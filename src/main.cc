@@ -13,6 +13,7 @@
 #include <dbi.h>
 #include "FetchSound.h"
 #include "ButtonListener.h"
+#include "FetchButton.h"
 
 using namespace Tools;
 
@@ -98,6 +99,12 @@ int main( int argc, char **argv )
 		o_listen.setDescription("listen to buttons");
 		o_listen.setRequired(false);
 		arg.addOptionR( &o_listen );
+
+
+		Arg::FlagOption o_button_worker("button-worker");
+		o_button_worker.setDescription("work on button pressed events");
+		o_button_worker.setRequired(false);
+		arg.addOptionR( &o_button_worker );
 
 		DetectLocale dl;
 
@@ -188,6 +195,12 @@ int main( int argc, char **argv )
 		if( o_listen.isSet() ) {
 			ButtonListener listener( cfg_net.UDPListenPort );
 			listener.run();
+			return 0;
+		}
+
+		if( o_button_worker.isSet() ) {
+			FetchButton button_worker;
+			button_worker.run();
 			return 0;
 		}
 

@@ -90,7 +90,7 @@ BUTTON_QUEUE::BUTTON_QUEUE()
   ip_address( this, "ip_address", IP_ADDRESS_LEN ),
   action( this, "action", ACTION_LEN )
 {
-	
+	//add_key( new Forkey( this, &mac_address, "USER", "button_mac_address" ) );
 }
 
 P_BUTTON_QUEUE::P_BUTTON_QUEUE()
@@ -99,6 +99,26 @@ P_BUTTON_QUEUE::P_BUTTON_QUEUE()
 	set_table_name( "P_BUTTON_QUEUE" );
 }
 
+
+USER::USER()
+: BASE( "USER", this ),
+  username( this, "username", USER_NAME_LEN ),
+  password( this, "password", PASSWORD_LEN ),
+  button_mac_address( this, "button_mac_address", MAC_ADDRESS_LEN ),
+  home_directory( this, "home_directory" ),
+  button_press_event0( this, "button_press_event0", ACTION_LEN ),
+  button_press_event1( this, "button_press_event1", ACTION_LEN ),
+  button_press_event2( this, "button_press_event2", ACTION_LEN ),
+  button_press_event3( this, "button_press_event3", ACTION_LEN ),
+  button_press_event4( this, "button_press_event4", ACTION_LEN ),
+  play_chunk0( this, "play_chunk0", FILE_LEN ),
+  play_chunk1( this, "play_chunk1", FILE_LEN ),
+  play_chunk2( this, "play_chunk2", FILE_LEN ),
+  play_chunk3( this, "play_chunk3", FILE_LEN ),
+  play_chunk4( this, "play_chunk4", FILE_LEN )
+{
+
+}
 
 std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > & forkeys )
 {
@@ -205,6 +225,7 @@ std::string create_sql()
   PLAY_QUEUE_CHUNKS 	play_queue_chunks;
   PLAY_QUEUE_MUSIC 		play_queue_music;
   BUTTON_QUEUE			button_queue;
+  USER					user;
 
   P_PLAY_QUEUE_CHUNKS 	p_play_queue_chunks;
   P_PLAY_QUEUE_MUSIC 	p_play_queue_music;
@@ -215,6 +236,7 @@ std::string create_sql()
   s += create_sql_statement( &play_queue_chunks, 	forkeys );
   s += create_sql_statement( &play_queue_music,  	forkeys );
   s += create_sql_statement( &button_queue,			forkeys );
+  s += create_sql_statement( &user,					forkeys );
 
   s += create_sql_statement( &p_play_queue_chunks, 	forkeys );
   s += create_sql_statement( &p_play_queue_music,	forkeys );

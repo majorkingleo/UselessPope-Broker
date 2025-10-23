@@ -5,6 +5,7 @@
 using namespace Tools;
 
 const unsigned USER_NAME_LEN=20;
+const unsigned PASSWORD_LEN=50;
 const unsigned TIME_LEN=19;
 const unsigned NAME_LEN=20;
 const unsigned FILE_LEN=1024;
@@ -203,6 +204,35 @@ public:
 	P_BUTTON_QUEUE();
 
 	P_BUTTON_QUEUE & operator=( const BUTTON_QUEUE & b )
+	{
+	  BASE::operator=(b);
+	  return *this;
+	}
+};
+
+class USER : public BASE
+{
+public:
+	DBTypeVarChar	username;
+	DBTypeVarChar	password;
+	DBTypeVarChar 	button_mac_address;
+	DBTypeVarChar	home_directory;
+	DBTypeVarChar	button_press_event0;
+	DBTypeVarChar	button_press_event1;
+	DBTypeVarChar	button_press_event2;
+	DBTypeVarChar	button_press_event3;
+	DBTypeVarChar	button_press_event4;
+	DBTypeVarChar	play_chunk0;
+	DBTypeVarChar	play_chunk1;
+	DBTypeVarChar	play_chunk2;
+	DBTypeVarChar	play_chunk3;
+	DBTypeVarChar	play_chunk4;
+
+
+public:
+	USER();
+
+	USER & operator=( const USER & b )
 	{
 	  BASE::operator=(b);
 	  return *this;
