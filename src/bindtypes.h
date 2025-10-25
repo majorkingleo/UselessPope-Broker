@@ -182,6 +182,7 @@ public:
 	DBTypeVarChar 	mac_address;
 	DBTypeVarChar	ip_address;
 	DBTypeVarChar	action;
+	DBTypeVarChar	file;
 
 public:
 	BUTTON_QUEUE();
@@ -210,11 +211,10 @@ public:
 	}
 };
 
-class USER : public BASE
+class USERS_ACTION : public BASE
 {
 public:
 	DBTypeVarChar	username;
-	DBTypeVarChar	password;
 	DBTypeVarChar 	button_mac_address;
 	DBTypeVarChar	home_directory;
 	DBTypeVarChar	button_press_event0;
@@ -230,9 +230,9 @@ public:
 
 
 public:
-	USER();
+	USERS_ACTION();
 
-	USER & operator=( const USER & b )
+	USERS_ACTION & operator=( const USERS_ACTION & b )
 	{
 	  BASE::operator=(b);
 	  return *this;

@@ -4,6 +4,7 @@
 #include <thread>
 #include <stdexcept>
 #include <chrono>
+#include <CpputilsDebug.h>
 
 using namespace std::chrono_literals;
 using namespace std::chrono;
@@ -20,7 +21,7 @@ void FetchButton::run()
 
     while( !APP.quit_request ) {
 
-    	if( m_users.empty() || steady_clock::now() >  user_refresh_deadline ) {
+    	if( m_users_actions_by_mac_address.empty() || steady_clock::now() >  user_refresh_deadline ) {
     		fetch_users();
     	}
 
@@ -47,31 +48,36 @@ void FetchButton::fetch_buttons()
 	}
 
     for( int i = 0; i < count; i++ ) {
+		std::string mac_address = button_queue[i].mac_address.data;
+		auto it = m_users_actions_by_mac_address.find( mac_address );
 
+		if( it == m_users_actions_by_mac_address.end() ) {
+			CPPDEBUG( Tools::format( "couldn't find USERS_ACTIONS for max: '%s'", mac_address) )
+		}
     }
 }
 
 void FetchButton::fetch_users()
 {
-	USER users[20];
+	USERS_ACTION users_actions[20];
 	DBInLimit limit(20);
 	int count = 0;
 
 	if( ( count = StdSqlSelect( *APP.db,
 			Tools::format( "select %%%s from %s",
-				users[0].get_table_name(),
-				users[0].get_table_name() ),
-				DBInArrayList() >> users, limit ) ) < 0 ) {
+				users_actions[0].get_table_name(),
+				users_actions[0].get_table_name() ),
+				DBInArrayList() >> users_actions, limit ) ) < 0 ) {
 		throw std::runtime_error( Tools::format( "SqlError: %s", APP.db->get_error()) );
 	}
 
-	m_users.clear();
+	m_users_actions_by_mac_address.clear();
 
     for( int i = 0; i < count; i++ ) {
-    	if( users[i].button_mac_address.data.empty() ) {
+    	if( users_actions[i].button_mac_address.data.empty() ) {
     		continue;
     	}
 
-    	m_users[users[i].button_mac_address.data] = users[i];
+    	m_users_actions_by_mac_address[users_actions[i].button_mac_address.data] = users_actions[i];
     }
 }

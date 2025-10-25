@@ -88,7 +88,8 @@ BUTTON_QUEUE::BUTTON_QUEUE()
   seq( this, "seq" ),
   mac_address( this, "mac_address", MAC_ADDRESS_LEN ),
   ip_address( this, "ip_address", IP_ADDRESS_LEN ),
-  action( this, "action", ACTION_LEN )
+  action( this, "action", ACTION_LEN ),
+  file( this, "file", FILE_LEN )
 {
 	//add_key( new Forkey( this, &mac_address, "USER", "button_mac_address" ) );
 }
@@ -100,10 +101,9 @@ P_BUTTON_QUEUE::P_BUTTON_QUEUE()
 }
 
 
-USER::USER()
-: BASE( "USER", this ),
+USERS_ACTION::USERS_ACTION()
+: BASE( "USERS_ACTIONS", this ),
   username( this, "username", USER_NAME_LEN ),
-  password( this, "password", PASSWORD_LEN ),
   button_mac_address( this, "button_mac_address", MAC_ADDRESS_LEN ),
   home_directory( this, "home_directory" ),
   button_press_event0( this, "button_press_event0", ACTION_LEN ),
@@ -225,7 +225,7 @@ std::string create_sql()
   PLAY_QUEUE_CHUNKS 	play_queue_chunks;
   PLAY_QUEUE_MUSIC 		play_queue_music;
   BUTTON_QUEUE			button_queue;
-  USER					user;
+  USERS_ACTION			users_action;
 
   P_PLAY_QUEUE_CHUNKS 	p_play_queue_chunks;
   P_PLAY_QUEUE_MUSIC 	p_play_queue_music;
@@ -236,7 +236,7 @@ std::string create_sql()
   s += create_sql_statement( &play_queue_chunks, 	forkeys );
   s += create_sql_statement( &play_queue_music,  	forkeys );
   s += create_sql_statement( &button_queue,			forkeys );
-  s += create_sql_statement( &user,					forkeys );
+  s += create_sql_statement( &users_action,			forkeys );
 
   s += create_sql_statement( &p_play_queue_chunks, 	forkeys );
   s += create_sql_statement( &p_play_queue_music,	forkeys );
