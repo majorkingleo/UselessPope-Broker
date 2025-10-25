@@ -42,6 +42,7 @@ void FetchSound::fetch_music()
 
     P_PLAY_QUEUE_MUSIC p_music;
     p_music = music;
+    p_music.idx.data = 0;
     p_music.setHist(BASE::HIST_TYPE::HIST_LO, "broker" );
 
     if( !StdSqlInsert( *APP.db, p_music ) <= 0 ) {
@@ -66,9 +67,10 @@ void FetchSound::fetch_chunk()
 
     P_PLAY_QUEUE_CHUNKS p_chunk;
     p_chunk = chunk;
+    p_chunk.idx.data = 0;
     p_chunk.setHist(BASE::HIST_TYPE::HIST_LO, "broker" );
 
-    if( !StdSqlInsert( *APP.db, p_chunk ) <= 0 ) {
+    if( !StdSqlInsert( *APP.db, p_chunk )) {
     	CPPDEBUG( Tools::format( "cannot insert into DB: %s", APP.db->get_error() ) );
     }
 

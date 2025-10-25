@@ -93,7 +93,8 @@ PlaySound::Chunk::Chunk( const std::string & file )
 	m_chunk = Mix_LoadWAV(file.c_str());
 
 	if( !m_chunk ) {
-		throw std::runtime_error( Tools::format( "cannot play '%s' Error: %s", m_file, Mix_GetError() ));
+		CPPDEBUG( Tools::format( "cannot play '%s' Error: %s skipping chunk.", m_file, Mix_GetError() ));
+		m_started = true;
 	}
 }
 
