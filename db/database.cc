@@ -4,6 +4,7 @@
 #include "odbc_db.h"
 #include "format.h"
 #include <iostream>
+#include <string_utils.h>
 
 #ifdef TOOLS_USE_DB
 
@@ -95,7 +96,7 @@ DBErg<DBRowList> Database::insert( const std::string &table, const DBRow &row )
       if( i )
 	sql += ",\n";
 
-      sql += '\'' + row.values[i] + '\'';
+      sql += '\'' + escape(row.values[i]) + '\'';
     }
 
   sql += ')';
