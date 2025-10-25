@@ -129,6 +129,42 @@ void FetchButton::fetch_buttons()
 
 			APP.db->exec( Tools::format( "delete from %s where idx = %d", pbq->get_table_name(), pbq->idx() ) );
     		APP.db->commit();
+		} else {
+
+			PLAY_QUEUE_CHUNKS chunk{};
+
+			CPPDEBUG( Tools::format( "searching for for users main file '%s'",
+					  pua->username.data));
+
+			std::string audio_main_file_path = pua->home_directory.data + "/audio_main/";
+
+			for (const auto & entry : std::filesystem::directory_iterator(audio_main_file_path)) {
+   				 CPPDEBUG( Tools::format( "found: '%s'",  entry.path().string() ) );
+
+				chunk.file.data = entry.path().string();
+				chunk.setHist( BASE::HIST_TYPE::HIST_AN, pua->username.data );
+				chunk.setHist( BASE::HIST_TYPE::HIST_AE, pua->username.data );
+				chunk.setHist( BASE::HIST_TYPE::HIST_LO, pua->username.data );
+
+				if( !StdSqlInsert( *APP.db, chunk ) ) {
+					CPPDEBUG( Tools::format( "SqlError: %s", APP.db->get_error()));
+					continue;
+				}
+
+				P_BUTTON_QUEUE p_button_queue{};
+				p_button_queue = *pbq;
+				p_button_queue.setHist( BASE::HIST_TYPE::HIST_LO, pua->username.data );
+
+				if( !StdSqlInsert( *APP.db, p_button_queue ) ) {
+					CPPDEBUG( Tools::format( "SqlError: %s", APP.db->get_error()));
+					continue;
+				}
+
+				APP.db->exec( Tools::format( "delete from %s where idx = %d", pbq->get_table_name(), pbq->idx() ) );
+				APP.db->commit();
+				break;
+  			}
+
 		}
     }
 }
