@@ -231,6 +231,11 @@ public:
 
 public:
 	USERS_ACTION();
+	USERS_ACTION( const USERS_ACTION & b )
+	: USERS_ACTION()
+	{
+		BASE::operator=(b);
+	}
 
 	USERS_ACTION & operator=( const USERS_ACTION & b )
 	{

@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <chrono>
 #include <CpputilsDebug.h>
+#include <filesystem>
 
 using namespace std::chrono_literals;
 using namespace std::chrono;
@@ -21,7 +22,10 @@ void FetchButton::run()
 
     while( !APP.quit_request ) {
 
-    	if( m_users_actions_by_mac_address.empty() || steady_clock::now() >  user_refresh_deadline ) {
+    	if( ( m_users_actions_by_mac_address.empty()
+	 		  && m_users_actions_by_username.empty() 
+			)
+		 	|| steady_clock::now() >  user_refresh_deadline ) {
     		fetch_users();
     	}
 
@@ -48,11 +52,83 @@ void FetchButton::fetch_buttons()
 	}
 
     for( int i = 0; i < count; i++ ) {
-		std::string mac_address = button_queue[i].mac_address.data;
-		auto it = m_users_actions_by_mac_address.find( mac_address );
+		const std::string & mac_address = button_queue[i].mac_address.data;
+		const std::string & username = button_queue[i].hist_an_user.data;		
 
-		if( it == m_users_actions_by_mac_address.end() ) {
-			CPPDEBUG( Tools::format( "couldn't find USERS_ACTIONS for max: '%s'", mac_address) )
+		BUTTON_QUEUE *pbq = nullptr;
+		USERS_ACTION *pua = nullptr;
+
+		if( !mac_address.empty() ) {
+			auto it = m_users_actions_by_mac_address.find( mac_address );
+
+			if( it == m_users_actions_by_mac_address.end() ) {
+				CPPDEBUG( Tools::format( "couldn't find USERS_ACTIONS for mac: '%s'", mac_address) )
+				continue;
+			}		
+			
+			pbq = &button_queue[i];
+			pua = &it->second;
+
+		} else {
+			auto it = m_users_actions_by_username.find( username );
+
+			if( it == m_users_actions_by_username.end() ) {				
+				CPPDEBUG( Tools::format( "couldn't find USERS_ACTIONS for user: '%s'", username) );
+				continue;			
+			}
+
+			pbq = &button_queue[i];
+			pua = &it->second;
+		}
+
+		if( !pbq || !pua ) {
+			continue;
+		}		
+
+		if( !pbq->file.data.empty() ) {
+
+			PLAY_QUEUE_CHUNKS chunk{};
+
+			CPPDEBUG( Tools::format( "searching for file: '%s' for user '%s'", 
+					  pbq->file.data,
+					  pua->username.data));
+
+			std::string audio_random_file  = pua->home_directory.data + "/audio_random/" + pbq->file.data;
+			std::string audio_main_file  = pua->home_directory.data + "/audio_main/" + pbq->file.data;
+
+			std::string file;
+
+			if( std::filesystem::exists( audio_random_file ) ) {
+				file = audio_random_file;
+			} else if( std::filesystem::exists( audio_main_file ) ) {
+				file = audio_main_file;
+			}
+
+			if( file.empty() ) {
+				continue;
+			}
+
+			chunk.file.data = file;
+			chunk.setHist( BASE::HIST_TYPE::HIST_AN, pua->username.data );
+			chunk.setHist( BASE::HIST_TYPE::HIST_AE, pua->username.data );
+			chunk.setHist( BASE::HIST_TYPE::HIST_LO, pua->username.data );
+
+			if( !StdSqlInsert( *APP.db, chunk ) ) {
+				CPPDEBUG( Tools::format( "SqlError: %s", APP.db->get_error()));
+				continue;
+			}
+
+			P_BUTTON_QUEUE p_button_queue{};
+			p_button_queue = *pbq;
+			p_button_queue.setHist( BASE::HIST_TYPE::HIST_LO, pua->username.data );
+
+			if( !StdSqlInsert( *APP.db, p_button_queue ) ) {
+				CPPDEBUG( Tools::format( "SqlError: %s", APP.db->get_error()));
+				continue;
+			}
+
+			APP.db->exec( Tools::format( "delete from %s where idx = %d", pbq->get_table_name(), pbq->idx() ) );
+    		APP.db->commit();
 		}
     }
 }
@@ -74,10 +150,13 @@ void FetchButton::fetch_users()
 	m_users_actions_by_mac_address.clear();
 
     for( int i = 0; i < count; i++ ) {
+
+		m_users_actions_by_username[users_actions[i].username.data] = users_actions[i];
+
     	if( users_actions[i].button_mac_address.data.empty() ) {
     		continue;
     	}
 
-    	m_users_actions_by_mac_address[users_actions[i].button_mac_address.data] = users_actions[i];
+    	m_users_actions_by_mac_address[users_actions[i].button_mac_address.data] = users_actions[i];		
     }
 }
