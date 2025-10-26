@@ -170,6 +170,7 @@ int main( int argc, char **argv )
 				if( retry_logon_until < std::chrono::steady_clock::now() ) {
 					throw STDERR_EXCEPTION( Tools::format( "cannot connect to database: '%s'", APP.db->get_error()));
 				} else {
+					APP.db.reset();
 					std::this_thread::sleep_for(500ms);
 				}
 			}
