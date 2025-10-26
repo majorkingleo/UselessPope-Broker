@@ -14,8 +14,11 @@
 #include "FetchSound.h"
 #include "ButtonListener.h"
 #include "FetchButton.h"
+#include <thread>
+#include <chrono>
 
 using namespace Tools;
+using namespace std::chrono_literals;
 
 class Co : public ColoredOutput
 {
@@ -106,6 +109,13 @@ int main( int argc, char **argv )
 		o_button_worker.setRequired(false);
 		arg.addOptionR( &o_button_worker );
 
+		Arg::IntOption o_db_retry_logon("retry-db-timeout");
+		o_db_retry_logon.setDescription("try relogin on DB for XX seconds");
+		o_db_retry_logon.setRequired(false);
+		o_db_retry_logon.setMaxValues(1);
+		o_db_retry_logon.setMinValues(1);
+		arg.addOptionR( &o_db_retry_logon );
+
 		DetectLocale dl;
 
 		const unsigned int console_width = 80;
@@ -141,15 +151,28 @@ int main( int argc, char **argv )
 		Configfile2::createDefaultInstaceWithAllModules()->read(true);
 		const ConfigSectionDatabase & cfg_db = Configfile2::get(ConfigSectionDatabase::KEY);
 		const ConfigSectionNetwork  & cfg_net = Configfile2::get(ConfigSectionNetwork::KEY);
+	
+		std::chrono::steady_clock::time_point retry_logon_until{};
 
-		APP.db = std::make_shared<Database>( cfg_db.Host,
-											 cfg_db.UserName,
-											 cfg_db.Password,
-											 cfg_db.Instance,
-											 Database::DB_MYSQL );
+		if( o_db_retry_logon.isSet() ) {
+			 unsigned sec = s2x<unsigned>((o_db_retry_logon.getValues()->at(0)), 0 );
+			 retry_logon_until = std::chrono::steady_clock::now() + std::chrono::seconds(sec);
+		}
 
-		if( !APP.db->valid() ) {
-			throw STDERR_EXCEPTION( Tools::format( "cannot connect to database: '%s'", APP.db->get_error()));
+		while( !APP.db ) {
+			APP.db = std::make_shared<Database>( cfg_db.Host,
+												cfg_db.UserName,
+												cfg_db.Password,
+												cfg_db.Instance,
+												Database::DB_MYSQL );
+
+			if( !APP.db->valid() ) {
+				if( retry_logon_until < std::chrono::steady_clock::now() ) {
+					throw STDERR_EXCEPTION( Tools::format( "cannot connect to database: '%s'", APP.db->get_error()));
+				} else {
+					std::this_thread::sleep_for(500ms);
+				}
+			}
 		}
 
 		if( o_enqueue_chunk.isSet() ) {
