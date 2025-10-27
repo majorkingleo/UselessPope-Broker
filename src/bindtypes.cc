@@ -120,6 +120,14 @@ USERS_ACTION::USERS_ACTION()
 
 }
 
+CONFIG::CONFIG()
+: BASE( "CONFIG", this ),
+  key( this, "key", CONFIG_KEY_LEN ),
+  value( this, "value", CONFIG_VALUE_LEN )
+{
+
+}
+
 std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > & forkeys )
 {
   std::string s;
@@ -226,6 +234,7 @@ std::string create_sql()
   PLAY_QUEUE_MUSIC 		play_queue_music;
   BUTTON_QUEUE			button_queue;
   USERS_ACTION			users_action;
+  CONFIG				config;
 
   P_PLAY_QUEUE_CHUNKS 	p_play_queue_chunks;
   P_PLAY_QUEUE_MUSIC 	p_play_queue_music;
@@ -237,6 +246,7 @@ std::string create_sql()
   s += create_sql_statement( &play_queue_music,  	forkeys );
   s += create_sql_statement( &button_queue,			forkeys );
   s += create_sql_statement( &users_action,			forkeys );
+  s += create_sql_statement( &config,				forkeys );
 
   s += create_sql_statement( &p_play_queue_chunks, 	forkeys );
   s += create_sql_statement( &p_play_queue_music,	forkeys );
