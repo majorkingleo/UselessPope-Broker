@@ -12,6 +12,8 @@ const unsigned FILE_LEN=1024;
 const unsigned MAC_ADDRESS_LEN=17;
 const unsigned IP_ADDRESS_LEN=15;
 const unsigned ACTION_LEN=50;
+const unsigned CONFIG_KEY_LEN=50;
+const unsigned CONFIG_VALUE_LEN=50;
 
 struct JANEIN
 {
@@ -238,6 +240,27 @@ public:
 	}
 
 	USERS_ACTION & operator=( const USERS_ACTION & b )
+	{
+	  BASE::operator=(b);
+	  return *this;
+	}
+};
+
+class CONFIG : public BASE
+{
+public:
+	DBTypeVarChar	key;
+	DBTypeVarChar	value;
+
+public:
+	CONFIG();
+	CONFIG( const CONFIG & b )
+	: CONFIG()
+	{
+		BASE::operator=(b);
+	}
+
+	CONFIG & operator=( const CONFIG & b )
 	{
 	  BASE::operator=(b);
 	  return *this;
