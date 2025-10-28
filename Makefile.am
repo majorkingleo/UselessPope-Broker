@@ -7,14 +7,6 @@ broker_SOURCES=\
 		src/PlaySound.cc \
 		src/App.h \
 		src/App.cc \
-		src/Configfile2.h \
-		src/Configfile2.cc \
-		src/ConfigGlobal.h \
-		src/ConfigGlobal.cc \
-		src/ConfigDatabase.h \
-		src/ConfigDatabase.cc \
-		src/ConfigNetwork.h \
-		src/ConfigNetwork.cc \
 		src/bindtypes.h \
 		src/bindtypes.cc \
 		src/FetchSound.h \
@@ -33,6 +25,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-I$(top_srcdir)/cpputils/io \
 	-I$(top_srcdir)/common \
 	-I$(top_srcdir)/db \
+	-I$(top_srcdir)/config \
 	-std=gnu++23 \
 	-fstack-protector \
 	-D_GLIBCXX_USE_CXX11_ABI=1 \
@@ -43,7 +36,8 @@ noinst_LIBRARIES=cpputils/io/libcpputilsio.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \
 	cpputils/cpputilsshared/cpputilsformat/libcpputilsformat.a \
 	common/libcommon.a \
-	db/libdb.a
+	db/libdb.a \
+	config/libconfig.a
 	
 db_libdb_a_SOURCES= \
 		db/db.h \
@@ -57,6 +51,16 @@ db_libdb_a_SOURCES= \
 		db/oracle_db.cc \
 		db/odbc_db.h \
 		db/odbc_db.cc
+
+config_libconfig_a_SOURCES= \
+		config/Configfile2.h \
+		config/Configfile2.cc \
+		config/ConfigGlobal.h \
+		config/ConfigGlobal.cc \
+		config/ConfigDatabase.h \
+		config/ConfigDatabase.cc \
+		config/ConfigNetwork.h \
+		config/ConfigNetwork.cc
 
 cpputils_io_libcpputilsio_a_SOURCES= \
 	cpputils/io/ColoredOutput.h \
@@ -133,6 +137,7 @@ common_libcommon_a_SOURCES=\
 
 broker_LDADD = \
 	common/libcommon.a \
+	config/libconfig.a \
 	db/libdb.a \
 	cpputils/io/libcpputilsio.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \
@@ -158,4 +163,5 @@ LIBS += -liconv
 endif
 
     
+
 
