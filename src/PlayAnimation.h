@@ -1,0 +1,78 @@
+#pragma once
+
+#include <string>
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_mixer.h"
+#include <thread>
+#include <list>
+#include <mutex>
+#include "BasicThread.h"
+#include <chrono>
+
+class PlaySound : public BasicThread
+{
+	class Music
+	{
+	private:
+		std::string 		m_file				{};
+		Mix_Music *			m_music				{};
+		bool				m_started 			{false};
+
+	public:
+		Music( const std::string & file );
+		~Music();
+
+		void play();
+
+		bool finished();
+	};
+
+	class Chunk
+	{
+		using duration_t = std::chrono::steady_clock::duration;
+		using time_point_t = std::chrono::steady_clock::time_point;
+
+	private:
+		std::string 		m_file				{};
+		Mix_Chunk *			m_chunk				{};
+		bool				m_started 			{false};
+		time_point_t		m_started_at		{};
+		int					m_channel			{-1};
+
+	public:
+		Chunk( const std::string & file );
+		~Chunk();
+
+		void play();
+
+		bool finished();
+
+		const time_point_t & get_started_at() const {
+			return m_started_at;
+		}
+
+		const std::string & get_file() const {
+			return m_file;
+		}
+	};
+
+	mutable std::mutex 	m_lock_music;
+	mutable std::mutex 	m_lock_chunks;
+
+	std::list<Music> 	m_music;
+	std::list<Chunk> 	m_chunks;
+
+public:
+
+	PlaySound();
+
+	void play_music( const std::string & file );
+	void play_chunk( const std::string & file );
+
+	unsigned countMusicInQueue() const {
+		auto lock = std::scoped_lock( m_lock_music );
+		return m_music.size();
+	}
+
+	void run() override;
+};

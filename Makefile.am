@@ -23,6 +23,8 @@ broker_SOURCES=\
 		src/ButtonListener.cc \
 		src/FetchButton.h \
 		src/FetchButton.cc \
+		src/PlayAnimation.h \
+		src/PlayAnimation.cc \
 		tools_config.h
 		
 AM_CPPFLAGS = -I$(top_srcdir)/tools \
