@@ -175,6 +175,31 @@ public:
 	}
 };
 
+class PLAY_QUEUE_ANIMATION : public PLAY_QUEUE_CHUNKS
+{
+ public:
+	PLAY_QUEUE_ANIMATION();
+
+	PLAY_QUEUE_ANIMATION & operator=( const PLAY_QUEUE_ANIMATION & b )
+	{
+	  BASE::operator=(b);
+	  return *this;
+	}
+};
+
+class P_PLAY_QUEUE_ANIMATION : public PLAY_QUEUE_ANIMATION
+{
+ public:
+	P_PLAY_QUEUE_ANIMATION();
+
+	P_PLAY_QUEUE_ANIMATION & operator=( const PLAY_QUEUE_ANIMATION & b )
+	{
+	  BASE::operator=(b);
+	  return *this;
+	}
+};
+
+
 // TIME=650922;SEQ=161;MAC=D8:BC:38:FA:EF:20;IP=192.168.1.137;ACTION=ButtonReleased
 class BUTTON_QUEUE : public BASE
 {

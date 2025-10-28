@@ -117,7 +117,7 @@ USERS_ACTION::USERS_ACTION()
   play_chunk3( this, "play_chunk3", FILE_LEN ),
   play_chunk4( this, "play_chunk4", FILE_LEN )
 {
-
+	add_key( new Forkey( this, &username, "USERS", "username" ) );
 }
 
 CONFIG::CONFIG()
@@ -126,6 +126,19 @@ CONFIG::CONFIG()
   value( this, "value", CONFIG_VALUE_LEN )
 {
 
+}
+
+
+PLAY_QUEUE_ANIMATION::PLAY_QUEUE_ANIMATION()
+  : PLAY_QUEUE_CHUNKS()
+{
+	set_table_name( "PLAY_QUEUE_ANIMATION" );
+}
+
+P_PLAY_QUEUE_ANIMATION::P_PLAY_QUEUE_ANIMATION()
+  : PLAY_QUEUE_ANIMATION()
+{
+	set_table_name( "P_PLAY_QUEUE_ANIMATION" );
 }
 
 static std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > & forkeys, bool add_drop_table )
@@ -161,7 +174,7 @@ static std::string create_sql_statement( DBBindType *table, std::vector< Ref<For
 		  break;
 
 		case DBType::TYPE::VARCHAR:
-		  s += Tools::format("VARCHAR(%s) CHARACTER SET utf8 COLLATE utf8_general_ci ", tl[i]->get_size() );
+		  s += Tools::format("VARCHAR(%s) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT ''", tl[i]->get_size() );
 		  break;
 
 		case DBType::TYPE::ENUM:
@@ -186,7 +199,7 @@ static std::string create_sql_statement( DBBindType *table, std::vector< Ref<For
 		  break;
 
 		case DBType::TYPE::DATETIME:
-		  s += "DATETIME ";
+		  s += "DATETIME DEFAULT current_timestamp()";
 		  break;
 
 		case DBType::TYPE::FIRST__:
@@ -215,7 +228,7 @@ static std::string create_sql_statement( DBBindType *table, std::vector< Ref<For
 	}
 
   s += Tools::format( "\n) ENGINE = %s;\n", engine );
-  s += Tools::format("ALTER TABLE `%s` ADD PRIMARY KEY ( `idx` );\n",table->get_table());
+  s += Tools::format("ALTER TABLE `%s` ADD PRIMARY KEY IF NOT EXISTS ( `idx` );\n",table->get_table());
   s += Tools::format("ALTER TABLE `%s` CHANGE `idx` `idx` INT( 11 ) NOT NULL AUTO_INCREMENT;\n",
 			  table->get_table());
   s += Tools::format("ALTER TABLE `%s`  DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;\n",table->get_table());
@@ -233,27 +246,31 @@ static std::string create_sql_statement( DBBindType *table, std::vector< Ref<For
 std::string create_sql( bool add_drop_table )
 {
   std::string s;
-  PLAY_QUEUE_CHUNKS 	play_queue_chunks;
-  PLAY_QUEUE_MUSIC 		play_queue_music;
-  BUTTON_QUEUE			button_queue;
-  USERS_ACTION			users_action;
-  CONFIG				config;
+  PLAY_QUEUE_CHUNKS 		play_queue_chunks;
+  PLAY_QUEUE_MUSIC 			play_queue_music;
+  PLAY_QUEUE_ANIMATION 		play_queue_animation;
+  BUTTON_QUEUE				button_queue;
+  USERS_ACTION				users_action;
+  CONFIG					config;
 
-  P_PLAY_QUEUE_CHUNKS 	p_play_queue_chunks;
-  P_PLAY_QUEUE_MUSIC 	p_play_queue_music;
-  P_BUTTON_QUEUE		p_button_queue;
+  P_PLAY_QUEUE_CHUNKS 		p_play_queue_chunks;
+  P_PLAY_QUEUE_MUSIC 		p_play_queue_music;
+  P_PLAY_QUEUE_ANIMATION 	p_play_queue_animation;
+  P_BUTTON_QUEUE			p_button_queue;
 
   std::vector< Ref<Forkey> > forkeys;
 
-  s += create_sql_statement( &play_queue_chunks, 	forkeys, add_drop_table );
-  s += create_sql_statement( &play_queue_music,  	forkeys, add_drop_table );
-  s += create_sql_statement( &button_queue,			forkeys, add_drop_table );
-  s += create_sql_statement( &users_action,			forkeys, add_drop_table );
-  s += create_sql_statement( &config,				forkeys, add_drop_table );
+  s += create_sql_statement( &play_queue_chunks, 		forkeys, add_drop_table );
+  s += create_sql_statement( &play_queue_music,  		forkeys, add_drop_table );
+  s += create_sql_statement( &play_queue_animation,		forkeys, add_drop_table );
+  s += create_sql_statement( &button_queue,				forkeys, add_drop_table );
+  s += create_sql_statement( &users_action,				forkeys, add_drop_table );
+  s += create_sql_statement( &config,					forkeys, add_drop_table );
 
-  s += create_sql_statement( &p_play_queue_chunks, 	forkeys, add_drop_table );
-  s += create_sql_statement( &p_play_queue_music,	forkeys, add_drop_table );
-  s += create_sql_statement( &p_button_queue,		forkeys, add_drop_table );
+  s += create_sql_statement( &p_play_queue_chunks, 		forkeys, add_drop_table );
+  s += create_sql_statement( &p_play_queue_music,		forkeys, add_drop_table );
+  s += create_sql_statement( &p_play_queue_animation,	forkeys, add_drop_table );
+  s += create_sql_statement( &p_button_queue,			forkeys, add_drop_table );
 
   // notwendige indexe anlegen
   for( unsigned i = 0; i < forkeys.size(); i++ )
@@ -262,7 +279,7 @@ std::string create_sql( bool add_drop_table )
 		{
 		  std::string ss;
 
-		  ss = Tools::format( "ALTER TABLE `%s` ADD INDEX `%s_%s_%s`(`%s`);\n",
+		  ss = Tools::format( "ALTER TABLE `%s` ADD INDEX IF NOT EXISTS `%s_%s_%s`(`%s`);\n",
 					   forkeys[i]->target_table,
 					   "idx",
 					   forkeys[i]->target_table,
@@ -280,7 +297,7 @@ std::string create_sql( bool add_drop_table )
   // Forkeys anlegen
   for( unsigned i = 0; i < forkeys.size(); i++ )
 	{
-	  s += Tools::format( "ALTER TABLE `%s` add FOREIGN KEY (`%s`) REFERENCES `%s`(`%s`);\n",
+	  s += Tools::format( "ALTER TABLE `%s` add FOREIGN KEY IF NOT EXISTS (`%s`) REFERENCES `%s`(`%s`);\n",
 				   forkeys[i]->own_table,
 				   forkeys[i]->field,
 				   forkeys[i]->target_table,
