@@ -6,6 +6,7 @@
 #include "ConfigGlobal.h"
 #include "ConfigDatabase.h"
 #include "ConfigNetwork.h"
+#include "ConfigAnimations.h"
 #include <filesystem>
 
 using namespace Tools;
@@ -145,6 +146,7 @@ Configfile2* Configfile2::createDefaultInstaceWithAllModules( const std::string 
 	ConfigSectionGlobal::registerSection( instance );
 	ConfigSectionDatabase::registerSection( instance );
 	ConfigSectionNetwork::registerSection( instance );
+	ConfigSectionAnimations::registerSection( instance );
 
 	return instance;
 }

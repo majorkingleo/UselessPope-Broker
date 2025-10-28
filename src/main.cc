@@ -9,6 +9,7 @@
 #include "Configfile2.h"
 #include "ConfigDatabase.h"
 #include "ConfigNetwork.h"
+#include "ConfigAnimations.h"
 #include "bindtypes.h"
 #include <dbi.h>
 #include "FetchSound.h"
@@ -16,6 +17,7 @@
 #include "FetchButton.h"
 #include <thread>
 #include <chrono>
+#include "PlayAnimation.h"
 
 using namespace Tools;
 using namespace std::chrono_literals;
@@ -121,6 +123,11 @@ int main( int argc, char **argv )
 		o_db_retry_logon.setMinValues(1);
 		arg.addOptionR( &o_db_retry_logon );
 
+		Arg::FlagOption o_master_animations("master-animations");
+		o_master_animations.setDescription("execute current animations from db");
+		o_master_animations.setRequired(false);
+		arg.addOptionR( &o_master_animations );
+
 		DetectLocale dl;
 
 		const unsigned int console_width = 80;
@@ -154,8 +161,8 @@ int main( int argc, char **argv )
 		}
 
 		Configfile2::createDefaultInstaceWithAllModules()->read(true);
-		const ConfigSectionDatabase & cfg_db = Configfile2::get(ConfigSectionDatabase::KEY);
-		const ConfigSectionNetwork  & cfg_net = Configfile2::get(ConfigSectionNetwork::KEY);
+		const ConfigSectionDatabase 	& cfg_db 			= Configfile2::get(ConfigSectionDatabase::KEY);
+		const ConfigSectionNetwork  	& cfg_net 			= Configfile2::get(ConfigSectionNetwork::KEY);
 	
 		std::chrono::steady_clock::time_point retry_logon_until{};
 
@@ -251,6 +258,34 @@ int main( int argc, char **argv )
 			threads.emplace_back([&listener]() {
 				listener.run();
 			});*/
+
+			while (!SDL_QuitRequested()) {
+				SDL_Delay(250);
+			}
+
+			APP.quit_request = true;
+
+			for( auto & t : threads ) {
+				t.join();
+			}
+		}
+
+		if( o_master_animations.isSet() ) {
+
+			const ConfigSectionAnimations  	& cfg_animations 	= Configfile2::get(ConfigSectionAnimations::KEY);
+
+			PlayAnimation play {cfg_animations};
+			//FetchAnimations fetch( play );
+
+
+			threads.emplace_back([&play]() {
+				play.run();
+			});
+/*
+			threads.emplace_back([&fetch]() {
+				fetch.run();
+			});
+*/
 
 			while (!SDL_QuitRequested()) {
 				SDL_Delay(250);
