@@ -86,6 +86,11 @@ int main( int argc, char **argv )
 		o_create_sql.setRequired(false);
 		arg.addOptionR( &o_create_sql );
 
+		Arg::FlagOption o_with_drop_table("with-drop-table");
+		o_with_drop_table.setDescription("add drop table statements");
+		o_with_drop_table.setRequired(false);
+		arg.addOptionR( &o_with_drop_table );
+
 		Arg::StringOption o_enqueue_chunk("enqueue-chunk");
 		o_enqueue_chunk.setDescription("add a chunk file to queue");
 		o_enqueue_chunk.setRequired(false);
@@ -144,8 +149,8 @@ int main( int argc, char **argv )
 			Tools::x_debug = new OutDebug();
 		}
 
-		if( o_create_sql.getState() ) {
-			std::cout << create_sql() << std::endl;
+		if( o_create_sql.getState() ) {			
+			std::cout << create_sql( o_with_drop_table.getState() ) << std::endl;
 		}
 
 		Configfile2::createDefaultInstaceWithAllModules()->read(true);

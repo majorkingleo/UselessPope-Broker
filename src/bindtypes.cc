@@ -128,12 +128,15 @@ CONFIG::CONFIG()
 
 }
 
-std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > & forkeys )
+static std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > & forkeys, bool add_drop_table )
 {
   std::string s;
 
-  s = "DROP TABLE IF EXISTS `" + table->get_table() + "`;\n";
-  s += "CREATE TABLE `" + table->get_table() + '`';
+  if( add_drop_table ) {
+  	s = "DROP TABLE IF EXISTS `" + table->get_table() + "`;\n";    	
+  }
+
+  s += "CREATE TABLE IF NOT EXISTS `" + table->get_table() + '`';
   s += " (\n ";
   
   std::vector<DBType*> tl = table->get_types();
@@ -227,7 +230,7 @@ std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > 
   return s;
 }
 
-std::string create_sql()
+std::string create_sql( bool add_drop_table )
 {
   std::string s;
   PLAY_QUEUE_CHUNKS 	play_queue_chunks;
@@ -242,15 +245,15 @@ std::string create_sql()
 
   std::vector< Ref<Forkey> > forkeys;
 
-  s += create_sql_statement( &play_queue_chunks, 	forkeys );
-  s += create_sql_statement( &play_queue_music,  	forkeys );
-  s += create_sql_statement( &button_queue,			forkeys );
-  s += create_sql_statement( &users_action,			forkeys );
-  s += create_sql_statement( &config,				forkeys );
+  s += create_sql_statement( &play_queue_chunks, 	forkeys, add_drop_table );
+  s += create_sql_statement( &play_queue_music,  	forkeys, add_drop_table );
+  s += create_sql_statement( &button_queue,			forkeys, add_drop_table );
+  s += create_sql_statement( &users_action,			forkeys, add_drop_table );
+  s += create_sql_statement( &config,				forkeys, add_drop_table );
 
-  s += create_sql_statement( &p_play_queue_chunks, 	forkeys );
-  s += create_sql_statement( &p_play_queue_music,	forkeys );
-  s += create_sql_statement( &p_button_queue,		forkeys );
+  s += create_sql_statement( &p_play_queue_chunks, 	forkeys, add_drop_table );
+  s += create_sql_statement( &p_play_queue_music,	forkeys, add_drop_table );
+  s += create_sql_statement( &p_button_queue,		forkeys, add_drop_table );
 
   // notwendige indexe anlegen
   for( unsigned i = 0; i < forkeys.size(); i++ )

@@ -267,6 +267,5 @@ public:
 	}
 };
 
-std::string create_sql();
-std::string create_sql_statement( DBBindType *table );
+std::string create_sql( bool add_drop_table = false );
 
