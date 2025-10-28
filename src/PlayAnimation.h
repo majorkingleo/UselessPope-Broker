@@ -13,14 +13,16 @@ class PlayAnimation : public BasicThread
 	class Animation
 	{
 	private:
-		std::string 		m_file				{};
-		bool				m_started 			{false};
+		std::string 		m_cmd				{};
+		pid_t				m_pid				{};
 
 	public:
-		Animation( const std::string & file );
+		Animation( const std::string & cmd );
 		~Animation();
 
 		void play();
+
+		void stop();
 
 		bool finished();
 	};
@@ -39,4 +41,9 @@ public:
 	void play_animation( const std::string & file );
 
 	void run() override;
+
+	std::size_t countAnimationsInQueue() const {
+		auto lock = std::lock_guard( m_lock_animation );
+		return m_animations.size();
+	}
 };

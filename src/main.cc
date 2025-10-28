@@ -18,6 +18,7 @@
 #include <thread>
 #include <chrono>
 #include "PlayAnimation.h"
+#include "FetchAnimation.h"
 
 using namespace Tools;
 using namespace std::chrono_literals;
@@ -99,6 +100,14 @@ int main( int argc, char **argv )
 		o_enqueue_chunk.setMinValues(1);
 		o_enqueue_chunk.setMaxValues(1);
 		arg.addOptionR( &o_enqueue_chunk );
+
+
+		Arg::StringOption o_enqueue_animation("enqueue-animation");
+		o_enqueue_animation.setDescription("add a animation file to queue");
+		o_enqueue_animation.setRequired(false);
+		o_enqueue_animation.setMinValues(1);
+		o_enqueue_animation.setMaxValues(1);
+		arg.addOptionR( &o_enqueue_animation );
 
 		Arg::FlagOption o_master("master");
 		o_master.setDescription("execute as master daemon program");
@@ -227,6 +236,25 @@ int main( int argc, char **argv )
 			}
 		}
 
+		if( o_enqueue_animation.isSet() ) {
+			for( const auto & file : *o_enqueue_animation.getValues() ) {
+				if( !std::filesystem::exists(file) ) {
+					throw STDERR_EXCEPTION( Tools::format( "file '%s' does not exists", file ) );
+				}
+
+				PLAY_QUEUE_ANIMATION pqa {};
+				pqa.file = std::filesystem::absolute( file ).string();
+				pqa.setHist(BASE::HIST_TYPE::HIST_AN);
+				pqa.setHist(BASE::HIST_TYPE::HIST_AE);
+				pqa.setHist(BASE::HIST_TYPE::HIST_LO);
+
+				if( !StdSqlInsert( *APP.db, pqa ) ) {
+					throw STDERR_EXCEPTION( Tools::format( "cannot enqueue file '%s' '%s'", file, APP.db->get_error() ) );
+				}
+				APP.db->commit();
+			}
+		}
+
 		bool does_something = false;
 
 		if( o_listen.isSet() ) {
@@ -274,18 +302,17 @@ int main( int argc, char **argv )
 
 			const ConfigSectionAnimations  	& cfg_animations 	= Configfile2::get(ConfigSectionAnimations::KEY);
 
-			PlayAnimation play {cfg_animations};
-			//FetchAnimations fetch( play );
+			PlayAnimation 	play {cfg_animations};
+			FetchAnimation 	fetch( play );
 
 
 			threads.emplace_back([&play]() {
 				play.run();
 			});
-/*
+
 			threads.emplace_back([&fetch]() {
 				fetch.run();
 			});
-*/
 
 			while (!SDL_QuitRequested()) {
 				SDL_Delay(250);
