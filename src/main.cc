@@ -181,11 +181,16 @@ int main( int argc, char **argv )
 		}
 
 		while( !APP.db ) {
-			APP.db = std::make_shared<Database>( cfg_db.Host,
-												cfg_db.UserName,
-												cfg_db.Password,
-												cfg_db.Instance,
-												Database::DB_MYSQL );
+
+			APP.reconnect_db = [&cfg_db]() {
+				APP.db = std::make_shared<Database>( cfg_db.Host,
+													cfg_db.UserName,
+													cfg_db.Password,
+													cfg_db.Instance,
+													Database::DB_MYSQL );
+			};
+
+			APP.reconnect_db();
 
 			if( !APP.db->valid() ) {
 				if( retry_logon_until < std::chrono::steady_clock::now() ) {
@@ -304,11 +309,11 @@ int main( int argc, char **argv )
 
 			PlayAnimation 	play {cfg_animations};
 			FetchAnimation 	fetch( play );
-
-
+/*
 			threads.emplace_back([&play]() {
 				play.run();
 			});
+*/
 
 			threads.emplace_back([&fetch]() {
 				fetch.run();

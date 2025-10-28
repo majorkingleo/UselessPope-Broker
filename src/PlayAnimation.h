@@ -42,6 +42,8 @@ public:
 
 	void run() override;
 
+	void run_once();
+
 	std::size_t countAnimationsInQueue() const {
 		auto lock = std::lock_guard( m_lock_animation );
 		return m_animations.size();
