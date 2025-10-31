@@ -76,10 +76,11 @@ std::string Database::create_values_list( const std::string &table, const std::v
 
   for( unsigned i = 0; i < cnames.size(); i++ )
     {
-      if( i )
-		csql += ",\n";
+      if( i ) {
+		    csql += ",\n";
+      }
 
-      csql += cnames[i];
+      csql += "`" + cnames[i] + "`";
     }
 
   csql += ") VALUES ( ";
@@ -93,8 +94,9 @@ DBErg<DBRowList> Database::insert( const std::string &table, const DBRow &row )
 
   for( unsigned i = 0; i < row.values.size(); i++ )
     {
-      if( i )
-	sql += ",\n";
+      if( i ) {      
+	      sql += ",\n";
+      }
 
       sql += '\'' + escape(row.values[i]) + '\'';
     }

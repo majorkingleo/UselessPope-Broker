@@ -197,12 +197,12 @@ template<class Storage> static std::string parse_sql( std::string sql, Storage &
 	      std::vector<std::string> names = bt->get_names();
 	      
 	      for( unsigned k = 0; k < names.size(); k++ )
-		{
-		  if( k )
-		    sql += ',';
-		  
-		  sql += bt->get_table_name() + '.' + names[k];
-		}
+        {
+          if( k )
+            sql += ',';
+          
+          sql += bt->get_table_name() + ".`" + names[k]+ "`";
+        }
 	      
 	      if( sl.size() > j + 1 )
 		{
@@ -306,13 +306,13 @@ static int StdSqlSelect( Database &db, std::string sql, DBInArrayList &in, DBInL
       
       DBRow row( erg.row_list.names, erg.row_list.values[j] );
       for( unsigned i = 0; i < in.types_count(); i++ )
-	{
-	  if( i + i_count >= in.size() )
-	    return j;
-	  
-	  in[i_count + i]->load_from_db( row );
-	  ic++;
-	}
+      {
+        if( i + i_count >= in.size() )
+          return j;
+        
+        in[i_count + i]->load_from_db( row );
+        ic++;
+      }
       
       i_count += ic;
     }

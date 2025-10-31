@@ -13,7 +13,7 @@ const unsigned MAC_ADDRESS_LEN=17;
 const unsigned IP_ADDRESS_LEN=15;
 const unsigned ACTION_LEN=50;
 const unsigned CONFIG_KEY_LEN=50;
-const unsigned CONFIG_VALUE_LEN=50;
+const unsigned CONFIG_VALUE_LEN=FILE_LEN;
 
 struct JANEIN
 {

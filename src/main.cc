@@ -43,6 +43,45 @@ static void usage( const std::string & prog )
 				<< prog << "\n";
 }
 
+static void insert_config( const std::string & key, const std::string & value )
+{
+	CONFIG existing_cfg;
+
+	CPPDEBUG( Tools::format( "insert_config key=%s value=%s", key.c_str(), value.c_str() ) );
+
+	if( StdSqlSelect( *APP.db,
+			Tools::format( "select %%%s from %s where `%s` = '%s' ",
+					existing_cfg.get_table_name(),
+					existing_cfg.get_table_name(),
+					existing_cfg.key.get_name(),
+					escape( key ) ),
+			DBInList<DBBindType>() >> existing_cfg ) > 0 ) {
+		return;
+	}
+
+	CONFIG cfg {};
+	cfg.setHist( BASE::HIST_TYPE::HIST_AN, "broker" );
+	cfg.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
+	cfg.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
+
+	cfg.key = key;
+	cfg.value = value;
+
+	if( !StdSqlInsert( *APP.db, cfg ) ) {
+		CPPDEBUG( Tools::format( "cannot insert into DB: %s", APP.db->get_error() ) );
+	}
+
+	APP.db->commit();
+}
+
+static void insert_default_values()
+{
+	insert_config( "brightness", "0.02" );
+	insert_config( "current_animation", "0" );
+	insert_config( "animation0", "/home/papst/UselessPope-raspi/python/pope_default_rotating_color_wheel.py" );
+	insert_config( "animation1", "/home/papst/UselessPope-raspi/python/pope_red_eyes.py" );
+}
+
 int main( int argc, char **argv )
 {
 	Co co;
@@ -201,6 +240,8 @@ int main( int argc, char **argv )
 					std::this_thread::sleep_for(500ms);
 				}
 			}
+
+			insert_default_values();
 		}
 
 		if( o_enqueue_chunk.isSet() ) {
