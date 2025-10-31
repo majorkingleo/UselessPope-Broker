@@ -238,6 +238,7 @@ int main( int argc, char **argv )
 					CPPDEBUG( Tools::format( "cannot connect to database: '%s' retrying...", APP.db->get_error()) );
 					APP.db.reset();
 					std::this_thread::sleep_for(500ms);
+					continue;
 				}
 			}
 
