@@ -19,6 +19,7 @@
 #include <chrono>
 #include "PlayAnimation.h"
 #include "FetchAnimation.h"
+#include "FetchAnswers.h"
 
 using namespace Tools;
 using namespace std::chrono_literals;
@@ -176,6 +177,12 @@ int main( int argc, char **argv )
 		o_master_animations.setRequired(false);
 		arg.addOptionR( &o_master_animations );
 
+		Arg::StringOption o_pope_answers_file("pope-reacts-answers-file");
+		o_pope_answers_file.setDescription("pop reactions answers file");
+		o_pope_answers_file.setRequired(false);
+		o_pope_answers_file.setMinValues(1);
+		arg.addOptionR( &o_pope_answers_file );
+
 		DetectLocale dl;
 
 		const unsigned int console_width = 80;
@@ -299,6 +306,19 @@ int main( int argc, char **argv )
 					throw STDERR_EXCEPTION( Tools::format( "cannot enqueue file '%s' '%s'", file, APP.db->get_error() ) );
 				}
 				APP.db->commit();
+			}
+		}
+
+		if( o_pope_answers_file.isSet() ) {
+
+			FetchAnswers answers {};
+
+			for( const auto & file : *o_enqueue_animation.getValues() ) {
+				if( !std::filesystem::exists(file) ) {
+					throw STDERR_EXCEPTION( Tools::format( "file '%s' does not exists", file ) );
+				}
+
+				answers.fetch_from_file( file );
 			}
 		}
 
