@@ -4,6 +4,7 @@
 #include <CpputilsDebug.h>
 #include <format.h>
 #include <string_utils.h>
+#include <utf8_util.h>
 
 using namespace Tools;
 
@@ -18,10 +19,30 @@ FetchAnswers::Reaction::Reaction( const std::wstring & song_title )
 	// 2) remove leading path
 	strip_file_name_from_path( m_song_title );
 
-	CPPDEBUG( Tools::wformat( L"%s", m_song_title ) );
+	// 3) extract keywords
+	m_key_words = get_key_words_from_title( m_song_title );
+
+	CPPDEBUG( Tools::wformat( L"song: %s keywords: %s", m_song_title,
+			IterableToFormattedWString( m_key_words.get_key_words() ) ) );
 }
 
-void FetchAnswers::Reaction::strip_file_extension( std::wstring & file_name )
+std::set<std::wstring> FetchAnswers::Reaction::get_key_words_from_title( const std::wstring & title )
+{
+	std::set<std::wstring> key_words;
+	std::vector<std::wstring> words = split_and_strip_simple( title, L" \t\r-_," );
+
+//	CPPDEBUG( Tools::wformat( L"words(%d): %s", words.size(), IterableToFormattedWString( words ) ) );
+
+	for( std::wstring word : words ) {
+		word = substitude( word, L"'", L"" );
+		word = tolower( word );
+		key_words.insert( std::move(word) );
+	}
+
+	return key_words;
+}
+
+void FetchAnswers::Reaction::strip_file_extension( std::wstring & file_name ) const
 {
 	std::wstring::size_type pos = file_name.find_last_of(L"/.");
 
@@ -33,10 +54,10 @@ void FetchAnswers::Reaction::strip_file_extension( std::wstring & file_name )
 		return;
 	}
 
-	file_name = file_name.substr( 0, pos - 1);
+	file_name = file_name.substr( 0, pos );
 }
 
-void FetchAnswers::Reaction::strip_file_name_from_path( std::wstring & file_name )
+void FetchAnswers::Reaction::strip_file_name_from_path( std::wstring & file_name ) const
 {
 	std::wstring::size_type pos = file_name.find_last_of(L"/");
 
@@ -100,4 +121,11 @@ void FetchAnswers::fetch_from_file( const std::string & file_name )
 			current_reaction->add_answer( line );
 		}
 	}
+}
+
+void FetchAnswers::get_reaction_from_song( const std::string & file )
+{
+	Reaction reaction( Utf8Util::utf8toWString( file ) );
+
+
 }
