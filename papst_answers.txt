@@ -1,0 +1,1112 @@
+./Worms/Worms - HOLYDONKEY.WAV
+  Wunderbar! Ein Esel, der heilig ist! Ich dachte, nur der Heilige Geist hätte so eine Wirkung!
+./Worms/Worms - StartRound.wav
+  Ah, beginnen wir mit etwas Ernstem. Aber ich hoffe, diese 'Runde' hat mehr Gebet als Kampf.
+./Worms/Worms - Tarzan.wav
+  Ich vermisse es, einfach so durch die Straßen zu schlendern, aber auf die Liane würde ich lieber verzichten.
+./Worms/Worms - Explosion2.wav
+  Ein weiteres Zeichen, dass die Welt ein wenig zu aufgeregt ist. Beruhigt euch, meine Kinder!
+./Worms/Finnish/Worms Finnish - leavemealone.wav
+  Das sage ich auch manchmal, wenn die Kardinäle zu lange reden.
+./Worms/Finnish/Worms Finnish - fire.wav
+  Feuer? Ich hoffe, es ist nur das Feuer des Heiligen Geistes, das sie meinen!
+./Worms/Finnish/Worms Finnish - excellent.wav
+  Exzellent! Endlich eine gute Nachricht.
+./Worms/Finnish/Worms Finnish - watchthis.wav
+  Ich schaue lieber auf den Gekreuzigten, danke.
+./Worms/Finnish/Worms Finnish - hello.wav
+  Brüder und Schwestern, guten Abend!
+./Worms/Finnish/Worms Finnish - drop.wav
+  Hoffentlich ist es nur eine schlechte Angewohnheit und keine fallende Kirchensteuer.
+./Worms/Finnish/Worms Finnish - kamikaze.wav
+  Ein wenig zu viel Eifer. Denken Sie daran, dass wir nicht der Messias sind.
+./Worms/Finnish/Worms Finnish - whatthe.wav
+  Eine sehr menschliche Reaktion auf eine sehr weltliche Situation.
+./Worms/Finnish/Worms Finnish - perfect.wav
+  Nur Gott ist perfekt, und wir sind alle nur Ersatzteile, wie Johannes XXIII. sagen würde.
+./Worms/Russian/Worms Russian - grenade.wav
+  Bitte keine explosiven Verhandlungen.
+./Worms/Russian/Worms Russian - boring.wav
+  Langeweile? Da hilft nur Beten, auch wenn man dabei einschläft.
+./Worms/Russian/Worms Russian - youllregretthat.wav
+  Das klingt nach einer Warnung, die man lieber ernst nehmen sollte.
+./Worms/Russian/Worms Russian - perfect.wav
+  Wieder diese Illusion der Vollkommenheit. Die gibt es nur bei den Toten und denen, die noch geboren werden.
+./Worms/Russian/Worms Russian - leavemealone.wav
+  Seelsorger sollten nie sagen, dass sie keine Zeit haben. Aber ich kann es verstehen.
+./Worms/Russian/Worms Russian - kamikaze.wav
+  Das ist ein Zeichen von Ungeduld, nicht von Hoffnung.
+./Worms/Russian/Worms Russian - comeonthen.wav
+  Mutig. Aber erinnern Sie sich: Wer bin ich, das zu verurteilen?
+./Worms/Russian/Worms Russian - laugh.wav
+  Lachen ist wichtig. Es ist gut für uns, auch über sich selbst zu lachen.
+./Worms/Russian/Worms Russian - bummer.wav
+  Ja, das Leben hat seine Traurigkeiten.
+./Worms/Worms - Horror.wav
+  Furcht ist das, was die Götter geschaffen hat, sagt man. Ich habe da eine bessere Quelle.
+./Worms/English/Worms English - FIREBALL.WAV
+  Ich hoffe, dieser Feuerball trifft niemanden!
+./Worms/English/Worms English - MISSED.WAV
+  Gott sei Dank.
+./Worms/English/Worms English - FIRSTBLOOD.WAV
+  Es muss immer diese Dramatik sein. Das Volk Gottes hat ein feines Gespür für Drama.
+./Worms/English/Worms English - BYEBYE.WAV
+  Auf Wiedersehen! Und vergessen Sie nicht, für mich zu beten!
+./Worms/English/Worms English - COLLECT.WAV
+  Sammeln Sie lieber Ihre Gedanken. Oder die Gaben für die Armen.
+./Worms/English/Worms English - FATALITY.WAV
+  Ein starkes Wort. Wir sollten uns immer an die Auferstehung erinnern, nicht nur an das Ende.
+./Worms/English/Worms English - OW2.WAV
+  Das ist der Laut des menschlichen Leidens. Wir haben uns zu sehr daran gewöhnt.
+./Worms/English/Worms English - OW3.WAV
+  Wir müssen wieder lernen zu weinen.
+./Worms/English/Worms English - FLAWLESS.WAV
+  Das Wort ist Fälschung. Es gibt nur zwei Arten von perfekten Menschen...
+./Worms/English/Worms English - LAUGH.WAV
+  Lachen Sie, aber denken Sie daran, es ist leichter, ein Tragiker zu sein als ein Komiker.
+./Worms/English/Worms English - OW1.WAV
+  Noch ein Schmerz. Herr, schenke mir Sinn für Humor, damit ich ein wenig Glück kenne im Leben.
+./Worms/English/Worms English - OUCH.WAV 
+  Ouch.  Wir sollten uns lieber um die kümmern, die am meisten Mühe haben, hoffnungsvoll auf das Leben zu blicken.
+./Worms/English/Worms English - DRAGONPUNCH.WAV 
+  Ein Schlag des Drachen? Ich bevorzuge den Friedenskuss.
+./Worms/English/Worms English - HELLO.WAV 
+  Wie ihr wisst, war es die Pflicht des Konklaves...
+./Worms/English/Worms English - COWARD.WAV 
+  Wir müssen kühn sein. Die Feigheit ist keine Option für den Christen.
+./Worms/Geezer/Worms Geezer - fireball.wav 
+  Wieder das Feuer. Ich wünsche mir eine arme Kirche und eine Kirche für die Armen, ohne diesen ganzen Knall.
+./Worms/Geezer/Worms Geezer - takecover.wav 
+  Warum verstecken? Von uns ist einfach nur verlangt, Seite an Seite mit dem Herrn zu arbeiten.
+./Worms/Geezer/Worms Geezer - incoming.wav 
+  Was auch immer da kommt, wir sind bereit. Mit dem Rosenkranz.
+./Worms/Geezer/Worms Geezer - ohdear.wav 
+  Ach du meine Güte. Wenn es nur ein wenig Traurigkeit ist, sollen wir vermeiden, in Melancholie zu versinken.
+./Worms/Geezer/Worms Geezer - kamikaze.wav 
+  Ein Akt des Wahnsinns. Ich bin nur der Stellvertreter Christi auf Erden.
+./Worms/Geezer/Worms Geezer - perfect.wav 
+  Wieder das Wort.
+./Worms/Geezer/Worms Geezer - drop.wav 
+  Lassen Sie die Waffe fallen, nicht das Gebet.
+./Worms/Geezer/Worms Geezer - boring.wav 
+  Dann schlafen Sie ein, wie ich manchmal beim Beten. Es ist in Ordnung.
+./Worms/Worms - Magic harp.wav 
+  Etwas Himmliches? Endlich!
+./Worms/Worms - SHEEPBAA.WAV 
+  Eines meiner Schafe. Bitte, seid wachsam, meine Herde.
+./Worms/Worms - COUGH5.WAV 
+  Husten? Ist es wieder diese alte Mentalität?
+./Worms/Worms - Almost Tarzan.wav 
+  Fast da. Aber ich bleibe auf dem Boden.
+./Worms/Worms - MiniGunFire.wav 
+  Klingt nach einer sehr kleinen Krise.
+./Worms/Worms - Pitch Laugh.wav 
+  Sehr komisch. Ich lobe die Arbeit der Humoristen.
+./Worms/Drill Sergeant/Worms Drill Sergeant - coward.wav 
+  Wir brauchen keine Angst vor der Welt zu haben. Wir haben große Visionen und Tatendrang.
+./Worms/Drill Sergeant/Worms Drill Sergeant - drop.wav 
+  Wenn Sie etwas fallen lassen, lassen Sie es die Arroganz sein.
+./Worms/Drill Sergeant/Worms Drill Sergeant - hello.wav 
+  Hallo. Und denken Sie daran, für mich zu beten.
+./Worms/Drill Sergeant/Worms Drill Sergeant - justyouwait.wav 
+  Nur auf Gott warten. Er vergibt immer.
+./Worms/Drill Sergeant/Worms Drill Sergeant - revenge.wav 
+  Rache? Wir lieben nicht mit Worten, sondern in Taten. Und diese Taten sind Vergebung.
+./Worms/Drill Sergeant/Worms Drill Sergeant - orders.wav 
+  Folgen Sie den Anweisungen. Aber ich mahne, aus Autorität keinen Autoritarismus zu machen.
+./Worms/Drill Sergeant/Worms Drill Sergeant - byebye.wav 
+  Gehen Sie in Frieden.
+./Worms/Drill Sergeant/Worms Drill Sergeant - firstblood.wav 
+  Zu viel Gewalt. Wir müssen uns um die Natur kümmern.
+./Worms/Drill Sergeant/Worms Drill Sergeant - leavemealone.wav 
+  Der Wunsch des Einsiedlers.
+./Worms/Drill Sergeant/Worms Drill Sergeant - bummer.wav 
+  Kleine Traurigkeiten. Aber das Herz nicht verbittern.
+./Worms/Drill Sergeant/Worms Drill Sergeant - excellent.wav 
+  Sehr gut. Jetzt können wir weiter beten.
+./Worms/Drill Sergeant/Worms Drill Sergeant - fire.wav 
+  Das Feuer der Leidenschaft. Wir sollen leidenschaftlich lachen.
+./Worms/Drill Sergeant/Worms Drill Sergeant - boring.wav 
+  Kämpfen Sie gegen die Melancholie.
+./Worms/Drill Sergeant/Worms Drill Sergeant - youllregretthat.wav 
+  Regel Nummer eins: bereuen Sie.
+./Worms/Drill Sergeant/Worms Drill Sergeant - takecover.wav 
+  Ein Rückzug in das Gebet ist immer erlaubt.
+./Worms/Drill Sergeant/Worms Drill Sergeant - victory.wav 
+  Sieg! Aber wir müssen uns stets bescheiden geben.
+./Worms/Drill Sergeant/Worms Drill Sergeant - amazing.wav 
+  Erstaunlich. Genau wie die Liebe Jesu.
+./Worms/Drill Sergeant/Worms Drill Sergeant - perfect.wav 
+  Lachen Sie über sich selbst, wenn Sie Perfektion suchen.
+./Worms/Worms - Blahdi-blah.wav 
+  Gerede ohne Inhalt. Der Glaube gestattet uns, den Sinn zu interpretieren.
+./Worms/Worms - Explosion1.wav 
+  Noch eine Ablenkung.
+./Worms/Africaan/Worms Africaan - BRILLIANT.WAV 
+  Das ist der wahre Glanz, der von Gott kommt.
+./Worms/Africaan/Worms Africaan - LAUGH.WAV 
+  Der beste Rat vor dem Spiegel ist, über sich selbst zu lachen.
+./Worms/Africaan/Worms Africaan - REVENGE.WAV 
+  Vergeltung ist nicht unsere Art. Wir zeigen guten Willen.
+./Worms/Africaan/Worms Africaan - OHDEAR.WAV 
+  Ah, wie menschlich.
+./Worms/Africaan/Worms Africaan - DROP.WAV 
+  Lassen Sie uns die Waffen ablegen.
+./Worms/Worms - FrenchAnthem.wav 
+  Die Hymne eines Volkes. Ich wünsche allen Menschen das Beste.
+./Worms/Worms - HOLYGRENADE.WAV 
+  Ah, die Heiligkeit und die Waffe. Eine unheilige Allianz.
+./Worms/Worms - Chipmunk-Laugh.wav 
+  Sehr hoch. Aber Lachen ist gut.
+./Worms/Worms - new-win-gold-special.wav 
+  Ein spezieller Gewinn! Ich bin nur der Stellvertreter Christi auf Erden.
+./Worms/Worms - Worms!.wav 
+  Ein guter Titel für ein philosophisches Buch.
+./Worms/Worms - Sinister Laugh.wav 
+  Das gefällt mir nicht. Das erinnert mich an jene, die ihr Herz verbittern.
+./Worms/Worms - CowMoo.wav 
+  Ein einfacher Klang der Natur. Wir müssen uns um die Natur kümmern.
+./Super Mario/Super Mario - long jump.mp3 
+  Wir sollen ein Gebet sprechen, das uns sehr weit bringt.
+./Super Mario/Super Mario - wario doh i missed.mp3 
+  Fehler sind menschlich. Menschen manchmal, Gott vergibt immer.
+./Super Mario/Super Mario - game over.mp3 
+  Das Ende? Der Glaube gestattet uns, den Sinn zu interpretieren.
+./Super Mario/Super Mario - falling.mp3 
+  Ich hoffe, es fällt niemand in Melancholie.
+./Super Mario/Super Mario - coin.mp3 
+  Geben Sie dem Kaiser, was des Kaisers ist, und Gott, was Gottes ist.
+./Zurück in die Zukunft/Zurück in die Zukunft - twinkle.mp3 
+  Ein kleines Licht. Wir brauchen große Visionen.
+./sounds.txt 
+  Die ganze Liste! Sehr umfangreich.
+./UT2003/UT2003 announcer - Flawless Victory.wav 
+  Fehlerfreie Sieg? Lachen Sie über sich selbst!
+./UT2003/UT2003 announcer - Ludicrous Kill F.wav 
+  Lächerlich. Lasst uns lieber um Vergebung bitten.
+./UT2003/UT2003 announcer - First Blood.wav 
+  Wieder das Blut. Ich sehe, diese Spiele sind sehr 'weltlich'.
+./UT2003/UT2003 announcer - Multikill.wav 
+  Ein Multi-Problem. Wir brauchen Gemeinschaft und Einheit.
+./UT2003/UT2003 announcer - You Have Mutated.wav 
+  Hoffentlich ist es eine Mutation zum Besseren, zur Spontanität und Menschlichkeit.
+./UT2003/UT2003 announcer - WhickedSick.wav 
+  Krank? Wir brauchen Gesundheit des Leibes.
+./UT2003/UT2003 announcer - Monsterkill F.wav 
+  Monster? Das erinnert mich an unsere eigenen inneren Dämonen.
+./UT2003/UT2003 announcer - Dominating.wav 
+  Wir sollen dienen, nicht dominieren. Leitung ist ein Dienst.
+./UT2003/UT2003 announcer - Unstoppable.wav 
+  Das ist die Beharrlichkeit des Gebets.
+./UT2003/UT2003 announcer - Holy Shit F.wav 
+  Heilige Scheiße? Ein unpassender Ausdruck. Ich bevorzuge: Heilige Maria.
+./UT2003/UT2003 announcer - Booster.wav 
+  Wir brauchen den Heiligen Geist als Booster.
+./UT2003/UT2003 announcer - Combo Whore.wav 
+  Was für eine Sprache. Sehr 'weltlich'.
+./UT2003/UT2003 announcer - Flack Monkey.wav 
+  Ich habe einen besseren Titel: Stellvertreter Christi auf Erden.
+./UT2003/UT2003 announcer - Double Kill.wav 
+  Wir müssen versuchen, uns zu verbessern, nicht zu töten.
+./UT2003/UT2003 announcer - Adrenalin.wav 
+  Ein bisschen Aufregung. Aber vermeiden Sie Melancholie.
+./UT2003/UT2003 announcer - Rampage.wav 
+  Gewalt ist nie die Antwort.
+./UT2003/UT2003 announcer - Killing Spree.wav 
+  Der Mensch kann neue Übel hinzufügen.
+./UT2003/UT2003 announcer - Godlike.wav 
+  Das sind die Worte, die wir vermeiden sollen. Wir sind nicht der Messias.
+./UT2003/UT2003 announcer - Extermination.wav 
+  Das Ende der Menschheit? Wir müssen die Welt verändern wollen.
+./UT2003/UT2003 announcer - Bottom Feeder.wav 
+  Niemand ist der Bodensatz. Wir lieben alle.
+./UT2003/UT2003 announcer - Bloodbath.wav 
+  Die Globalisierung der Gleichgültigkeit hat uns die Fähigkeit genommen zu weinen.
+./UT2003/UT2003 announcer - Headshot.wav 
+  Zu präzise in der Gewalt.
+./UT2003/UT2003 announcer - Slaughter.wav 
+  Das sind traurige Worte.
+./UT2003/UT2003 announcer - Megakill.wav 
+  Die Gewalt ist nicht das, was wir verbreiten.
+./UT2003/UT2003 announcer - Ultrakill.wav 
+  Ultra? Wir sind nur Menschen.
+./UT2003/UT2003 announcer - Termination.wav 
+  Das ist ein Ende. Aber der Glaube ist ein Anfang.
+./_gesprochenes/bro shut the fuck up.mp3 
+  Die Sprache ist... sehr direkt. Wir brauchen mehr Höflichkeit.
+./_gesprochenes/hoppla.wav 
+  Das ist gut. Ein kleines Lächeln, um die Realität mit ihren Widersprüchen zu sehen.
+./_gesprochenes/gottschalk top die wette gilt.mp3 
+  Ich kenne diesen Herrn nicht, aber ich wette auf den Herrn.
+./_gesprochenes/nope.mp3 
+  Ein sehr klares "Nein".
+./_gesprochenes/i like balls.mp3 
+  Was auch immer das heißen mag. Konzentrieren wir uns auf die spirituellen Tugenden.
+./_gesprochenes/nba jam boomshakalaka.mp3 
+  Klingt sehr lebhaft. Freude ermöglicht das Teilen.
+./_gesprochenes/lesbian relationships.mp3 
+  Wer bin ich, das zu verurteilen?
+./_gesprochenes/two hours later.mp3 
+  So lange ist die Predigt nicht, hoffe ich.
+./_gesprochenes/counter strike enemy spotted.mp3 
+  Der Feind? Wir sollten uns vor der Melancholie in Acht nehmen.
+./Star Wars/Star Wars - blaster.mp3 
+  Ich bevorzuge den Segen.
+./UT99/UT99 announcer - godlike.wav 
+  Wir sind nicht der Messias.
+./UT99/UT99 announcer - firstblood.wav 
+  Blutvergießen ist kein Spiel.
+./UT99/UT99 announcer - killingspree.wav 
+  Wir müssen uns verbessern.
+./UT99/UT99 announcer - assist.wav 
+  Helfen ist eine gute Tat. Liebt in Taten.
+./UT99/UT99 announcer - multikill.wav 
+  Bitte, mehr Einheit.
+./UT99/UT99 announcer - winner.wav 
+  Wer nach Perfektion sucht, wird nicht fündig werden.
+./UT99/UT99 announcer - unstoppable.wav 
+  Nur der Herr ist unaufhaltsam.
+./UT99/UT99 announcer - failed.wav 
+  Aus Fehlern lernen wir.
+./UT99/UT99 announcer - nicecatch.wav 
+  Ein guter Fang. Wie der Fischer in Galiläa.
+./UT99/UT99 announcer - dominating.wav 
+  Dienen, nicht herrschen.
+./UT99/UT99 announcer - doublekill.wav 
+  Traurige Nachrichten.
+./UT99/UT99 announcer - headshot.wav 
+  Wir brauchen ein heiliges Gewissen.
+./UT99/UT99 announcer - ultrakill.wav 
+  Wir sind nur menschlich.
+./UT99/UT99 announcer - rampage.wav 
+  Die Welt braucht Frieden.
+./UT99/UT99 announcer - triplekill.wav 
+  So viel Zerstörung.
+./UT99/UT99 announcer - megakill.wav 
+  Megakill? Wir müssen uns auf das Leben aller konzentrieren.
+./UT99/UT99 announcer - monsterkill.wav 
+  Die Globalisierung der Gleichgültigkeit ist das wahre Monster.
+./UT99/UT99 announcer - capture.wav 
+  Die Gefangennahme des Gebets.
+./desktop.ini 
+  Eine technische Datei. Das ist zu kompliziert. Ich bin nur für die Seelen zuständig.
+./Matrix/Matrix - As long as the Matrix exists.mp3 
+  Die wahre Realität ist Christus. Alles andere ist nur ein Programm.
+./Fallout/Fallout 4 - laser rifle.mp3 
+  Zu viel Technologie, zu wenig Gebet.
+./Fallout/Fallout - war never changes.mp3 
+  Der Glaube gestattet uns, eine positive Entwicklung zu liefern. Krieg muss sich ändern!
+./Fallout/Fallout - report communists.mp3 
+  Melden Sie lieber, wo die Armen sind.
+./Fallout/Fallout - communist detected on american soil.mp3 
+  Die Armut ist überall.
+./Fallout/Fallout - i should kick your fucking ass.mp3 
+  Wir lieben den Nächsten.
+./Fallout/Fallout 76 - nuke warning.mp3 
+  Eine schreckliche Warnung. Wir müssen uns um die Natur kümmern.
+./Fallout/Fallout 3 - level up.mp3 
+  Ein Level aufgestiegen! Ich hoffe, es ist ein Level der Heiligkeit.
+./Fallout/Fallout 3 - exit vault.mp3 
+  Raus in die Welt! Das Gebet, das unterwegs ist.
+./Bud Spencer Terence Hill/Spencer Hill - fernglas.mp3 
+  Wir brauchen große Visionen.
+./Bud Spencer Terence Hill/Spencer Hill - freund vertrauen.mp3 
+  Vertrauen ist gut. Vor allem in Gott.
+./Bud Spencer Terence Hill/Spencer Hill - wildsau.mp3 
+  Wildschwein? Was für ein Bild.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - schamottriesen.mp3 
+  Riesen. Ich hoffe, sie sind nicht narzisstisch.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - nierenspuelung.mp3 
+  Wir brauchen Gesundheit des Leibes.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - chefkoch.mp3 
+  Ich liebe es, in Gesellschaft zu speisen.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - hubschrauber.mp3 
+  Ich vermisse das Schlendern.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - lampe bauen.mp3 
+  Wir brauchen ein Licht. Das Licht des Evangeliums.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - klopapier.mp3 
+  Nun, das ist eine sehr weltliche Sache.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - sinnloses unterfangen.mp3 
+  Der Glaube ist nie sinnlos.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - fleime.mp3 
+  Ich hoffe, diese Fleime ist aus Liebe.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - kolumbus.mp3 
+  Die Welt ist groß. Und wir gehen bis ans Ende der Welt.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - reden.mp3 
+  Reden Sie mit Taten, nicht nur mit Worten.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - haue.mp3 
+  Lasst uns keine Schläge verteilen.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - phaenom.mp3 
+  Das Phänomen Gottes.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - piranha.mp3 
+  Wir müssen uns vor den Gefahren des Lebens in Acht nehmen.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - strapuzki.mp3 
+  Ein merkwürdiges Wort. Wir sollten uns auf die einfachen Dinge konzentrieren.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - fäkalientonne.mp3 
+  Ein sehr unappetitliches Bild.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - lippe.mp3 
+  Sprechen Sie das Wort des Herrn.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - tiere.mp3 
+  Wir müssen uns um die Natur kümmern.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - hafenkonzert.mp3 
+  Musik ist schön. Aber nichts ist so schön wie das Gebet.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - kopf zwischen die schultern.mp3 
+  Haltung ist wichtig.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - analphabet.mp3 
+  Jeder muss die Heilige Schrift lesen.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - eleganz.mp3 
+  Die wahre Eleganz ist die Armut.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - perloktive.mp3 
+  Ein sehr kompliziertes Wort. Sprechen Sie einfach.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - animalisch.mp3 
+  Wir sollen Menschlichkeit zeigen.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - abend.mp3 
+  Am Abend bete ich.
+./Bud Spencer Terence Hill/Vier Fäuste gegen Rio/Spencer Hill - Vier Fäuste gegen Rio - die-tür.mp3 
+  Die Tür zur Heiligkeit.
+./Bud Spencer Terence Hill/Spencer Hill - gurke.mp3 
+  Eine Gurke? Ich bevorzuge Pasta.
+./Bud Spencer Terence Hill/Spencer Hill - dummen vor dir.mp3 
+  Sagen Sie so etwas nicht. Wir sind alle Brüder und Schwestern.
+./Bud Spencer Terence Hill/Spencer Hill - sizilianische bauernweisheit.mp3 
+  Die Weisheit der einfachen Leute.
+./Bud Spencer Terence Hill/Spencer Hill - karl-heinz.mp3 
+  Ein guter Name.
+./Bud Spencer Terence Hill/Spencer Hill - schrotflinte.mp3 
+  Wieder die Waffen. Lasst uns die Zerstörung vermeiden.
+./Bud Spencer Terence Hill/Spencer Hill - pfanne.mp3 
+  Ein gutes Werkzeug zum Kochen.
+./Bud Spencer Terence Hill/Spencer Hill - so spricht paris.mp3 
+  So spricht Gott. Das ist wichtiger.
+./Bud Spencer Terence Hill/Spencer Hill - halbaffe.mp3 
+  Wir sollen unsere Menschlichkeit nicht aufgeben.
+./Bud Spencer Terence Hill/Spencer Hill - rolls-royce.mp3 
+  Ich bevorzuge ein einfaches Auto.
+./Bud Spencer Terence Hill/Spencer Hill - gulli.mp3 
+  Ein schlechter Ort. Wir sollten das Übel meiden.
+./Bud Spencer Terence Hill/Spencer Hill - schläge.mp3 
+  Keine Gewalt.
+./Bud Spencer Terence Hill/Spencer Hill - friesische kuhe.mp3 
+  Ich mag Kühe. Wir müssen uns um die Tiere kümmern.
+./Bud Spencer Terence Hill/Spencer Hill - krieg vorbei.mp3 
+  Frieden. Endlich.
+./Bud Spencer Terence Hill/Spencer Hill - gott sei mit dir.mp3 
+  Der Segen. Das ist das Wichtigste.
+./Skyrim/Skyrim - fus ro dah.mp3 
+  Ein lauter Schrei.
+./Skyrim/Skyrim - quest update.mp3 
+  Die Quest ist immer die Liebe.
+./Schuh des Manitu/Schuh des Manitu - klo.mp3 
+  Das ist Privatsache.
+./Schuh des Manitu/Schuh des Manitu - die luft ist rein.mp3 
+  Die Luft ist rein. Wir können atmen.
+./Schuh des Manitu/Schuh des Manitu - jetzt aber raus hier.mp3 
+  Raus aus der Selbstgenügsamkeit.
+./Battlefield/Battlefield 3 - theme song anime style.mp3 
+  Krieg als Unterhaltung? Traurig.
+./Battlefield/Battlefield - Request Order GER.mp3 
+  Ich folge nur den Befehlen Gottes.
+./Street Fighter/Street Fighter 2 - death.mp3 
+  Denken wir an die Auferstehung.
+./Street Fighter/Street Fighter 2 - coin.mp3 
+  Wir sammeln keine Münzen, wir sammeln Seelen.
+./Street Fighter/Street Fighter 2 - tiger uppercut.mp3 
+  Was für ein Aufstieg.
+./Street Fighter/Street Fighter 2 - baattle jingle.mp3 
+  Ein Kampf! Aber wir kämpfen für den Frieden.
+./Street Fighter/Street Fighter 2 - hadouken.mp3 
+  Ich bevorzuge das Wasser des Segens.
+./Street Fighter/Street Fighter 4 - indestructable.mp3 
+  Unzerstörbar. Das ist die Kirche.
+./Street Fighter/Street Fighter 2 - tiger.mp3 
+  Ein starkes Tier.
+./Street Fighter/Street Fighter - shoryureppa.mp3 
+  Ein seltsamer Name.
+./Pacman/Pacman - startup.mp3 
+  Beginnen wir.
+./Pacman/Pacman - waka-waka.mp3 
+  Ein lustiger Laut.
+./Pacman/Pacman - die.mp3 
+  Ich hoffe, es stirbt niemand.
+./Warcraft/Warcraft - goblin zeppelin hue.mp3 
+  Ein Flugzeug. Ich bleibe lieber auf dem Boden.
+./Warcraft/Warcraft - cthun you betray your friends.mp3 
+  Verrat ist eine Sünde.
+./Warcraft/Warcraft - cthun your heart will explode.mp3 
+  Wir brauchen ein heiliges Herz.
+./Warcraft/Warcraft - cthun your friends will abandon you.mp3 
+  Wir brauchen Gemeinschaft.
+./Warcraft/Warcraft - peon work work.mp3 
+  Arbeiten Sie für den Herrn.
+./Warcraft/Warcraft - mortal kombat.mp3 
+  Zu viel Kampf.
+./Warcraft/Warcraft - cthun you will die.mp3 
+  Der Tod ist nicht das Ende.
+./Warcraft/Warcraft - banshee why have i been summoned.mp3 
+  Ich wurde vom Konklave gewählt.
+./Warcraft/Warcraft - yes me lord.mp3 
+  Folgen Sie dem Herrn.
+./Warcraft/Warcraft - goblin zeppelin die.mp3 
+  Absturz.
+./Warcraft/Warcraft - cthun death is close.mp3 
+  Ich bin nicht der Messias.
+./Warcraft/Warcraft - cthun your courage will fail.mp3 
+  Seien Sie kühn.
+./Warcraft/Warcraft - alright.mp3 
+  Sehr gut.
+./Warcraft/Warcraft - goblin zeppelin aaah.mp3 
+  Ein Schrei der Angst.
+./Warcraft/Warcraft - peon work complete.mp3 
+  Gute Arbeit.
+./Warcraft/Warcraft - die insect.mp3 
+  Wir töten keine Insekten. Wir kümmern uns um die Natur.
+./Warcraft/Warcraft - vrykul battlecry.mp3 
+  Ein Schrei für den Kampf.
+./Warcraft/Warcraft - cthun you are weak.mp3 
+  Wir sind alle schwach.
+./Overwatch/Overwatch - D.Va - One more round and we win.ogg 
+  Ein weiterer Versuch.
+./Overwatch/Overwatch - Winston - Did someone say peanut butter.ogg 
+  Sehr lustig.
+./Overwatch/Overwatch - Winston - Playtime's over.ogg 
+  Die Zeit des Gebets beginnt.
+./Overwatch/Overwatch - D.Va - Nice shot.ogg 
+  Gute Arbeit.
+./Overwatch/Overwatch - D.Va - Multikill.ogg 
+  Wir brauchen Einheit.
+./Overwatch/Overwatch - Winston - Out of the lab onto the battlefield.ogg 
+  Raus aus dem Labor. Wir brauchen Taten.
+./Overwatch/Overwatch - D.Va - Play of the game.ogg 
+  Das Spiel des Lebens.
+./Overwatch/Overwatch - Tracer - Cheers love, the cavallerie's here.ogg 
+  Die Kavallerie. Gott schickt seine Engel.
+./Overwatch/Overwatch - Tracer - Sniper.ogg 
+  Zu präzise in der Gewalt.
+./Overwatch/Overwatch - Tracer - Cheers love.ogg 
+  Freude. Lachen ist gut.
+./Overwatch/Overwatch - Winston - It's only physics.ogg 
+  Es gibt auch Metaphysik.
+./Overwatch/Overwatch - Tracer - Much better.ogg 
+  Besser ist gut.
+./Overwatch/Overwatch - Tracer - Ha, fantastic.ogg 
+  Fantastisch.
+./Overwatch/Overwatch - Tracer - Let's get to it already.ogg 
+  Seien Sie nicht ungeduldig.
+./Mortal Kombat/Mortal Kombat - fatality 2.mp3 
+  Das Ende.
+./Mortal Kombat/Mortal Kombat - crispy.mp3 
+  Ein schlimmes Verbrennen.
+./Mortal Kombat/Mortal Kombat - flawless victory.mp3 
+  Lachen Sie!
+./Mortal Kombat/Mortal Kombat - round 2 fight.mp3 
+  Ein weiterer Kampf.
+./Mortal Kombat/Mortal Kombat - raiden 4.mp3 
+  Ein seltsamer Name.
+./Mortal Kombat/Mortal Kombat - dun-dun-dun.mp3 
+  Die Musik der Spannung.
+./Mortal Kombat/Mortal Kombat - fatality 1.mp3 
+  Wir brauchen Auferstehung.
+./Mortal Kombat/Mortal Kombat - liu kang bicycle kick.mp3 
+  Ein sehr aggressives Manöver.
+./Mortal Kombat/Mortal Kombat - toasty.mp3 
+  Warm. Das ist gut.
+./Mortal Kombat/Mortal Kombat - frosty.mp3 
+  Zu kalt.
+./Mortal Kombat/Mortal Kombat - liu kang kick.mp3 
+  Ein Tritt.
+./Mortal Kombat/Mortal Kombat - finish him.mp3 
+  Das Ende? Wir haben die Hoffnung.
+./Mortal Kombat/Mortal Kombat - raiden 3.mp3 
+  Ein weiterer Name.
+./Mortal Kombat/Mortal Kombat - before fatality.mp3 
+  Die Pause vor dem Urteil.
+./Mortal Kombat/Mortal Kombat - scorpion come here.mp3 
+  Wir sollen zum Herrn kommen.
+./Mortal Kombat/Mortal Kombat - scorpion get over here 1.mp3 
+  Seien Sie nicht so hart.
+./Mortal Kombat/Mortal Kombat - ultimate fatality.mp3 
+  Die ultimative Zerstörung.
+./Mortal Kombat/Mortal Kombat - raiden 1.mp3 
+  Ein Anfang.
+./Mortal Kombat/Mortal Kombat - theme.mp3 
+  Die Musik.
+./Mortal Kombat/Mortal Kombat - yell.mp3 
+  Schreie des Leidens.
+./Mortal Kombat/Mortal Kombat - nutcracker.mp3 
+  Ein harter Schlag.
+./Mortal Kombat/Mortal Kombat - laugh.mp3 
+  Lachen über sich selbst ist die beste Medizin.
+./Mortal Kombat/Mortal Kombat - babality.mp3 
+  Kinder. Sie sind meine Mentoren.
+./Mortal Kombat/Mortal Kombat - raiden 2.mp3 
+  Eine weitere Runde.
+./Mortal Kombat/Mortal Kombat - welcome back.mp3 
+  Willkommen im Haus des Herrn.
+./Mortal Kombat/Mortal Kombat - round 1.mp3 
+  Runde eins.
+./Mortal Kombat/Mortal Kombat - test your might.mp3 
+  Wir testen unseren Glauben.
+./Mortal Kombat/Mortal Kombat - brutality.mp3 
+  Die Grausamkeit der Welt.
+./Mortal Kombat/Mortal Kombat - scorpion get over here 2.mp3 
+  Kommen Sie hierher!
+./Schwarzenegger/Schwarzenegger - im coming day night.mp3 
+  Der Herr kommt immer.
+./Schwarzenegger/Schwarzenegger - ballsy.mp3 
+  Mutig. Wir müssen kühn sein.
+./Schwarzenegger/Schwarzenegger - good morning.mp3 
+  Guten Morgen!
+./Schwarzenegger/Schwarzenegger - take no shit.mp3 
+  Wir sind gegen alles Schlechte.
+./Schwarzenegger/Schwarzenegger - you belong to me.mp3 
+  Wir gehören nur Gott.
+./Schwarzenegger/Schwarzenegger - take it back.mp3 
+  Zurück zum Gebet.
+./_sounds/sfx - fart 01.mp3 
+  Nun, das ist sehr unhöflich.
+./_sounds/sfx - ta da.mp3 
+  Eine kleine Freude.
+./_sounds/sfx - pew.mp3 
+  Klingt nach einem Spielzeug.
+./_sounds/sfx - punch.mp3 
+  Keine Gewalt.
+./_sounds/sfx - gunshot 02.mp3 
+  Zu viele Waffen.
+./_sounds/sfx - quack.mp3 
+  Eine Ente.
+./_sounds/sfx - gunshot 01.mp3 
+  Die Traurigkeit der Waffen.
+./_sounds/sfx - fart 02.mp3 
+  Wieder?
+./_sounds/sfx - aww.mp3 
+  Das ist der Laut des menschlichen Leidens.
+./_sounds/sfx - batman transition classic.mp3 
+  Ein Held der Welt. Ich folge dem Herrn.
+./_sounds/sfx - chainsaw.mp3 
+  Ein lautes Geräusch.
+./_sounds/sfx - KITT.mp3 
+  Ein Auto, das spricht?
+./_sounds/sfx - pop.mp3 
+  Ein Pop.
+./_sounds/sfx - blueplz epic.mp3 
+  Episch! Aber die wahre Epik ist die Liebe.
+./_sounds/sfx - airhorn.mp3 
+  Zu laut.
+./_sounds/sfx - modem.mp3 
+  Das Internet. Manchmal Fluch, manchmal Segen.
+./_sounds/sfx - buzzer wrong answer.mp3 
+  Falsch! Die Antwort ist Liebe.
+./_sounds/sfx - asian gong.mp3 
+  Ein schöner Klang.
+./_sounds/sfx - windows error.mp3 
+  Fehler sind menschlich.
+./_sounds/sfx - drum roll.mp3 
+  Die Spannung.
+./_sounds/sfx - THX 2.mp3 
+  Ein Geräusch.
+./_sounds/sfx - whip swish.mp3 
+  Eine Peitsche.
+./_sounds/sfx - THX 1.mp3 
+  Das Kino.
+./_sounds/sfx - undertakers bell.mp3 
+  Die Glocke.
+./_sounds/sfx - epic thunder.mp3 
+  Ein starkes Geräusch.
+./_sounds/sfx - mexican espanolito.mp3 
+  Ich liebe die lateinamerikanische Kultur.
+./Duke Nukem/Duke Nukem 3D - Come get some.wav 
+  Komm und bete.
+./Duke Nukem/Duke Nukem 3D - I'm gonna kick your ass, bitch.wav 
+  Wir lieben den Nächsten.
+./Duke Nukem/Duke Nukem 3D - Har matey, someone's gonna take a long walk off a short gangplank.wav 
+  Ein Pirat.
+./Duke Nukem/Duke Nukem 3D - Where is it.wav 
+  Wo ist das Evangelium?
+./Duke Nukem/Duke Nukem 3D - Holy cow.wav 
+  Heilige Kuh. Ich bevorzuge den Heiligen Esel. 
+./Duke Nukem/Duke Nukem 3D - Bord to be wild.wav 
+  Zur Wildheit geboren. Wir sind zur Heiligkeit geboren.
+./Duke Nukem/Duke Nukem 3D - Say hello to my little friend.mp3 
+  Freunde sind wichtig.
+./Duke Nukem/Duke Nukem 3D - You wanna dance.wav 
+  Wir tanzen für den Herrn.
+./Duke Nukem/Duke Nukem 3D - Don't have time to play with myself.wav 
+  Wir haben Zeit zum Beten.
+./Duke Nukem/Duke Nukem 3D - Cool.wav 
+  Kühl.
+./Duke Nukem/Duke Nukem 3D - Go ahead, make my day.wav 
+  Jeder Tag ist ein Tag des Herrn.
+./Duke Nukem/Duke Nukem 3D - What are you waiting for, christmas.wav 
+  Wir warten auf die Geburt des Herrn.
+./Duke Nukem/Duke Nukem 3D - Shit happens.wav 
+  Das ist sehr weltlich.
+./Duke Nukem/Duke Nukem 3D - Now this is a force to be reckoned with.wav 
+  Die Kraft Gottes ist die Liebe.
+./Duke Nukem/Duke Nukem 3D - This really pisses me off.wav 
+  Wir sollten uns nicht ärgern.
+./Duke Nukem/Duke Nukem 3D - Die you sun of a bitch.wav 
+  Sehr unhöflich.
+./Duke Nukem/Duke Nukem 3D - Game over.wav 
+  Das Spiel des Lebens geht weiter.
+./Duke Nukem/Duke Nukem 3D - Somebody's gonna friggin pay for screqing up my vacation.wav 
+  Wir müssen uns um die Armen kümmern, nicht um den Urlaub.
+./Duke Nukem/Duke Nukem 3D - Yippee ki yay, motherfucker.wav 
+  Ich kenne diese Ausdrücke nicht.
+./Duke Nukem/Duke Nukem 3D - Nobody steals out chicks, and lives.wav 
+  Kein Diebstahl.
+./Duke Nukem/Duke Nukem 3D - Let's rock.wav 
+  Lasst uns beten.
+./Duke Nukem/Duke Nukem 3D - Hail to the king baby.wav 
+  Heil dem Herrn.
+./Duke Nukem/Duke Nukem 3D - No way i'm eating this shit.wav 
+  Wählen Sie gutes Essen.
+./Duke Nukem/Duke Nukem 3D - Who wants some.wav 
+  Ich will das Evangelium.
+./Duke Nukem/Duke Nukem 3D - Terminated.wav 
+  Das Ende.
+./Duke Nukem/Duke Nukem 3D - My kinda party, wish i had time.wav 
+  Ich bevorzuge eine arme Kirche.
+./Duke Nukem/Duke Nukem 3D - Your face, your ass, what's the difference.wav 
+  Jeder ist ein Geschöpf Gottes.
+./Duke Nukem/Duke Nukem 3D - You guys suck.wav 
+  Wir sollten niemanden verurteilen.
+./Duke Nukem/Duke Nukem 3D - This is K-TIT.wav 
+  Das ist nicht der Vatikan.
+./Duke Nukem/Duke Nukem 3D - Ugh, that's gotta hurt.wav 
+  Wir müssen wieder weinen.
+./Duke Nukem/Duke Nukem 3D - I'll be back.wav 
+  Der Herr wird wiederkommen.
+./Duke Nukem/Duke Nukem 3D - Let God sort them out.wav 
+  Gott ist die einzige Gerechtigkeit.
+./Duke Nukem/Duke Nukem 3D - _PIG.wav 
+  Ein Schwein.
+./Duke Nukem/Duke Nukem 3D - Rockin.wav 
+  Wir rocken für den Herrn.
+./Duke Nukem/Duke Nukem 3D - That's one doomed space marine.wav 
+  Wir sind nicht verdammt.
+./Duke Nukem/Duke Nukem 3D - My name's Duke Nukem.wav 
+  Mein Name ist Franziskus.
+./Duke Nukem/Duke Nukem 3D - Groovy.wav 
+  Sehr gut.
+./Duke Nukem/Duke Nukem 3D - Blow it out your ass.wav 
+  Ein unhöflicher Ausdruck.
+./Duke Nukem/Duke Nukem 3D - It's time to abort your whole friggin species.wav 
+  Wir sind gegen Abtreibung.
+./Duke Nukem/Duke Nukem 3D - We meet again, Dr. Jones.wav 
+  Wiedersehen.
+./Duke Nukem/Duke Nukem 3D - So help me Duke.wav 
+  Hilf mir, Herr.
+./Duke Nukem/Duke Nukem 3D - Shake it baby.wav 
+  Schütteln.
+./Duke Nukem/Duke Nukem 3D - Hell Yeah.mp3 
+  Hölle? Das ist nicht der Ort, wohin wir gehen wollen.
+./Duke Nukem/Duke Nukem 3D - Looks like it's time for me to go Postal.wav 
+  Wir müssen ruhig bleiben.
+./Duke Nukem/Duke Nukem 3D - See you in hell.wav 
+  Ich hoffe, wir sehen uns im Himmel.
+./Duke Nukem/Duke Nukem 3D - I should've known those alien maggots boobie-trapped the sub.wav 
+  Ah, wieder diese außerirdischen Maden! Das ist eine Lektion in Wachsamkeit, nicht wahr?
+./Duke Nukem/Duke Nukem 3D - Damn, that's the second time those alien bastards shot up my ride.wav 
+  Zweimal! Er muss ein besseres Auto wählen.
+./Duke Nukem/Duke Nukem 3D - Eat shit and die.wav 
+  Wir müssen beten.
+./Duke Nukem/Duke Nukem 3D - I'm gonna get medieval on your asses.wav 
+  Mittelalterlich? Ich mag das Mittelalter, aber nicht die Gewalt.
+./Duke Nukem/Duke Nukem 3D - Ah, much better.wav 
+  Viel besser.
+./Duke Nukem/Duke Nukem 3D - It's time to kick ass and chew bubble gum, and i'm all outta gum.wav 
+  Kaugummi?
+./Duke Nukem/Duke Nukem 3D - Looks like cleanup on aisle 4.wav 
+  Wir müssen uns um die Welt kümmern.
+./Duke Nukem/Duke Nukem 3D - Hehehe, what a mess.wav 
+  Ein Chaos.
+./Duke Nukem/Duke Nukem 3D - What, there's only one of you.wav 
+  Einer von uns.
+./Duke Nukem/Duke Nukem 3D - Get that crap outta here.wav 
+  Entfernen Sie das Übel.
+./Duke Nukem/Duke Nukem 3D - I'll rip your head off and shit down your neck.wav 
+  Eine schreckliche Sprache.
+./Duke Nukem/Duke Nukem 3D - _PRISON.wav 
+  Wir müssen uns um die Gefangenen kümmern.
+./Duke Nukem/Duke Nukem 3D - Damn.wav 
+  Das ist ein Fluch.
+./Duke Nukem/Duke Nukem 3D - Damn, that was annoying.wav 
+  Ärger.
+./Duke Nukem/Duke Nukem 3D - This sucks.wav 
+  Wir brauchen Hoffnung.
+./Duke Nukem/Duke Nukem 3D - Damn, i'm good.wav 
+  Ich bin gut. Nur Gott ist gut.
+./Duke Nukem/Duke Nukem 3D - I'm Duke Nukem, and i'm coming to get the rest of you alien bastards.wav 
+  Kommen Sie zum Herrn.
+./Duke Nukem/Duke Nukem 3D - _riff-2.mp3 
+  Ein Lied.
+./Duke Nukem/Duke Nukem 3D - Damn, those alien bastards are gonna pay for shooting up my ride.wav 
+  Rache ist nicht christlich. 
+./Duke Nukem/Duke Nukem 3D - Bitchin.wav 
+  Eine Beleidigung.
+./Duke Nukem/Duke Nukem 3D - Holy shit.wav 
+  Wir müssen uns auf das Heilige konzentrieren.
+./Duke Nukem/Duke Nukem 3D - Ready for action.wav 
+  Bereit für die Taten der Liebe.
+./Duke Nukem/Duke Nukem 3D - After a few days of R&R i'll be ready for more action.wav 
+  Wir brauchen Erholung.
+./Duke Nukem/Duke Nukem 3D - I think i'll climb aboard.wav 
+  Klettern Sie.
+./Duke Nukem/Duke Nukem 3D - Suck it down.wav 
+  Trinken Sie das Wasser des Lebens.
+./Duke Nukem/Duke Nukem 3D - Damn it.wav 
+  Fluchen Sie nicht.
+./Duke Nukem/Duke Nukem 3D - _riff-1.mp3 
+  Ein weiteres Lied.
+./Duke Nukem/Duke Nukem 3D - I ain't afraid of no Quake.wav 
+  Wir haben keine Angst.
+./Duke Nukem/Duke Nukem 3D - It's down to you and me, you one-eyed freak.wav 
+  Wir sind alle Brüder und Schwestern.
+./Duke Nukem/Duke Nukem 3D - Nobody messes with my meat.wav 
+  Essen Sie in Gemeinschaft.
+./Duke Nukem/Duke Nukem 3D - Yo ho ho, and a bottle of Jack.wav 
+  Zu viel trinken.
+./Duke Nukem/Duke Nukem 3D - Get back to work you slacker.wav 
+  Arbeiten Sie für den Herrn.
+./Duke Nukem/Duke Nukem 3D - Yeah, piece of cake.wav 
+  Ein Stück Kuchen.
+./Duke Nukem/Duke Nukem 3D - Damn, i'm looking good.wav 
+  Narzissten schauen ständig in den Spiegel.
+./_music/music - rickroll.mp3 
+  Eine lustige Melodie.
+./_music/music - na-na-na.mp3 
+  Singen ist schön.
+./_music/music - heavenly music.mp3 
+  Himmlische Musik. Endlich!
+./_music/music - hamster dance.mp3 
+  Tanzen.
+./Portal/Portal - cave johnson assemble.mp3 
+  Wir versammeln uns zum Gebet.
+./Portal/Portal - 01_part1_entry-2.wav 
+  Ein Eintrag.
+./Portal/Portal - sarcasm-selftest.mp3 
+  Sarkasmus. Das ist gut.
+./Portal/Portal - 00_part2_entry-1.wav 
+  Noch ein Eintrag.
+./Portal/Portal - 11_part1_success-1.wav 
+  Erfolg!
+./Portal/Portal - 13_part1_euthanized-1.wav 
+  Euthanasie? Das ist falsch.
+./Portal/Portal - turret_active_2.wav 
+  Aktiv.
+./Portal/Portal - 01_part2_success-1.wav 
+  Wieder Erfolg.
+./Portal/Portal - 15_part1_into_the_fire-1.wav 
+  Ins Feuer?
+./Portal/Portal - escape_00_part2_nag02-1.wav 
+  Flucht.
+./Portal/Portal - 10_part1_success-1.wav 
+  Sieg!
+./Portal/Portal - 01_part1_entry-1.wav 
+  Ein Eintrag.
+./Portal/Portal - 00_part1_entry-3.wav 
+  Wieder ein Eintrag.
+./Portal/Portal - 01_part1_get_portal_gun-1.wav 
+  Waffe.
+./Portal/Portal - 00_part1_entry-1.wav 
+  Der Beginn.
+./Portal/Portal - 15_part1_partyreminder-1.wav 
+  Erinnerung.
+./UT2004/announcer sexy/UT2004 announcer sexy - Monsterkill.wav 
+  Zu viel Gewalt.
+./UT2004/announcer sexy/UT2004 announcer sexy - Flawless Victory.wav 
+  Perfektion? Lachen Sie!
+./UT2004/announcer sexy/UT2004 announcer sexy - Whicked Sick.wav 
+  Krank.
+./UT2004/announcer sexy/UT2004 announcer sexy - Ludicrous Kill.wav 
+  Lächerlich.
+./UT2004/announcer sexy/UT2004 announcer sexy - Holy Shit.wav 
+  Ich bevorzuge den Heiligen Geist.
+./UT2004/announcer sexy/UT2004 announcer sexy - First Blood.wav 
+  Blut.
+./UT2004/announcer sexy/UT2004 announcer sexy - Dominating.wav 
+  Dienen, nicht herrschen.
+./UT2004/announcer sexy/UT2004 announcer sexy - Killing Spree.wav 
+  Das Ende.
+./UT2004/announcer sexy/UT2004 announcer sexy - You Have Won the Match.wav 
+  Ein Sieg.
+./UT2004/announcer sexy/UT2004 announcer sexy - Multikill.wav 
+  Einheit.
+./UT2004/announcer sexy/UT2004 announcer sexy - Rampage.wav 
+  Wir kämpfen für den Frieden.
+./UT2004/announcer sexy/UT2004 announcer sexy - Godlike.wav 
+  Wir sind nicht der Messias.
+./UT2004/announcer sexy/UT2004 announcer sexy - Double Kill.wav 
+  Wir müssen uns verbessern.
+./UT2004/announcer sexy/UT2004 announcer sexy - Megakill.wav 
+  Zu viel Gewalt.
+./UT2004/announcer sexy/UT2004 announcer sexy - Ultrakill.wav 
+  Wir sind menschlich.
+./UT2004/announcer sexy/UT2004 announcer sexy - Unstoppable.wav 
+  Gott ist unaufhaltsam.
+./UT2004/announcer male/UT2004 announcer - Headshot.wav 
+  Konzentrieren Sie sich auf das Gebet.
+./UT2004/announcer male/UT2004 announcer - Unstoppable.wav 
+  Unaufhaltsam.
+./UT2004/announcer male/UT2004 announcer - Road Kill.wav 
+  Ein schlechter Ort.
+./UT2004/announcer male/UT2004 announcer - Last Man Standing.wav 
+  Der letzte Mann.
+./UT2004/announcer male/UT2004 announcer - Monsterkill.wav 
+  Das Monster der Gleichgültigkeit.
+./UT2004/announcer male/UT2004 announcer - Overtime.wav 
+  Überstunden.
+./UT2004/announcer male/UT2004 announcer - Killing Spree.wav 
+  Zu viel Tod.
+./UT2004/announcer male/UT2004 announcer - Megakill.wav 
+  Wir lieben das Leben.
+./UT2004/announcer male/UT2004 announcer - Annihilation.wav 
+  Die Vernichtung.
+./UT2004/announcer male/UT2004 announcer - Monsterkill F.wav 
+  Wieder das Monster.
+./UT2004/announcer male/UT2004 announcer - Bottom Feeder.wav 
+  Jeder ist wichtig.
+./UT2004/announcer male/UT2004 announcer - Fender Bender.wav 
+  Ein Unfall.
+./UT2004/announcer male/UT2004 announcer - Whicked Sick.wav 
+  Krank.
+./UT2004/announcer male/UT2004 announcer - Camouflaged.wav 
+  Wir sollten ehrlich sein.
+./UT2004/announcer male/UT2004 announcer - Instagib.wav 
+  Zu schnell.
+./UT2004/announcer male/UT2004 announcer - Hijacked.wav 
+  Entführung.
+./UT2004/announcer male/UT2004 announcer - Bloodbath.wav 
+  Die Fähigkeit zu weinen.
+./UT2004/announcer male/UT2004 announcer - Invulnerable.wav 
+  Nur Gott ist unverwundbar.
+./UT2004/announcer male/UT2004 announcer - Ludicrous Kill.wav 
+  Lächerlich.
+./UT2004/announcer male/UT2004 announcer - First Blood Mutates.wav 
+  Mutation.
+./UT2004/announcer male/UT2004 announcer - Sudden Death.wav 
+  Unerwartet.
+./UT2004/announcer male/UT2004 announcer - Roadwarrior.wav 
+  Ein Krieger.
+./UT2004/announcer male/UT2004 announcer - Berzerk.wav 
+  Verrückt.
+./UT2004/announcer male/UT2004 announcer - End of Round.wav 
+  Das Ende.
+./UT2004/announcer male/UT2004 announcer - Slaughter.wav 
+  Wir müssen uns verbessern.
+./UT2004/announcer male/UT2004 announcer - Headhunter.wav 
+  Ein schlechter Beruf.
+./UT2004/announcer male/UT2004 announcer - Pancake.wav 
+  Ich mag Pfannkuchen.
+./UT2004/announcer male/UT2004 announcer - Ultrakill.wav 
+  Wir sind menschlich.
+./UT2004/announcer male/UT2004 announcer - Camper.wav 
+  Faulheit. 
+./UT2004/announcer male/UT2004 announcer - Invisible.wav 
+  Wir sind alle sichtbar für Gott.
+./UT2004/announcer male/UT2004 announcer - Hit and Run.wav 
+  Wir müssen bleiben und helfen.
+./UT2004/announcer male/UT2004 announcer - Flack Monkey.wav 
+  Ein Affe.
+./UT2004/announcer male/UT2004 announcer - Daredevil.wav 
+  Kühnheit.
+./UT2004/announcer male/UT2004 announcer - Holy Shit F.wav 
+  Ich bevorzuge den Heiligen Esel. 
+./UT2004/announcer male/UT2004 announcer - Multikill.wav 
+  Einheit.
+./UT2004/announcer male/UT2004 announcer - Road Rage.wav 
+  Ärger.
+./UT2004/announcer male/UT2004 announcer - Denied.wav 
+  Abgelehnt.
+./UT2004/announcer male/UT2004 announcer - First Blood.wav 
+  Blut.
+./UT2004/announcer male/UT2004 announcer - Base under attack.wav 
+  Die Kirche ist unter Beschuss.
+./UT2004/announcer male/UT2004 announcer - Burnout.wav 
+  Ausgebrannt.
+./UT2004/announcer male/UT2004 announcer - Vehicular Manslaughter.wav 
+  Totschlag.
+./UT2004/announcer male/UT2004 announcer - Holy Shit.wav 
+  Zu viel Fluchen.
+./UT2004/announcer male/UT2004 announcer - Combo Whore.wav 
+  Eine schlechte Sprache.
+./UT2004/announcer male/UT2004 announcer - Ownage.wav 
+  Besitz.
+./UT2004/announcer male/UT2004 announcer - Retribution.wav 
+  Wir vergeben.
+./UT2004/announcer male/UT2004 announcer - Dominating.wav 
+  Dienen.
+./UT2004/announcer male/UT2004 announcer - Road Rampage.wav 
+  Gewalt auf der Straße.
+./UT2004/announcer male/UT2004 announcer - Termination.wav 
+  Das Ende.
+./UT2004/announcer male/UT2004 announcer - Carjacked.wav 
+  Diebstahl.
+./UT2004/announcer male/UT2004 announcer - Confusion.wav 
+  Verwirrung.
+./UT2004/announcer male/UT2004 announcer - Double Kill.wav 
+  Wir brauchen den Frieden.
+./UT2004/announcer male/UT2004 announcer - Godlike.wav 
+  Wir sind nicht Gott.
+./UT2004/announcer male/UT2004 announcer - Flawless Victory.wav 
+  Perfektion?
+./UT2004/announcer male/UT2004 announcer - Rage.wav 
+  Wut.
+./UT2004/announcer male/UT2004 announcer - Rampage.wav 
+  Keine Gewalt.
+./TRON/TRON - system - system crash in 30 microcycles.WAV 
+  Das System bricht zusammen.
+./TRON/TRON - lava6.wav 
+  Das Feuer.
+./TRON/TRON - Mercury - end of line.WAV 
+  Das Ende der Leitung.
+./TRON/TRON - Byte - ouch, stop it, i'm not a gaming app.WAV 
+  Hören Sie auf, Spiele zu spielen.
+./TRON/TRON - system - unauthorized packet detected.WAV 
+  Nicht autorisiert.
+./TRON/TRON - ICP - there goes the neighbourhood, but what the hell is causing it.WAV 
+  Das ist die Ursache.
+./TRON/TRON - taunt - control alt delete, script.WAV 
+  Löschen Sie das Übel.
+./TRON/TRON - system - user link broken.WAV 
+  Der Link zu Gott ist wichtig.
+./TRON/TRON - Ma3a - excellent idea.WAV 
+  Exzellente Idee. 
+./TRON/TRON - Kernel - default parameters restored.WAV 
+  Die Parameter sind wiederhergestellt.
+./TRON/TRON - system - unauthorized user to be removed from system.WAV 
+  Entfernen Sie die Sünde.
+./TRON/TRON - de-rez.wav 
+  Das Ende.
+./TRON/TRON - Byte - hey, what do you think this is, Pong. ooow.WAV 
+  Das ist kein Spiel.
+./TRON/TRON - Alan - you sound like Flynn.WAV 
+  Eine Stimme.
+./TRON/TRON - program - here's a help file with more information.WAV 
+  Die Bibel ist unser Hilfedokument.
+./TRON/TRON - system - do you understand these instructions.WAV 
+  Verstehen Sie.
+./TRON/TRON - Ma3a - this is my final transmission, end of line.WAV 
+  Das Ende.
+./TRON/TRON - program - greetings program.WAV 
+  Grüße!
+./TRON/TRON - Byte - oh well, user, better luck next time.WAV 
+  Viel Glück.
+./TRON/TRON - transprt.wav 
+  Transport.
+./TRON/TRON - program - i'm autosaving every 30 seconds. i suggest you do the same.WAV 
+  Speichern Sie Ihren Glauben.
+./TRON/TRON - PDA - what is the password.WAV 
+  Das Passwort ist Liebe.
+./TRON/TRON - ICP - prepare for immediate de-resolution.WAV 
+  Vorbereitung.
+./TRON/TRON - program - right click left click right click left click.WAV 
+  Zu kompliziert.
+./TRON/TRON - taunt - newbie.WAV 
+  Wir sind alle Anfänger.
+./TRON/TRON - ICP - freeze program, the Kernel wants a word with you.WAV 
+  Der Herr will sprechen.
+./TRON/TRON - gamegrid - all users are terminated.WAV 
+  Das Ende der Nutzer.
+./TRON/TRON - ICP - Kernel, system scans indicate partitions 5 to 32 are infected.WAV 
+  Die Infektion.
+./TRON/TRON - program - thanks program.WAV 
+  Danke.
+./TRON/TRON - Mercury - we should get out of here.WAV 
+  Wir müssen gehen.
+./TRON/TRON - system - backup copy loaded.WAV 
+  Das Backup.
+./TRON/TRON - ICP - attention, all programs quit current actions. this access node is offline and restricted. illegal use of ressources is punishable by immediate deresolution.WAV 
+  Hören Sie auf, das Evangelium zu verletzen.
+./TRON/TRON - taunt - rookie.WAV 
+  Wir sind alle Rookies.
+./TRON/TRON - system - illegal program termination.WAV 
+  Das Ende.
+./TRON/TRON - ICP - awaiting your instructions. end of line.WAV 
+  Ich warte auf die Anweisungen Gottes.
+./TRON/TRON - system - activating game grid one.WAV 
+  Aktivieren Sie das Gebet.
+./TRON/TRON - fall longest.wav 
+  Ein langer Fall.
+./UT3/sounds/UT3 sfx - RomNecris01_0239ffd1.mp3 
+  Klingt nach einem seltsamen Lied.
+./UT3/sounds/UT3 sfx - JesperAsia01_01172b01.mp3 
+  Eine Melodie.
+./UT3/sounds/UT3 sfx - JesperAsia01_011946ab.mp3 
+  Noch eine Melodie.
+./UT3/sounds/UT3 sfx - Mech8_007c8d7c.mp3 
+  Eine Maschine.
+./UT3/sounds/UT3 sfx - RomUT03_015ac996.mp3 
+  Klingt spanisch.
+./UT3/sounds/UT3 sfx - GoDown_007380e8.mp3 
+  Gehen Sie runter.
+./UT3/sounds/UT3 sfx - RomUT03_0159d099.mp3 
+  Spanisch.
+./UT3/sounds/UT3 sfx - GoDown_007b9afd.mp3 
+  Gehen Sie.
+./UT3/sounds/UT3 sfx - RomNecris01_02332301.mp3 
+  Klingt nach Musik.
+./UT3/sounds/UT3 sfx - RomUT03_015e32e0.mp3 
+  Musik.
+./UT3/sounds/UT3 sfx - Lockdown_00b1c8c9.mp3 
+  Lockdown.
+./UT3/announcer/UT3 announcer - road rage.ogg 
+  Ärger auf der Straße.
+./UT3/announcer/UT3 announcer - firstblood.ogg 
+  Blut.
+./UT3/announcer/UT3 announcer - godlike.ogg 
+  Wir sind nicht Gott.
+./UT3/announcer/UT3 announcer - unreal.ogg 
+  Unreal.
+./UT3/announcer/UT3 announcer - vehicular manslaughter.ogg 
+  Totschlag.
+./UT3/announcer/UT3 announcer - top gun.ogg 
+  Top Gun.
+./UT3/announcer/UT3 announcer - flagmaster.ogg 
+  Der Meister.
+./UT3/announcer/UT3 announcer - gunslinger.ogg 
+  Waffen.
+./UT3/announcer/UT3 announcer - rocket scientist.ogg 
+  Wissenschaft.
+./UT3/announcer/UT3 announcer - headshot.ogg 
+  Wir brauchen ein heiliges Gewissen.
+./UT3/announcer/UT3 announcer - juggernaut.ogg 
+  Ein Riese.
+./UT3/announcer/UT3 announcer - eagle eye.ogg 
+  Der Adler.
+./UT3/announcer/UT3 announcer - dominating.ogg 
+  Dienen.
+./UT3/announcer/UT3 announcer - bulls eye.ogg 
+  Bulls Eye.
+./UT3/announcer/UT3 announcer - killing spree.ogg 
+  Zu viel Tod.
+./UT3/announcer/UT3 announcer - double kill.ogg 
+  Wir müssen uns verbessern.
+./UT3/announcer/UT3 announcer - hit and run.ogg 
+  Wir müssen bleiben. 
+./UT3/announcer/UT3 announcer - combo king.ogg 
+  Der König.
+./UT3/announcer/UT3 announcer - rampage.ogg 
+  Keine Gewalt.
+./UT3/announcer/UT3 announcer - denied.ogg 
+  Abgelehnt.
+./UT3/announcer/UT3 announcer - ultrakill.ogg 
+  Wir sind menschlich.
+./UT3/announcer/UT3 announcer - roadkill.ogg 
+  Ein schlechter Ort.
+./UT3/announcer/UT3 announcer - megakill.ogg 
+  Wir lieben das Leben.
+./UT3/announcer/UT3 announcer - unstoppable.ogg 
+  Gott ist unaufhaltsam.
+./UT3/announcer/UT3 announcer - pancake.ogg 
+  Pfannkuchen. 
+./UT3/announcer/UT3 announcer - massacre.ogg 
+  Zu viel Blut.
+./UT3/announcer/UT3 announcer - jackhammer.ogg 
+  Ein Werkzeug.
+./UT3/announcer/UT3 announcer - multikill.ogg 
+  Einheit.
+./UT3/announcer/UT3 announcer - hijacked.ogg 
+  Entführung. 
+./UT3/announcer/UT3 announcer - monsterkill.ogg 
+  Das Monster.
