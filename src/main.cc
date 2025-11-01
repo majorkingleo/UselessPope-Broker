@@ -313,7 +313,7 @@ int main( int argc, char **argv )
 
 			FetchAnswers answers {};
 
-			for( const auto & file : *o_enqueue_animation.getValues() ) {
+			for( const auto & file : *o_pope_answers_file.getValues() ) {
 				if( !std::filesystem::exists(file) ) {
 					throw STDERR_EXCEPTION( Tools::format( "file '%s' does not exists", file ) );
 				}
