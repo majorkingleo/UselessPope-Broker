@@ -21,6 +21,8 @@ broker_SOURCES=\
 		src/FetchAnimation.cc \
 		src/FetchAnswers.h \
 		src/FetchAnswers.cc \
+		src/FetchStats.h \
+		src/FetchStats.cc \
 		tools_config.h
 		
 AM_CPPFLAGS = -I$(top_srcdir)/tools \

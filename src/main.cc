@@ -20,6 +20,7 @@
 #include "PlayAnimation.h"
 #include "FetchAnimation.h"
 #include "FetchAnswers.h"
+#include "FetchStats.h"
 
 using namespace Tools;
 using namespace std::chrono_literals;
@@ -204,6 +205,11 @@ int main( int argc, char **argv )
 		o_pope_answers_file.setRequired(false);
 		o_pope_answers_file.setMinValues(1);
 		arg.addOptionR( &o_pope_answers_file );
+
+		Arg::FlagOption o_master_stats("master-stats");
+		o_master_stats.setDescription("calculate statistics server");
+		o_master_stats.setRequired(false);
+		arg.addOptionR( &o_master_stats );
 
 		DetectLocale dl;
 
@@ -401,6 +407,24 @@ int main( int argc, char **argv )
 
 			threads.emplace_back([&fetch]() {
 				fetch.run();
+			});
+
+			while (!SDL_QuitRequested()) {
+				SDL_Delay(250);
+			}
+
+			APP.quit_request = true;
+
+			for( auto & t : threads ) {
+				t.join();
+			}
+		}
+
+		if( o_master_stats.isSet() ) {
+			FetchStats 	stats {};
+
+			threads.emplace_back([&stats]() {
+				stats.run();
 			});
 
 			while (!SDL_QuitRequested()) {
