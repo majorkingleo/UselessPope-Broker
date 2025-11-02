@@ -164,9 +164,8 @@ void FetchStats::fetch_mostplayed_sound()
 	std::wstring max_played_file {};
 
 	for( auto & p : data ) {
-		CPPDEBUG( Tools::wformat( L"%s: %d", p.first, p.second) );
-
 		if( p.second > max ) {
+			CPPDEBUG( Tools::wformat( L"%s: %d", p.first, p.second) );
 			max_played_file = p.first;
 			max = p.second;
 		}
