@@ -97,3 +97,8 @@ STATS FetchStats::fetch_stats( const std::string & key )
 
 	return stats;
 }
+
+void FetchStats::fetch_top_user_actions()
+{
+
+}

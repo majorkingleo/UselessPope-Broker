@@ -11,6 +11,8 @@ public:
 	static constexpr const char* RPMS 				= "umdrehungen";
 	static constexpr const char* FREQUENCY 			= "frequenz";
 	static constexpr const char* TOP_USER_1 		= "user1";
+	static constexpr const char* TOP_USER_2 		= "user2";
+	static constexpr const char* TOP_USER_3 		= "user3";
 	static constexpr const char* TOTAL_ACTIONS 		= "totalactions";
 
 public:
@@ -20,6 +22,7 @@ public:
 
 protected:
     void fetch_total_actions();
+    void fetch_top_user_actions();
     unsigned count_table( const BASE & table );
     STATS fetch_stats( const std::string & key );
 };
