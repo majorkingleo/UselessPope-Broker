@@ -98,6 +98,11 @@ static void insert_default_values()
 	insert_config( "animation1", "/home/papst/UselessPope-raspi/python/pope_red_eyes.py" );
 
 	insert_stats( "mostplayedsound", "" );
+	insert_stats( "active-leds-data", "0123" );
+	insert_stats( "umdrehungen", "1234" );
+	insert_stats( "frequenz", "73" );
+	insert_stats( "user1", "der.mucki (97 actions)");
+	insert_stats( "totalactions", "666" );
 }
 
 int main( int argc, char **argv )
