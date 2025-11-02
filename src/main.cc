@@ -52,7 +52,7 @@ void insert_TABLE( const std::string & name, const std::string & key, const std:
 {
 	TABLE existing_table;
 
-	CPPDEBUG( Tools::format( "%s key=%s value=%s", key.c_str(), value.c_str() ) );
+	CPPDEBUG( Tools::format( "%s key=%s value=%s", name, key.c_str(), value.c_str() ) );
 
 	if( StdSqlSelect( *APP.db,
 			Tools::format( "select %%%s from %s where `%s` = '%s' ",
@@ -98,12 +98,12 @@ static void insert_default_values()
 	insert_config( "animation0", "/home/papst/UselessPope-raspi/python/pope_default_rotating_color_wheel.py" );
 	insert_config( "animation1", "/home/papst/UselessPope-raspi/python/pope_red_eyes.py" );
 
-	insert_stats( "mostplayedsound", "" );
-	insert_stats( "active-leds-data", "0123" );
-	insert_stats( "umdrehungen", "1234" );
-	insert_stats( "frequenz", "73" );
-	insert_stats( "user1", "der.mucki (97 actions)");
-	insert_stats( "totalactions", "666" );
+	insert_stats( FetchStats::MOST_PLAYED_SOUND, "" );
+	insert_stats( FetchStats::ACTIVE_LEDS_DATA, "0123" );
+	insert_stats( FetchStats::RPMS, "1234" );
+	insert_stats( FetchStats::FREQUENCY, "73" );
+	insert_stats( FetchStats::TOP_USER_1, "der.mucki (97 actions)");
+	insert_stats( FetchStats::TOTAL_ACTIONS, "666" );
 }
 
 int main( int argc, char **argv )
