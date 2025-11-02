@@ -142,10 +142,11 @@ DBErg<DBRowList> Database::update( const std::string &table,
 
   for( unsigned i = 0; i < row.names.size(); i++ )
     {
-      if( i )
-	sql += ",\n";
+      if( i ) {
+    	  sql += ",\n";
+      }
 
-      sql += row.names[i] + "='" + row.values[i] + '\'';
+      sql += "`" + row.names[i] + "`='" + row.values[i] + '\'';
     }
 
   sql += extra;
