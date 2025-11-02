@@ -93,6 +93,14 @@ public:
 			return m_key_words;
 		}
 
+		const auto & get_title() const {
+			return m_song_title;
+		}
+
+		const auto & get_answer() const {
+			return m_answer;
+		}
+
 		static std::set<std::wstring> get_key_words_from_title( const std::wstring & title );
 
 		static std::wstring strip_file_name( const std::wstring & file_name );
@@ -116,4 +124,5 @@ public:
     void get_reaction_from_song( const std::string & file );
 
 protected:
+    void fetch_last_played_chunks();
 };

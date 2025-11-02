@@ -5,8 +5,13 @@
 #include <format.h>
 #include <string_utils.h>
 #include <utf8_util.h>
+#include <chrono>
+#include "App.h"
+#include <thread>
 
 using namespace Tools;
+using namespace std::chrono_literals;
+using namespace std::chrono;
 
 FetchAnswers::Reaction::Reaction( const std::wstring & song_title )
 : m_song_title( song_title )
@@ -87,7 +92,28 @@ FetchAnswers::FetchAnswers()
 
 void FetchAnswers::run()
 {
+	const auto timeout = 1min;
+	auto deadline = steady_clock::now();
 
+    while( !APP.quit_request ) {
+
+    	if( steady_clock::now() > deadline ) {
+    		APP.db->commit();
+
+    		try {
+
+    			fetch_last_played_chunks();
+
+    		} catch( const std::exception & error ) {
+    			CPPDEBUG( Tools::format( "Error: %s", error.what() ));
+    		}
+
+    		APP.db->commit();
+    		deadline = steady_clock::now() + timeout;
+    	}
+
+        std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
+    }
 }
 
 void FetchAnswers::fetch_from_file( const std::string & file_name )
@@ -134,7 +160,33 @@ void FetchAnswers::fetch_from_file( const std::string & file_name )
 
 void FetchAnswers::get_reaction_from_song( const std::string & file )
 {
-	Reaction reaction( Utf8Util::utf8toWString( file ) );
+	Reaction current_title( Utf8Util::utf8toWString( file ) );
+	const KeyWords & current_title_key_words = current_title.get_key_words();
 
+	unsigned best_match {};
+	std::vector<Reaction*> best_reactions {};
+
+	for( Reaction & reaction : m_reactions ) {
+		unsigned match = reaction.get_key_words().match( current_title_key_words );
+
+		if( match > best_match ) {
+			best_reactions.clear();
+			best_match = match;
+			best_reactions.push_back( &reaction );
+		} else if( match == best_match ) {
+			best_reactions.push_back( &reaction );
+		}
+	}
+
+	for( Reaction *reaction : best_reactions ) {
+		CPPDEBUG( Tools::wformat( L"(%d) song: %s, pope reacts: %s",
+				best_match,
+				current_title.get_title(),
+				reaction->get_answer() ) );
+	}
+}
+
+void FetchAnswers::fetch_last_played_chunks()
+{
 
 }
