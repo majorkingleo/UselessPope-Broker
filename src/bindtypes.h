@@ -271,6 +271,7 @@ public:
 	}
 };
 
+
 class CONFIG : public BASE
 {
 public:
@@ -286,6 +287,27 @@ public:
 	}
 
 	CONFIG & operator=( const CONFIG & b )
+	{
+	  BASE::operator=(b);
+	  return *this;
+	}
+};
+
+class STATS : public BASE
+{
+public:
+	DBTypeVarChar	key;
+	DBTypeVarChar	value;
+
+public:
+	STATS();
+	STATS( const STATS & b )
+	: STATS()
+	{
+		BASE::operator=(b);
+	}
+
+	STATS & operator=( const STATS & b )
 	{
 	  BASE::operator=(b);
 	  return *this;

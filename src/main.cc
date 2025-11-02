@@ -44,36 +44,51 @@ static void usage( const std::string & prog )
 				<< prog << "\n";
 }
 
-static void insert_config( const std::string & key, const std::string & value )
-{
-	CONFIG existing_cfg;
+namespace {
 
-	CPPDEBUG( Tools::format( "insert_config key=%s value=%s", key.c_str(), value.c_str() ) );
+template <class TABLE>
+void insert_TABLE( const std::string & name, const std::string & key, const std::string & value )
+{
+	TABLE existing_table;
+
+	CPPDEBUG( Tools::format( "%s key=%s value=%s", key.c_str(), value.c_str() ) );
 
 	if( StdSqlSelect( *APP.db,
 			Tools::format( "select %%%s from %s where `%s` = '%s' ",
-					existing_cfg.get_table_name(),
-					existing_cfg.get_table_name(),
-					existing_cfg.key.get_name(),
+					existing_table.get_table_name(),
+					existing_table.get_table_name(),
+					existing_table.key.get_name(),
 					escape( key ) ),
-			DBInList<DBBindType>() >> existing_cfg ) > 0 ) {
+			DBInList<DBBindType>() >> existing_table ) > 0 ) {
 		return;
 	}
 
-	CONFIG cfg {};
-	cfg.setHist( BASE::HIST_TYPE::HIST_AN, "broker" );
-	cfg.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
-	cfg.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
+	TABLE table {};
+	table.setHist( BASE::HIST_TYPE::HIST_AN, "broker" );
+	table.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
+	table.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
 
-	cfg.key = key;
-	cfg.value = value;
+	table.key = key;
+	table.value = value;
 
-	if( !StdSqlInsert( *APP.db, cfg ) ) {
+	if( !StdSqlInsert( *APP.db, table ) ) {
 		CPPDEBUG( Tools::format( "cannot insert into DB: %s", APP.db->get_error() ) );
 	}
 
 	APP.db->commit();
 }
+
+static void insert_config( const std::string & key, const std::string & value )
+{
+	insert_TABLE<CONFIG>( "config", key, value );
+}
+
+static void insert_stats( const std::string & key, const std::string & value )
+{
+	insert_TABLE<STATS>( "stats", key, value );
+}
+
+} // namespace
 
 static void insert_default_values()
 {
@@ -81,6 +96,8 @@ static void insert_default_values()
 	insert_config( "current_animation", "0" );
 	insert_config( "animation0", "/home/papst/UselessPope-raspi/python/pope_default_rotating_color_wheel.py" );
 	insert_config( "animation1", "/home/papst/UselessPope-raspi/python/pope_red_eyes.py" );
+
+	insert_stats( "mostplayedsound", "" );
 }
 
 int main( int argc, char **argv )

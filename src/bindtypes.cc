@@ -128,6 +128,14 @@ CONFIG::CONFIG()
 
 }
 
+STATS::STATS()
+: BASE( "STATS", this ),
+  key( this, "key", CONFIG_KEY_LEN ),
+  value( this, "value", CONFIG_VALUE_LEN )
+{
+
+}
+
 
 PLAY_QUEUE_ANIMATION::PLAY_QUEUE_ANIMATION()
   : PLAY_QUEUE_CHUNKS()
@@ -252,6 +260,7 @@ std::string create_sql( bool add_drop_table )
   BUTTON_QUEUE				button_queue;
   USERS_ACTION				users_action;
   CONFIG					config;
+  STATS						stats;
 
   P_PLAY_QUEUE_CHUNKS 		p_play_queue_chunks;
   P_PLAY_QUEUE_MUSIC 		p_play_queue_music;
@@ -266,6 +275,7 @@ std::string create_sql( bool add_drop_table )
   s += create_sql_statement( &button_queue,				forkeys, add_drop_table );
   s += create_sql_statement( &users_action,				forkeys, add_drop_table );
   s += create_sql_statement( &config,					forkeys, add_drop_table );
+  s += create_sql_statement( &stats,					forkeys, add_drop_table );
 
   s += create_sql_statement( &p_play_queue_chunks, 		forkeys, add_drop_table );
   s += create_sql_statement( &p_play_queue_music,		forkeys, add_drop_table );
