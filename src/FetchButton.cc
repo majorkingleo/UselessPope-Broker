@@ -121,6 +121,7 @@ void FetchButton::fetch_buttons()
 			P_BUTTON_QUEUE p_button_queue{};
 			p_button_queue = *pbq;
 			p_button_queue.setHist( BASE::HIST_TYPE::HIST_LO, pua->username.data );
+			p_button_queue.idx.data = 0;
 
 			if( !StdSqlInsert( *APP.db, p_button_queue ) ) {
 				CPPDEBUG( Tools::format( "SqlError: %s", APP.db->get_error()));
@@ -154,6 +155,7 @@ void FetchButton::fetch_buttons()
 				P_BUTTON_QUEUE p_button_queue{};
 				p_button_queue = *pbq;
 				p_button_queue.setHist( BASE::HIST_TYPE::HIST_LO, pua->username.data );
+				p_button_queue.idx.data = 0;
 
 				if( !StdSqlInsert( *APP.db, p_button_queue ) ) {
 					CPPDEBUG( Tools::format( "SqlError: %s", APP.db->get_error()));
