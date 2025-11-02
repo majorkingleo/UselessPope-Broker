@@ -65,7 +65,8 @@ PLAY_QUEUE_CHUNKS::PLAY_QUEUE_CHUNKS()
 {}
 
 P_PLAY_QUEUE_CHUNKS::P_PLAY_QUEUE_CHUNKS()
-: PLAY_QUEUE_CHUNKS()
+: PLAY_QUEUE_CHUNKS(),
+  sermon_reaction_idx( this, "sermon_reaction_idx" )
 {
 	set_table_name( "P_PLAY_QUEUE_CHUNKS" );
 }
@@ -147,6 +148,14 @@ P_PLAY_QUEUE_ANIMATION::P_PLAY_QUEUE_ANIMATION()
   : PLAY_QUEUE_ANIMATION()
 {
 	set_table_name( "P_PLAY_QUEUE_ANIMATION" );
+}
+
+SERMON::SERMON()
+: BASE( "SERMON", this ),
+  action( this, "action", SERMON_ACTION_LEN ),
+  reaction( this, "reaction", SERMON_REACTION_LEN )
+{
+
 }
 
 static std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > & forkeys, bool add_drop_table )
@@ -261,6 +270,7 @@ std::string create_sql( bool add_drop_table )
   USERS_ACTION				users_action;
   CONFIG					config;
   STATS						stats;
+  SERMON					sermon;
 
   P_PLAY_QUEUE_CHUNKS 		p_play_queue_chunks;
   P_PLAY_QUEUE_MUSIC 		p_play_queue_music;
@@ -276,6 +286,7 @@ std::string create_sql( bool add_drop_table )
   s += create_sql_statement( &users_action,				forkeys, add_drop_table );
   s += create_sql_statement( &config,					forkeys, add_drop_table );
   s += create_sql_statement( &stats,					forkeys, add_drop_table );
+  s += create_sql_statement( &sermon,					forkeys, add_drop_table );
 
   s += create_sql_statement( &p_play_queue_chunks, 		forkeys, add_drop_table );
   s += create_sql_statement( &p_play_queue_music,		forkeys, add_drop_table );

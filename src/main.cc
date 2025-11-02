@@ -339,6 +339,8 @@ int main( int argc, char **argv )
 			}
 		}
 
+		bool does_something = false;
+
 		if( o_pope_answers_file.isSet() ) {
 
 			FetchAnswers answers {};
@@ -350,9 +352,23 @@ int main( int argc, char **argv )
 
 				answers.fetch_from_file( file );
 			}
-		}
 
-		bool does_something = false;
+			threads.emplace_back([&answers]() {
+				answers.run();
+			});
+
+			while (!SDL_QuitRequested()) {
+				SDL_Delay(250);
+			}
+
+			APP.quit_request = true;
+
+			for( auto & t : threads ) {
+				t.join();
+			}
+
+			return 0;
+		}
 
 		if( o_listen.isSet() ) {
 			ButtonListener listener( cfg_net.UDPListenPort );
@@ -369,7 +385,6 @@ int main( int argc, char **argv )
 		if( o_master.isSet() ) {
 			PlaySound play {};
 			FetchSound fetch( play );
-			//ButtonListener listener( cfg_net.UDPListenPort );
 
 			threads.emplace_back([&play]() {
 				play.run();
@@ -379,10 +394,6 @@ int main( int argc, char **argv )
 				fetch.run();
 			});
 
-			/*
-			threads.emplace_back([&listener]() {
-				listener.run();
-			});*/
 
 			while (!SDL_QuitRequested()) {
 				SDL_Delay(250);
@@ -393,6 +404,8 @@ int main( int argc, char **argv )
 			for( auto & t : threads ) {
 				t.join();
 			}
+
+			return 0;
 		}
 
 		if( o_master_animations.isSet() ) {
@@ -401,11 +414,6 @@ int main( int argc, char **argv )
 
 			PlayAnimation 	play {cfg_animations};
 			FetchAnimation 	fetch( play );
-/*
-			threads.emplace_back([&play]() {
-				play.run();
-			});
-*/
 
 			threads.emplace_back([&fetch]() {
 				fetch.run();
@@ -420,6 +428,8 @@ int main( int argc, char **argv )
 			for( auto & t : threads ) {
 				t.join();
 			}
+
+			return 0;
 		}
 
 		if( o_master_stats.isSet() ) {
@@ -438,6 +448,8 @@ int main( int argc, char **argv )
 			for( auto & t : threads ) {
 				t.join();
 			}
+
+			return 0;
 		}
 
 	} catch( std::exception & err ) {

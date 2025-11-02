@@ -8,6 +8,7 @@
 #include <chrono>
 #include "App.h"
 #include <thread>
+#include "bindtypes.h"
 
 using namespace Tools;
 using namespace std::chrono_literals;
@@ -188,5 +189,18 @@ void FetchAnswers::get_reaction_from_song( const std::string & file )
 
 void FetchAnswers::fetch_last_played_chunks()
 {
+	static std::string sql = "SELECT `file` FROM `P_PLAY_QUEUE_CHUNKS`"
+							 " order by idx desc ";
 
+	DBTypeVarChar 	file  {};
+	DBInLimit		limit {};
+
+
+	while( StdSqlSelect( *APP.db,
+					  sql,
+					  DBInList<DBType>() >> file, limit ) > 0 ) {
+
+		get_reaction_from_song( file.data );
+		break;
+	}
 }

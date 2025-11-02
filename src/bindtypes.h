@@ -14,6 +14,8 @@ const unsigned IP_ADDRESS_LEN=15;
 const unsigned ACTION_LEN=50;
 const unsigned CONFIG_KEY_LEN=50;
 const unsigned CONFIG_VALUE_LEN=FILE_LEN;
+const unsigned SERMON_ACTION_LEN = 1024;
+const unsigned SERMON_REACTION_LEN = 1024;
 
 struct JANEIN
 {
@@ -147,6 +149,8 @@ class PLAY_QUEUE_CHUNKS : public BASE
 
 class P_PLAY_QUEUE_CHUNKS : public PLAY_QUEUE_CHUNKS
 {
+  DBTypeInt	sermon_reaction_idx;
+
  public:
   P_PLAY_QUEUE_CHUNKS();
 
@@ -308,6 +312,27 @@ public:
 	}
 
 	STATS & operator=( const STATS & b )
+	{
+	  BASE::operator=(b);
+	  return *this;
+	}
+};
+
+class SERMON : public BASE
+{
+public:
+	DBTypeVarChar	action;
+	DBTypeVarChar	reaction;
+
+public:
+	SERMON();
+	SERMON( const SERMON & b )
+	: SERMON()
+	{
+		BASE::operator=(b);
+	}
+
+	SERMON & operator=( const SERMON & b )
 	{
 	  BASE::operator=(b);
 	  return *this;
