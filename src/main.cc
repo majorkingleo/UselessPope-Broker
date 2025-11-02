@@ -103,6 +103,8 @@ static void insert_default_values()
 	insert_stats( FetchStats::RPMS, "1234" );
 	insert_stats( FetchStats::FREQUENCY, "73" );
 	insert_stats( FetchStats::TOP_USER_1, "der.mucki (97 actions)");
+	insert_stats( FetchStats::TOP_USER_2, "der.mucki (97 actions)");
+	insert_stats( FetchStats::TOP_USER_3, "der.mucki (97 actions)");
 	insert_stats( FetchStats::TOTAL_ACTIONS, "666" );
 }
 

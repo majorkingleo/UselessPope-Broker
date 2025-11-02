@@ -271,12 +271,12 @@ void DBInArrayList::prepare()
   resize( types.size() * a_size );
   
   for( unsigned i = 0; i < types.size(); i++ )
-    {
-      for( unsigned j = 0, count = i; j < types[i].size(); j++, count += types.size() )
-	{	  
-	  operator[](count) = types[i][j];
-	}
-    }
+  {
+	  for( unsigned j = 0, count = i; j < types[i].size(); j++, count += types.size() )
+	  {
+		  operator[](count) = types[i][j];
+	  }
+  }
 }
 
 static int StdSqlSelect( Database &db, std::string sql, DBInArrayList &in, DBInLimit * limit )

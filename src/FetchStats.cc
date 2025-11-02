@@ -27,6 +27,7 @@ void FetchStats::run()
 
     		try {
     			fetch_total_actions();
+    			fetch_top_user_actions();
 
     		} catch( const std::exception & error ) {
     			CPPDEBUG( Tools::format( "Error: %s", error.what() ));
@@ -100,5 +101,37 @@ STATS FetchStats::fetch_stats( const std::string & key )
 
 void FetchStats::fetch_top_user_actions()
 {
+	static std::string sql = "SELECT count(hist_an_user), hist_an_user FROM `P_BUTTON_QUEUE` "
+			" where hist_an_user not like '' "
+			" group by hist_an_user order by 1";
 
+	DBTypeInt 		count {};
+	DBTypeVarChar 	user  {};
+	DBInLimit		limit {};
+	const unsigned 	TOP_USER_COUNT = 3;
+
+	int res = 0;
+
+	std::vector<std::pair<unsigned,std::string>> data {};
+
+	while( StdSqlSelect( *APP.db,
+					  sql,
+					  DBInList<DBType>() >> count >> user, limit ) > 0 ) {
+		CPPDEBUG( Tools::format( "%s (%d actions)", user.data, count.data));
+		data.emplace_back( count.data, user.data );
+	}
+
+	for( unsigned i = 0; i < TOP_USER_COUNT && i < data.size(); ++i ) {
+		STATS stats = fetch_stats( Tools::format( "user%d", i+1) );
+		stats.value.data = Tools::format( "%s (%d actions)", user.data, count.data);
+		stats.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
+
+		std::string where = Tools::format( " where idx='%d'", stats.idx.data );
+
+		StdSqlUpdate( *APP.db, stats, where );
+
+		APP.db->commit();
+	}
+
+	APP.db->commit();
 }

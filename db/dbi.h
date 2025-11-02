@@ -419,7 +419,7 @@ class DBInArrayList : public std::vector<DBBindType*>
 
     for( unsigned i = 0; i < array_size; i++ )
       {
-	bt[i] = &a[i];
+    	bt[i] = &a[i];
       }
 
     types.push_back( bt );
@@ -431,8 +431,9 @@ class DBInArrayList : public std::vector<DBBindType*>
 
   const DBBindType* get_type( unsigned i ) const 
     { 
-      if( types.size() > i && types[i].size() ) 
-	return types[i][0]; 
+      if( types.size() > i && types[i].size() ) {
+    	  return types[i][0];
+      }
       return 0;
     }
 
