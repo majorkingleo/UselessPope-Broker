@@ -8,6 +8,7 @@
 
 class FetchAnswers : public BasicThread
 {
+public:
 	class KeyWords
 	{
 	public:
@@ -94,9 +95,11 @@ class FetchAnswers : public BasicThread
 
 		static std::set<std::wstring> get_key_words_from_title( const std::wstring & title );
 
+		static std::wstring strip_file_name( const std::wstring & file_name );
+
 	private:
-		void strip_file_extension( std::wstring & file_name ) const;
-		void strip_file_name_from_path( std::wstring & file_name ) const;
+		static void strip_file_extension( std::wstring & file_name );
+		static void strip_file_name_from_path( std::wstring & file_name );
 	};
 
 private:

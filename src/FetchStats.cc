@@ -4,6 +4,9 @@
 #include <thread>
 #include <CpputilsDebug.h>
 #include <format.h>
+#include "FetchAnswers.h"
+#include <utf8_util.h>
+#include <map>
 
 using namespace std::chrono_literals;
 using namespace std::chrono;
@@ -28,6 +31,7 @@ void FetchStats::run()
     		try {
     			fetch_total_actions();
     			fetch_top_user_actions();
+    			fetch_mostplayed_sound();
 
     		} catch( const std::exception & error ) {
     			CPPDEBUG( Tools::format( "Error: %s", error.what() ));
@@ -132,6 +136,49 @@ void FetchStats::fetch_top_user_actions()
 
 		APP.db->commit();
 	}
+
+	APP.db->commit();
+}
+
+
+void FetchStats::fetch_mostplayed_sound()
+{
+	static std::string sql = "SELECT `file` FROM `P_PLAY_QUEUE_CHUNKS`";
+
+	DBTypeVarChar 	file  {};
+	DBInLimit		limit {};
+
+	int res = 0;
+
+	std::map<std::wstring,unsigned> data {};
+
+	while( StdSqlSelect( *APP.db,
+					  sql,
+					  DBInList<DBType>() >> file, limit ) > 0 ) {
+
+		std::wstring res = FetchAnswers::Reaction::strip_file_name(Utf8Util::utf8toWString(file.data));
+		data[res]++;
+	}
+
+	unsigned max = 0;
+	std::wstring max_played_file {};
+
+	for( auto & p : data ) {
+		CPPDEBUG( Tools::wformat( L"%s: %d", p.first, p.second) );
+
+		if( p.second > max ) {
+			max_played_file = p.first;
+			max = p.second;
+		}
+	}
+
+	STATS stats = fetch_stats( MOST_PLAYED_SOUND );
+	stats.value.data = Utf8Util::wStringToUtf8(max_played_file);
+	stats.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
+
+	std::string where = Tools::format( " where idx='%d'", stats.idx.data );
+
+	StdSqlUpdate( *APP.db, stats, where );
 
 	APP.db->commit();
 }

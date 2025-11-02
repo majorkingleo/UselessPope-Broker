@@ -23,6 +23,7 @@ public:
 protected:
     void fetch_total_actions();
     void fetch_top_user_actions();
+    void fetch_mostplayed_sound();
     unsigned count_table( const BASE & table );
     STATS fetch_stats( const std::string & key );
 };

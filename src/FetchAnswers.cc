@@ -42,7 +42,7 @@ std::set<std::wstring> FetchAnswers::Reaction::get_key_words_from_title( const s
 	return key_words;
 }
 
-void FetchAnswers::Reaction::strip_file_extension( std::wstring & file_name ) const
+void FetchAnswers::Reaction::strip_file_extension( std::wstring & file_name )
 {
 	std::wstring::size_type pos = file_name.find_last_of(L"/.");
 
@@ -57,7 +57,7 @@ void FetchAnswers::Reaction::strip_file_extension( std::wstring & file_name ) co
 	file_name = file_name.substr( 0, pos );
 }
 
-void FetchAnswers::Reaction::strip_file_name_from_path( std::wstring & file_name ) const
+void FetchAnswers::Reaction::strip_file_name_from_path( std::wstring & file_name )
 {
 	std::wstring::size_type pos = file_name.find_last_of(L"/");
 
@@ -68,6 +68,15 @@ void FetchAnswers::Reaction::strip_file_name_from_path( std::wstring & file_name
 	file_name = file_name.substr( pos + 1 );
 
 	file_name = strip( file_name, L"/");
+}
+
+std::wstring FetchAnswers::Reaction::strip_file_name( const std::wstring & file_name )
+{
+	std::wstring ret = file_name;
+	strip_file_extension( ret );
+	strip_file_name_from_path( ret );
+
+	return ret;
 }
 
 FetchAnswers::FetchAnswers()
