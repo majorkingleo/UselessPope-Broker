@@ -5,6 +5,7 @@
 #include "format.h"
 #include <iostream>
 #include <string_utils.h>
+#include <CpputilsDebug.h>
 
 #ifdef TOOLS_USE_DB
 
@@ -146,10 +147,12 @@ DBErg<DBRowList> Database::update( const std::string &table,
     	  sql += ",\n";
       }
 
-      sql += "`" + row.names[i] + "`='" + row.values[i] + '\'';
+      sql += "`" + row.names[i] + "`='" + escape( row.values[i] ) + '\'';
     }
 
   sql += extra;
+
+  //CPPDEBUG( Tools::format( "Update: %s", sql ) );
 
   return exec( sql );
 }
