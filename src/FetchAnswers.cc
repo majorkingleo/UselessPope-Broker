@@ -200,7 +200,7 @@ std::optional<SERMON> FetchAnswers::get_reaction_from_song( const std::string & 
 	sermon.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
 	sermon.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
 	sermon.action.data = Tools::format( "%s hat %s abgespielt.", user, Utf8Util::wStringToUtf8( current_title.get_title() ) );
-	sermon.reaction.data = Tools::format( "Der Papst meint: %s", Utf8Util::wStringToUtf8( reaction->get_answer() ) );
+	sermon.reaction.data = Tools::format( "Der Papst meint dazu: %s", Utf8Util::wStringToUtf8( reaction->get_answer() ) );
 
 	return sermon;
 }
