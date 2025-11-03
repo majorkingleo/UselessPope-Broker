@@ -5,6 +5,8 @@
 #include "IsOneOf.h"
 #include <vector>
 #include <algorithm>
+#include "bindtypes.h"
+#include <random>
 
 class FetchAnswers : public BasicThread
 {
@@ -113,6 +115,9 @@ public:
 private:
 	const IsOneOf is_space{ L" \t\r\n" };
 
+	std::random_device rd; 	// obtain a random number from hardware
+	std::mt19937 gen{rd()}; // seed the generator
+
 	std::vector<Reaction> m_reactions;
 
 public:
@@ -121,7 +126,7 @@ public:
     void run() override;
 
     void fetch_from_file( const std::string & file );
-    void get_reaction_from_song( const std::string & file );
+    std::optional<SERMON> get_reaction_from_song( const std::string & file, const std::string & user );
 
 protected:
     void fetch_last_played_chunks();

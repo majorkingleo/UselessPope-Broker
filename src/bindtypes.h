@@ -149,10 +149,17 @@ class PLAY_QUEUE_CHUNKS : public BASE
 
 class P_PLAY_QUEUE_CHUNKS : public PLAY_QUEUE_CHUNKS
 {
+public:
   DBTypeInt	sermon_reaction_idx;
 
  public:
   P_PLAY_QUEUE_CHUNKS();
+
+  P_PLAY_QUEUE_CHUNKS( const P_PLAY_QUEUE_CHUNKS & b )
+  : P_PLAY_QUEUE_CHUNKS()
+  {
+	  BASE::operator=(b);
+  }
 
   P_PLAY_QUEUE_CHUNKS & operator=( const PLAY_QUEUE_CHUNKS & b )
 	{

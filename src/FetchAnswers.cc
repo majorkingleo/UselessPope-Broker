@@ -8,7 +8,8 @@
 #include <chrono>
 #include "App.h"
 #include <thread>
-#include "bindtypes.h"
+#include <list>
+#include <stderr_exception.h>
 
 using namespace Tools;
 using namespace std::chrono_literals;
@@ -159,7 +160,7 @@ void FetchAnswers::fetch_from_file( const std::string & file_name )
 	}
 }
 
-void FetchAnswers::get_reaction_from_song( const std::string & file )
+std::optional<SERMON> FetchAnswers::get_reaction_from_song( const std::string & file, const std::string & user )
 {
 	Reaction current_title( Utf8Util::utf8toWString( file ) );
 	const KeyWords & current_title_key_words = current_title.get_key_words();
@@ -179,28 +180,75 @@ void FetchAnswers::get_reaction_from_song( const std::string & file )
 		}
 	}
 
+	if( best_reactions.empty() ) {
+		return {};
+	}
+
 	for( Reaction *reaction : best_reactions ) {
 		CPPDEBUG( Tools::wformat( L"(%d) song: %s, pope reacts: %s",
 				best_match,
 				current_title.get_title(),
 				reaction->get_answer() ) );
 	}
+
+	std::uniform_int_distribution<> distr(0, best_reactions.size()-1);
+
+	Reaction *reaction = best_reactions.at(distr(gen));
+
+	SERMON sermon {};
+	sermon.setHist( BASE::HIST_TYPE::HIST_AN, "broker" );
+	sermon.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
+	sermon.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
+	sermon.action.data = Tools::format( "%s hat %s abgespielt.", user, Utf8Util::wStringToUtf8( current_title.get_title() ) );
+	sermon.reaction.data = Tools::format( "Der Papst meint: %s", Utf8Util::wStringToUtf8( reaction->get_answer() ) );
+
+	return sermon;
 }
 
 void FetchAnswers::fetch_last_played_chunks()
 {
-	static std::string sql = "SELECT `file` FROM `P_PLAY_QUEUE_CHUNKS`"
+	static std::string sql = "SELECT %P_PLAY_QUEUE_CHUNKS FROM `P_PLAY_QUEUE_CHUNKS`"
+							 " where `sermon_reaction_idx` = 0 "
+							 " and `hist_an_zeit` >= NOW() - INTERVAL 10 MINUTE "
 							 " order by idx desc ";
 
-	DBTypeVarChar 	file  {};
-	DBInLimit		limit {};
+	std::list<std::pair<P_PLAY_QUEUE_CHUNKS,SERMON>> sermons;
 
+	{
+		P_PLAY_QUEUE_CHUNKS chunk {};
+		DBInLimit		limit {};
 
-	while( StdSqlSelect( *APP.db,
-					  sql,
-					  DBInList<DBType>() >> file, limit ) > 0 ) {
+		while( StdSqlSelect( *APP.db,
+						  sql,
+						  DBInList<DBBindType>() >> chunk, limit ) > 0 ) {
 
-		get_reaction_from_song( file.data );
-		break;
+			auto o_sermon = get_reaction_from_song( chunk.file.data, chunk.hist_an_user.data );
+
+			if( !o_sermon ) {
+				continue;
+			}
+
+			sermons.emplace_back( std::move(chunk) , std::move(*o_sermon) );
+		}
+	}
+
+	for( auto & p : sermons )
+	{
+		P_PLAY_QUEUE_CHUNKS & chunk = p.first;
+		SERMON 				& sermon = p.second;
+
+		if( !StdSqlInsert( *APP.db, sermon ) ) {
+			throw STDERR_EXCEPTION( Tools::format( "StdInsert failed. SqlError: %s", APP.db->get_error()) );
+		}
+
+		chunk.sermon_reaction_idx.data = APP.db->get_insert_id();
+
+		chunk.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
+
+		if( !StdSqlUpdate( *APP.db, chunk, Tools::format( " where %s = %d", chunk.idx.get_name(), chunk.idx.data ) ) ) {
+			throw STDERR_EXCEPTION( Tools::format( "StdUpdate failed. SqlError: %s", APP.db->get_error()) );
+		}
+
+		APP.db->commit();
 	}
 }
