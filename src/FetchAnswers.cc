@@ -160,8 +160,25 @@ void FetchAnswers::fetch_from_file( const std::string & file_name )
 	}
 }
 
+const std::wstring & FetchAnswers::get_random_pope_reaction_text()
+{
+	static std::vector<std::wstring> pope_reaction_text {
+		{ L"Der Papst meint dazu" },
+		{ L"Johannes Paul II denkt sich" },
+		{ L"Der Papst überlegt" }
+	};
+
+	static std::uniform_int_distribution<> distr(0, pope_reaction_text.size()-1);
+
+	const std::wstring & reaction_text = pope_reaction_text.at(distr(gen));
+
+	return reaction_text;
+}
+
 std::optional<SERMON> FetchAnswers::get_reaction_from_song( const std::string & file, const std::string & user )
 {
+
+
 	Reaction current_title( Utf8Util::utf8toWString( file ) );
 	const KeyWords & current_title_key_words = current_title.get_key_words();
 
@@ -195,12 +212,17 @@ std::optional<SERMON> FetchAnswers::get_reaction_from_song( const std::string & 
 
 	Reaction *reaction = best_reactions.at(distr(gen));
 
+	const std::wstring & reaction_text = get_random_pope_reaction_text();
+
+
 	SERMON sermon {};
 	sermon.setHist( BASE::HIST_TYPE::HIST_AN, "broker" );
 	sermon.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
 	sermon.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
 	sermon.action.data = Tools::format( "%s hat %s abgespielt.", user, Utf8Util::wStringToUtf8( current_title.get_title() ) );
-	sermon.reaction.data = Tools::format( "Der Papst meint dazu: %s", Utf8Util::wStringToUtf8( reaction->get_answer() ) );
+	sermon.reaction.data = Tools::format( "%s: %s",
+			Utf8Util::wStringToUtf8( reaction_text ),
+			Utf8Util::wStringToUtf8( reaction->get_answer() ) );
 
 	return sermon;
 }

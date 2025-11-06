@@ -130,4 +130,5 @@ public:
 
 protected:
     void fetch_last_played_chunks();
+    const std::wstring & get_random_pope_reaction_text();
 };
