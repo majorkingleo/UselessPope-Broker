@@ -107,7 +107,8 @@ void FetchStats::fetch_top_user_actions()
 {
 	static std::string sql = "SELECT count(hist_an_user), hist_an_user FROM `P_BUTTON_QUEUE` "
 			" where hist_an_user not like '' "
-			" group by hist_an_user order by 1";
+			" group by hist_an_user "
+			" order by 1 desc";
 
 	DBTypeInt 		count {};
 	DBTypeVarChar 	user  {};
@@ -127,7 +128,7 @@ void FetchStats::fetch_top_user_actions()
 
 	for( unsigned i = 0; i < TOP_USER_COUNT && i < data.size(); ++i ) {
 		STATS stats = fetch_stats( Tools::format( "user%d", i+1) );
-		stats.value.data = Tools::format( "%s (%d actions)", user.data, count.data);
+		stats.value.data = Tools::format( "%s (%d actions)", data[i].second, data[i].first);
 		stats.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
 
 		std::string where = Tools::format( " where idx='%d'", stats.idx.data );
