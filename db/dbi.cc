@@ -115,8 +115,9 @@ const DBType* DBBindType::get_cell_by_name( const std::string &name ) const
 {
   for( unsigned i = 0; i < type_list.size(); i++ )
     {
-      if( name == type_list[i]->get_name() )
-	return type_list[i];
+      if( name == type_list[i]->get_name() ) {
+	      return type_list[i];
+      }
     }
 
   return 0;
@@ -134,6 +135,22 @@ bool DBBindType::load_from_db( const std::string &name, const std::string &data 
 
   return false;
 }
+
+  DBBindType & DBBindType::operator=( const DBBindType & t )
+  {
+    // Do exactly nothing. Addresses are still the same.
+
+	  for( unsigned int i = 0; i < type_list.size(); i++ )
+		{
+      const DBType* cell = t.get_cell_by_name( type_list[i]->get_name() );
+
+      if( cell ) {
+		    type_list[i]->load_from_db( cell->save_to_db() );
+      }
+		}
+
+    return *this;
+  }
 
 static int StdSqlSelect( Database &db, const std::string &sql, DBInList<DBType> &in, DBInLimit *limit )
 {

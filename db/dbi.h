@@ -87,18 +87,8 @@ class DBBindType
 
   std::vector<std::string> get_values() const;
 
-  DBBindType & operator=( const DBBindType & t )
-    {
-      // Do exactly nothing. Addresses are still the same.
-
-	  for( unsigned int i = 0; i < type_list.size(); i++ )
-		{
-		  type_list[i]->load_from_db( t.get_cell_by_name( type_list[i]->get_name() )->save_to_db() );
-		}
-
-      return *this;
-    }
-
+  DBBindType & operator=( const DBBindType & t );
+  
   const std::string & get_table_name() const { return table_name; }
   
   const std::vector<DBType*> & get_types() const { return type_list; }
