@@ -95,6 +95,7 @@ static void insert_default_values()
 {
 	insert_config( "brightness", "0.02" );
 	insert_config( "current_animation", "0" );
+	insert_config( "fog", "0" );
 	insert_config( "animation0", "/home/papst/UselessPope-raspi/python/pope_default_rotating_color_wheel.py" );
 	insert_config( "animation1", "/home/papst/UselessPope-raspi/python/pope_red_eyes.py" );
 
@@ -278,8 +279,6 @@ int main( int argc, char **argv )
 					continue;
 				}
 			}
-
-			insert_default_values();
 		}
 
 		if( o_enqueue_chunk.isSet() ) {
@@ -383,6 +382,8 @@ int main( int argc, char **argv )
 		}
 
 		if( o_master.isSet() ) {
+			insert_default_values();
+
 			PlaySound play {};
 			FetchSound fetch( play );
 
