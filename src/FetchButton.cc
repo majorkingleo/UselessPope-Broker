@@ -98,7 +98,10 @@ void FetchButton::fetch_buttons()
 
 			std::string file;
 
-			if( std::filesystem::exists( audio_random_file ) ) {
+			if( std::filesystem::exists( pbq->file.data ) ) {
+				file = pbq->file.data;
+			}
+			else if( std::filesystem::exists( audio_random_file ) ) {
 				file = audio_random_file;
 			} else if( std::filesystem::exists( audio_main_file ) ) {
 				file = audio_main_file;
