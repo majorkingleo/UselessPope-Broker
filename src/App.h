@@ -8,8 +8,7 @@
 struct App
 {
 	std::atomic<bool> 					quit_request 		{false};
-	std::shared_ptr<Tools::Database> 	db {};
-
+	Tools::ThreadedDatabase 			db {};
 	std::function<void()> 				reconnect_db {};
 };
 

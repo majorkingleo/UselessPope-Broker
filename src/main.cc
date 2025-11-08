@@ -260,11 +260,11 @@ int main( int argc, char **argv )
 		while( !APP.db ) {
 
 			APP.reconnect_db = [&cfg_db]() {
-				APP.db = std::make_shared<Database>( cfg_db.Host,
-													cfg_db.UserName,
-													cfg_db.Password,
-													cfg_db.Instance,
-													Database::DB_MYSQL );
+				APP.db.connect( cfg_db.Host,
+								cfg_db.UserName,
+								cfg_db.Password,
+								cfg_db.Instance,
+								Database::DB_MYSQL );
 			};
 
 			APP.reconnect_db();
@@ -274,7 +274,7 @@ int main( int argc, char **argv )
 					throw STDERR_EXCEPTION( Tools::format( "cannot connect to database: '%s'", APP.db->get_error()));
 				} else {
 					CPPDEBUG( Tools::format( "cannot connect to database: '%s' retrying...", APP.db->get_error()) );
-					APP.db.reset();
+					APP.db.dispose();
 					std::this_thread::sleep_for(500ms);
 					continue;
 				}
@@ -388,10 +388,12 @@ int main( int argc, char **argv )
 			FetchSound fetch( play );
 
 			threads.emplace_back([&play]() {
+				auto token = APP.db.get_dispose_token();
 				play.run();
 			});
 
 			threads.emplace_back([&fetch]() {
+				auto token = APP.db.get_dispose_token();
 				fetch.run();
 			});
 
@@ -417,6 +419,7 @@ int main( int argc, char **argv )
 			FetchAnimation 	fetch( play );
 
 			threads.emplace_back([&fetch]() {
+				auto token = APP.db.get_dispose_token();
 				fetch.run();
 			});
 
@@ -437,6 +440,7 @@ int main( int argc, char **argv )
 			FetchStats 	stats {};
 
 			threads.emplace_back([&stats]() {
+				auto token = APP.db.get_dispose_token();
 				stats.run();
 			});
 

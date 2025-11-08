@@ -174,4 +174,36 @@ DBErg<DBRowList> Database::select( const std::string &table, const DBRow &which,
   return exec( sql );
 }
 
+std::shared_ptr<Database> & ThreadedDatabase::at()
+{
+	auto lock = std::scoped_lock( m_tex );
+
+	auto & db = m_instances[std::this_thread::get_id()];
+
+	if( !db ) {
+		CPPDEBUG( Tools::format( "creating instance for id: %d", std::this_thread::get_id() ) );
+		db = std::make_shared<Database>( m_host, m_user, m_passwd, m_instance, m_type );
+	}
+
+	return db;
+}
+
+void ThreadedDatabase::dispose()
+{
+	CPPDEBUG( Tools::format( "disposing instance %d", std::this_thread::get_id() ) );
+	auto lock = std::scoped_lock( m_tex );
+	m_instances.erase(std::this_thread::get_id());
+}
+
+bool  ThreadedDatabase::operator!()
+{
+	auto lock = std::scoped_lock( m_tex );
+
+	if( m_instances.empty() ) {
+		return true;
+	}
+
+	return !at()->valid();
+}
+
 #endif

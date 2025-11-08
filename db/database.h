@@ -3,12 +3,17 @@
 
 #ifdef TOOLS_USE_DB
 
+#include <thread>
+#include <map>
+#include <memory>
+#include <mutex>
+
 namespace Tools {
 
 class Database
 {
  private:
-  DB *db;
+  DB *db = nullptr;
   std::string sql;
   std::string err;
 
@@ -74,6 +79,100 @@ class Database
 
  private:
   std::string create_values_list( const std::string &table, const std::vector<std::string> &names );
+};
+
+class ThreadedDatabase
+{
+public:
+	class DisposeToken
+	{
+	private:
+		 ThreadedDatabase *m_db;
+
+	public:
+		 DisposeToken() = delete;
+
+		 DisposeToken( ThreadedDatabase & db )
+		 : m_db( &db )
+		 {}
+
+		 DisposeToken( DisposeToken && other )
+		 : m_db( other.m_db )
+		 {
+			 other.m_db = nullptr;
+		 }
+
+		 ~DisposeToken()
+		 {
+			 if( m_db ) {
+				 m_db->dispose();
+			 }
+		 }
+	};
+
+private:
+	std::string m_host;
+	std::string m_user;
+	std::string m_passwd;
+	std::string m_instance;
+	unsigned 	m_type {};
+
+	std::map<std::thread::id,std::shared_ptr<Database>> m_instances;
+
+	std::recursive_mutex m_tex {};
+
+public:
+	ThreadedDatabase() = default;
+	ThreadedDatabase( const ThreadedDatabase & other ) = delete;
+
+	ThreadedDatabase( const std::string & host,
+		    		  const std::string & user,
+					  const std::string & passwd,
+					  const std::string & instance,
+					  unsigned type )
+	: m_host( host ),
+	  m_user( user ),
+	  m_passwd( passwd ),
+	  m_instance( instance ),
+	  m_type( type )
+	{}
+
+	ThreadedDatabase & operator=( const ThreadedDatabase & other ) = delete;
+
+	void connect( const std::string & host,
+		    		  const std::string & user,
+					  const std::string & passwd,
+					  const std::string & instance,
+					  unsigned type )
+	{
+		auto lock = std::scoped_lock( m_tex );
+
+		m_host = host;
+		m_user = user;
+		m_passwd = passwd;
+		m_instance = instance;
+		m_type = type;
+
+		m_instances.clear();
+	}
+
+	bool operator!();
+
+	Database & operator*() {
+		return *at();
+	}
+
+	std::shared_ptr<Database> & operator->() {
+		return at();
+	}
+
+	std::shared_ptr<Database> & at();
+
+	void dispose();
+
+	DisposeToken get_dispose_token() {
+		return DisposeToken( *this );
+	}
 };
 
 } // namespace Tools

@@ -25,8 +25,8 @@ bool MySqlDB::connect(  const char *hostname, const char* username, const char *
 {
     if( db )
     {
-	close();
-	db = mysql_init(0);
+		close();
+		db = mysql_init(0);
     }
 
     return mysql_real_connect( C(db), hostname, username, passwd, 0, 0, 0, 0 );
@@ -115,15 +115,16 @@ DBErg<DBRowList> MySqlDB::select( const std::string &sql, bool table_names )
       int num = mysql_num_fields( res );
       
       for( int i = 0; i < num; ++i )
-	{
-	  std::string s;
-	  
-	  if( row[i] )
-	    s = row[i];
-	  
-	  sl.row_list.values[count-1].push_back( s );
-	}
+		{
+		  std::string s;
+
+		  if( row[i] )
+			s = row[i];
+
+		  sl.row_list.values[count-1].push_back( s );
+		}
     }
+
   mysql_free_result( res );
   
   return sl;

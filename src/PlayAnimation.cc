@@ -28,7 +28,7 @@ void PlayAnimation::Animation::play()
 	if( m_pid == 0 ) {
 		CPPDEBUG( Tools::format( "executing %s", m_cmd ) );
 
-		APP.db.reset();
+		APP.db.dispose();
 
 		m_pid = fork();
 
