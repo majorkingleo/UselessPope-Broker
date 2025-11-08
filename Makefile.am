@@ -68,7 +68,9 @@ config_libconfig_a_SOURCES= \
 		config/ConfigNetwork.h \
 		config/ConfigNetwork.cc \
 		config/ConfigAnimations.h \
-		config/ConfigAnimations.cc
+		config/ConfigAnimations.cc \
+		config/ConfigPopeReacts.h \
+		config/ConfigPopeReacts.cc
 
 cpputils_io_libcpputilsio_a_SOURCES= \
 	cpputils/io/ColoredOutput.h \
