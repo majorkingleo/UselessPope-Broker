@@ -9,7 +9,7 @@ Configfile2::SectionKey<ConfigSectionPopeReacts> ConfigSectionPopeReacts::KEY( "
 
 ConfigSectionPopeReacts::ConfigSectionPopeReacts( const std::string & name_, Configfile2 *config_file_ )
 : Section( name_, config_file_ ),
-  answers( "answers", "/home/paps/UselessPope-Broker/papst_answers.txt" )
+  answers( "answers", "/home/papst/UselessPope-Broker/papst_answers.txt" )
 {
 	registerValue( &answers );
 }
