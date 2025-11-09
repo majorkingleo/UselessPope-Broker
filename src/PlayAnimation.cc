@@ -18,7 +18,7 @@ PlayAnimation::Animation::Animation( const std::string & cmd )
 
 PlayAnimation::Animation::~Animation()
 {
-
+	stop();
 }
 
 extern char **environ;
@@ -78,6 +78,7 @@ void PlayAnimation::Animation::stop()
 		} while( !done && !WIFEXITED(state) );
 
 		CPPDEBUG( Tools::format( "waited for %d WIFEXITED: %d", m_pid, WIFEXITED(state) ));
+		m_pid = 0;
 	}
 }
 
