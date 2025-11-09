@@ -140,33 +140,40 @@ int main( int argc, char **argv )
 		o_version.setDescription( "Show replace version number" );
 		oc_info.addOptionR( &o_version );
 
+
+		Arg::OptionChain oc_main;
+		arg.addChainR( &oc_main );
+		oc_main.setMinMatch( 0 );
+		oc_main.setContinueOnMatch( true );
+		oc_main.setContinueOnFail( true );
+
 		Arg::FlagOption o_debug("debug");
 		o_debug.setDescription("print debugging messages");
 		o_debug.setRequired(false);
-		arg.addOptionR( &o_debug );
+		oc_main.addOptionR( &o_debug );
 
 		Arg::StringOption o_enqueue_music("enqueue-music");
 		o_enqueue_music.setDescription("add music to queue");
 		o_enqueue_music.setRequired(false);
 		o_enqueue_music.setMinValues(1);
-		arg.addOptionR( &o_enqueue_music );
+		oc_main.addOptionR( &o_enqueue_music );
 
 		Arg::FlagOption o_create_sql("create-sql");
 		o_create_sql.setDescription("print create sql script");
 		o_create_sql.setRequired(false);
-		arg.addOptionR( &o_create_sql );
+		oc_main.addOptionR( &o_create_sql );
 
 		Arg::FlagOption o_with_drop_table("with-drop-table");
 		o_with_drop_table.setDescription("add drop table statements");
 		o_with_drop_table.setRequired(false);
-		arg.addOptionR( &o_with_drop_table );
+		oc_main.addOptionR( &o_with_drop_table );
 
 		Arg::StringOption o_enqueue_chunk("enqueue-chunk");
 		o_enqueue_chunk.setDescription("add a chunk file to queue");
 		o_enqueue_chunk.setRequired(false);
 		o_enqueue_chunk.setMinValues(1);
 		o_enqueue_chunk.setMaxValues(1);
-		arg.addOptionR( &o_enqueue_chunk );
+		oc_main.addOptionR( &o_enqueue_chunk );
 
 
 		Arg::StringOption o_enqueue_animation("enqueue-animation");
@@ -174,21 +181,16 @@ int main( int argc, char **argv )
 		o_enqueue_animation.setRequired(false);
 		o_enqueue_animation.setMinValues(1);
 		o_enqueue_animation.setMaxValues(1);
-		arg.addOptionR( &o_enqueue_animation );
-
-		Arg::IntOption o_db_retry_logon("retry-db-timeout");
-		o_db_retry_logon.setDescription("try relogin on DB for XX seconds");
-		o_db_retry_logon.setRequired(false);
-		o_db_retry_logon.setMaxValues(1);
-		o_db_retry_logon.setMinValues(1);
-		arg.addOptionR( &o_db_retry_logon );
+		oc_main.addOptionR( &o_enqueue_animation );
 
 		DetectLocale dl;
 
 		const unsigned int console_width = 80;
 
-		if( !arg.parse() || argc <= 1 )
+		if( !arg.parse() )
 		{
+			std::cout << "failed\n";
+
 			if( o_version.getState() )
 			{
 				std::cout << format("%s version %s\n", argv[0], VERSION);
@@ -222,10 +224,8 @@ int main( int argc, char **argv )
 	
 		std::chrono::steady_clock::time_point retry_logon_until{};
 
-		if( o_db_retry_logon.isSet() ) {
-			 unsigned sec = s2x<unsigned>((o_db_retry_logon.getValues()->at(0)), 0 );
-			 retry_logon_until = std::chrono::steady_clock::now() + std::chrono::seconds(sec);
-		}
+		retry_logon_until = std::chrono::steady_clock::now() + std::chrono::seconds(cfg_db.retry_db_timeout.value);
+
 
 		while( !APP.db ) {
 

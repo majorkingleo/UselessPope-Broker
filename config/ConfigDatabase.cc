@@ -12,12 +12,14 @@ ConfigSectionDatabase::ConfigSectionDatabase( const std::string & name_, Configf
   Host( "host", "localhost" ),
   UserName( "username", "broker" ),
   Password( "password", "broker" ),
-  Instance( "instance", "pope" )
+  Instance( "instance", "pope" ),
+  retry_db_timeout( "retry_db_timeout", 60 )
 {
 	registerValue( &Host );
 	registerValue( &UserName );
 	registerValue( &Password );
 	registerValue( &Instance );
+	registerValue( &retry_db_timeout );
 }
 
 void ConfigSectionDatabase::registerSection( Configfile2 *config_file )

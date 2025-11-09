@@ -11,6 +11,7 @@ public:
 	CONFIG_SIMPLE_DECLARE_STR( UserName );
 	CONFIG_SIMPLE_DECLARE_STR( Password );
 	CONFIG_SIMPLE_DECLARE_STR( Instance );
+	CONFIG_SIMPLE_DECLARE_INT( retry_db_timeout );
 
 public:
 	ConfigSectionDatabase( const std::string & name_, Configfile2 *config_file_ );
