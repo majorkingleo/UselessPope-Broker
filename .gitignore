@@ -37,11 +37,13 @@
 .deps
 .dirstamp
 Makefile
-supagrep
-supagrep.exe
-testsupagrep.exe
-forward.exe
-addpath.exe
+INSTALL
+NEWS
+README
+*~
+*.sql
+settings.json
+ChangeLog
 
 # http://www.gnu.org/software/automake
 
