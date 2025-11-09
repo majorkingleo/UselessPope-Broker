@@ -10,6 +10,7 @@
 #include "ConfigDatabase.h"
 #include "ConfigNetwork.h"
 #include "ConfigAnimations.h"
+#include "ConfigPopeReacts.h"
 #include "bindtypes.h"
 #include <dbi.h>
 #include "FetchSound.h"
@@ -175,44 +176,12 @@ int main( int argc, char **argv )
 		o_enqueue_animation.setMaxValues(1);
 		arg.addOptionR( &o_enqueue_animation );
 
-		Arg::FlagOption o_master("master");
-		o_master.setDescription("execute as master daemon program");
-		o_master.setRequired(false);
-		arg.addOptionR( &o_master );
-
-		Arg::FlagOption o_listen("listen");
-		o_listen.setDescription("listen to buttons");
-		o_listen.setRequired(false);
-		arg.addOptionR( &o_listen );
-
-
-		Arg::FlagOption o_button_worker("button-worker");
-		o_button_worker.setDescription("work on button pressed events");
-		o_button_worker.setRequired(false);
-		arg.addOptionR( &o_button_worker );
-
 		Arg::IntOption o_db_retry_logon("retry-db-timeout");
 		o_db_retry_logon.setDescription("try relogin on DB for XX seconds");
 		o_db_retry_logon.setRequired(false);
 		o_db_retry_logon.setMaxValues(1);
 		o_db_retry_logon.setMinValues(1);
 		arg.addOptionR( &o_db_retry_logon );
-
-		Arg::FlagOption o_master_animations("master-animations");
-		o_master_animations.setDescription("execute current animations from db");
-		o_master_animations.setRequired(false);
-		arg.addOptionR( &o_master_animations );
-
-		Arg::StringOption o_pope_answers_file("pope-reacts-answers-file");
-		o_pope_answers_file.setDescription("pop reactions answers file");
-		o_pope_answers_file.setRequired(false);
-		o_pope_answers_file.setMinValues(1);
-		arg.addOptionR( &o_pope_answers_file );
-
-		Arg::FlagOption o_master_stats("master-stats");
-		o_master_stats.setDescription("calculate statistics server");
-		o_master_stats.setRequired(false);
-		arg.addOptionR( &o_master_stats );
 
 		DetectLocale dl;
 
@@ -249,6 +218,7 @@ int main( int argc, char **argv )
 		Configfile2::createDefaultInstaceWithAllModules()->read(true);
 		const ConfigSectionDatabase 	& cfg_db 			= Configfile2::get(ConfigSectionDatabase::KEY);
 		const ConfigSectionNetwork  	& cfg_net 			= Configfile2::get(ConfigSectionNetwork::KEY);
+		const ConfigSectionPopeReacts  	& cfg_pope_reacts	= Configfile2::get(ConfigSectionPopeReacts::KEY);
 	
 		std::chrono::steady_clock::time_point retry_logon_until{};
 
@@ -298,6 +268,8 @@ int main( int argc, char **argv )
 				}
 				APP.db->commit();
 			}
+
+			return 0;
 		}
 
 		if( o_enqueue_music.isSet() ) {
@@ -317,6 +289,8 @@ int main( int argc, char **argv )
 				}
 				APP.db->commit();
 			}
+
+			return 0;
 		}
 
 		if( o_enqueue_animation.isSet() ) {
@@ -336,126 +310,85 @@ int main( int argc, char **argv )
 				}
 				APP.db->commit();
 			}
+
+			return 0;
 		}
 
-		bool does_something = false;
+		insert_default_values();
 
-		if( o_pope_answers_file.isSet() ) {
+		if( !std::filesystem::exists(cfg_pope_reacts.answers.value) ) {
+			throw STDERR_EXCEPTION( Tools::format( "file '%s' does not exists", cfg_pope_reacts.answers.value ) );
+		}
 
+
+		threads.emplace_back([&cfg_pope_reacts]() {
 			FetchAnswers answers {};
+			answers.fetch_from_file( cfg_pope_reacts.answers.value );
+			auto token = APP.db.get_dispose_token();
+			answers.run();
+		});
 
-			for( const auto & file : *o_pope_answers_file.getValues() ) {
-				if( !std::filesystem::exists(file) ) {
-					throw STDERR_EXCEPTION( Tools::format( "file '%s' does not exists", file ) );
-				}
-
-				answers.fetch_from_file( file );
-			}
-
-			threads.emplace_back([&answers]() {
-				answers.run();
-			});
-
-			while (!SDL_QuitRequested()) {
-				SDL_Delay(250);
-			}
-
-			APP.quit_request = true;
-
-			for( auto & t : threads ) {
-				t.join();
-			}
-
-			return 0;
-		}
-
-		if( o_listen.isSet() ) {
+		threads.emplace_back([&cfg_net]() {
 			ButtonListener listener( cfg_net.UDPListenPort );
+			auto token = APP.db.get_dispose_token();
 			listener.run();
-			return 0;
-		}
+		});
 
-		if( o_button_worker.isSet() ) {
+		threads.emplace_back([]() {
 			FetchButton button_worker;
+			auto token = APP.db.get_dispose_token();
 			button_worker.run();
-			return 0;
-		}
-
-		if( o_master.isSet() ) {
-			insert_default_values();
-
-			PlaySound play {};
-			FetchSound fetch( play );
-
-			threads.emplace_back([&play]() {
-				auto token = APP.db.get_dispose_token();
-				play.run();
-			});
-
-			threads.emplace_back([&fetch]() {
-				auto token = APP.db.get_dispose_token();
-				fetch.run();
-			});
+		});
 
 
-			while (!SDL_QuitRequested()) {
-				SDL_Delay(250);
-			}
+		PlaySound play_sound {};
 
-			APP.quit_request = true;
+		threads.emplace_back([&play_sound]() {
+			auto token = APP.db.get_dispose_token();
+			play_sound.run();
+		});
 
-			for( auto & t : threads ) {
-				t.join();
-			}
+		threads.emplace_back([&play_sound]() {
+			auto token = APP.db.get_dispose_token();
+			FetchSound fetch( play_sound );
+			fetch.run();
+		});
 
-			return 0;
-		}
 
-		if( o_master_animations.isSet() ) {
+		const ConfigSectionAnimations  	& cfg_animations 	= Configfile2::get(ConfigSectionAnimations::KEY);
 
-			const ConfigSectionAnimations  	& cfg_animations 	= Configfile2::get(ConfigSectionAnimations::KEY);
+		PlayAnimation 	play_animation {cfg_animations};
 
-			PlayAnimation 	play {cfg_animations};
-			FetchAnimation 	fetch( play );
+		threads.emplace_back([&play_animation]() {
+			auto token = APP.db.get_dispose_token();
+			play_animation.run();
+		});
 
-			threads.emplace_back([&fetch]() {
-				auto token = APP.db.get_dispose_token();
-				fetch.run();
-			});
+		threads.emplace_back([&play_animation]() {
+			auto token = APP.db.get_dispose_token();
+			FetchAnimation 	fetch( play_animation );
+			fetch.run();
+		});
 
-			while (!SDL_QuitRequested()) {
-				SDL_Delay(250);
-			}
 
-			APP.quit_request = true;
-
-			for( auto & t : threads ) {
-				t.join();
-			}
-
-			return 0;
-		}
-
-		if( o_master_stats.isSet() ) {
+		threads.emplace_back([]() {
+			auto token = APP.db.get_dispose_token();
 			FetchStats 	stats {};
+			stats.run();
+		});
 
-			threads.emplace_back([&stats]() {
-				auto token = APP.db.get_dispose_token();
-				stats.run();
-			});
-
-			while (!SDL_QuitRequested()) {
-				SDL_Delay(250);
-			}
-
-			APP.quit_request = true;
-
-			for( auto & t : threads ) {
-				t.join();
-			}
-
-			return 0;
+		while (!SDL_QuitRequested()) {
+			SDL_Delay(250);
 		}
+
+		APP.quit_request = true;
+
+		for( auto & t : threads ) {
+			t.join();
+		}
+
+		return 0;
+
 
 	} catch( std::exception & err ) {
 		std::cerr << co.bad("error: ") << err.what() << std::endl;

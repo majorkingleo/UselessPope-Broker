@@ -190,9 +190,15 @@ std::shared_ptr<Database> & ThreadedDatabase::at()
 
 void ThreadedDatabase::dispose()
 {
-	CPPDEBUG( Tools::format( "disposing instance %d", std::this_thread::get_id() ) );
+	auto id = std::this_thread::get_id();
 	auto lock = std::scoped_lock( m_tex );
-	m_instances.erase(std::this_thread::get_id());
+
+	auto it = m_instances.find(id);
+
+	if( it != m_instances.end() ) {
+		CPPDEBUG( Tools::format( "disposing instance %d", id ) );
+		m_instances.erase(std::this_thread::get_id());
+	}
 }
 
 bool  ThreadedDatabase::operator!()
