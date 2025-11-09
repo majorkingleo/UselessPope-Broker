@@ -242,6 +242,12 @@ class P_BUTTON_QUEUE : public BUTTON_QUEUE
 public:
 	P_BUTTON_QUEUE();
 
+	P_BUTTON_QUEUE( const BUTTON_QUEUE & b )
+	: P_BUTTON_QUEUE()
+	{
+		BASE::operator=(b);
+	}
+
 	P_BUTTON_QUEUE & operator=( const BUTTON_QUEUE & b )
 	{
 	  BASE::operator=(b);

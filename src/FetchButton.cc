@@ -6,9 +6,14 @@
 #include <chrono>
 #include <CpputilsDebug.h>
 #include <filesystem>
+#include <list>
 
 using namespace std::chrono_literals;
 using namespace std::chrono;
+
+const std::string FetchButton::ACTION_BUTTON_PRESSED 	= "ButtonPressed";
+const std::string FetchButton::ACTION_BUTTON_RELEASED 	= "ButtonReleased";
+const std::string FetchButton::ACTION_PING 				= "Ping";
 
 FetchButton::FetchButton()
 : BasicThread( "FetchButton" )
@@ -51,6 +56,8 @@ void FetchButton::fetch_buttons()
 		throw std::runtime_error( Tools::format( "SqlError: %s", APP.db->get_error()) );
 	}
 
+	std::list<BUTTON_QUEUE> to_delete;
+
     for( int i = 0; i < count; i++ ) {
 		const std::string & mac_address = button_queue[i].mac_address.data;
 		const std::string & username = button_queue[i].hist_an_user.data;		
@@ -62,9 +69,11 @@ void FetchButton::fetch_buttons()
 			auto it = m_users_actions_by_mac_address.find( mac_address );
 
 			if( it == m_users_actions_by_mac_address.end() ) {
-				CPPDEBUG( Tools::format( "couldn't find USERS_ACTIONS for mac: '%s'", mac_address) )
+				CPPDEBUG( Tools::format( "couldn't find USERS_ACTIONS for mac: '%s' action: '%s'", 
+					mac_address, button_queue[i].action.data ) );
+				to_delete.emplace_back( std::move( button_queue[i] ) );
 				continue;
-			}		
+			}
 			
 			pbq = &button_queue[i];
 			pua = &it->second;
@@ -172,6 +181,31 @@ void FetchButton::fetch_buttons()
 
 		}
     }
+
+	for( auto & to_del : to_delete ) {
+		delete_button_queue_entry( to_del );
+	}
+
+	APP.db->commit();
+}
+
+bool FetchButton::delete_button_queue_entry( BUTTON_QUEUE & bq )
+{
+	P_BUTTON_QUEUE p_button_queue = bq;
+	p_button_queue.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
+	p_button_queue.idx.data = 0;
+
+	if( p_button_queue.action.data != ACTION_PING ) {
+		if( !StdSqlInsert( *APP.db, p_button_queue ) ) {
+			CPPDEBUG( Tools::format( "SqlError: %s", APP.db->get_error()));
+			return false;
+		}
+	}
+
+	APP.db->exec( Tools::format( "delete from %s where idx = %d", bq.get_table_name(), bq.idx() ) );
+	APP.db->commit();
+
+	return true;
 }
 
 void FetchButton::fetch_users()
