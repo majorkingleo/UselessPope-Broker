@@ -151,6 +151,8 @@ void FetchButton::fetch_buttons()
 
 			std::string audio_main_file_path = pua->home_directory.data + "/audio_main/";
 
+			bool found = false;
+
 			for (const auto & entry : std::filesystem::directory_iterator(audio_main_file_path)) {
    				 CPPDEBUG( Tools::format( "found: '%s'",  entry.path().string() ) );
 
@@ -178,6 +180,10 @@ void FetchButton::fetch_buttons()
 				APP.db->commit();
 				break;
   			}
+
+			if( !found ) {
+				to_delete.emplace_back( std::move( *pbq ) );
+			}
 
 		}
     }
