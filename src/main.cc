@@ -49,7 +49,14 @@ static void usage( const std::string & prog )
 namespace {
 
 template <class TABLE>
-void insert_TABLE( const std::string & name, const std::string & key, const std::string & value )
+struct insert_TABLE_ret
+{
+	bool inserted {};
+	TABLE table {};
+};
+
+template <class TABLE>
+insert_TABLE_ret<TABLE> insert_TABLE( const std::string & name, const std::string & key, const std::string & value )
 {
 	TABLE existing_table;
 
@@ -62,7 +69,7 @@ void insert_TABLE( const std::string & name, const std::string & key, const std:
 					existing_table.key.get_name(),
 					escape( key ) ),
 			DBInList<DBBindType>() >> existing_table ) > 0 ) {
-		return;
+		return { false, existing_table };
 	}
 
 	TABLE table {};
@@ -78,11 +85,27 @@ void insert_TABLE( const std::string & name, const std::string & key, const std:
 	}
 
 	APP.db->commit();
+
+	return { true, table };
 }
 
-static void insert_config( const std::string & key, const std::string & value )
+static void insert_config( const std::string & key, const std::string & value, bool force = false )
 {
-	insert_TABLE<CONFIG>( "config", key, value );
+	auto ret = insert_TABLE<CONFIG>( "config", key, value );
+
+	if( !force ) {
+		return;
+	}
+
+	if( !ret.inserted ) {
+
+		CONFIG & config = ret.table;
+		config.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
+		config.value.data = value;
+		if( StdSqlUpdate( *APP.db, ret.table, Tools::format( "where `%s` = '%d'", config.idx.get_name(), config.idx.data )) ) {
+			APP.db->commit();
+		}
+	}
 }
 
 static void insert_stats( const std::string & key, const std::string & value )
@@ -96,7 +119,7 @@ static void insert_default_values()
 {
 	insert_config( "brightness", "0.02" );
 	insert_config( "current_animation", "0" );
-	insert_config( "fog", "0" );
+	insert_config( "fog", "0", true );
 	insert_config( "animation0", "/home/papst/UselessPope-raspi/python/pope_default_rotating_color_wheel.py" );
 	insert_config( "animation1", "/home/papst/UselessPope-raspi/python/pope_red_eyes.py" );
 
