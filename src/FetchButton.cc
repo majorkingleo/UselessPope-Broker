@@ -92,7 +92,12 @@ void FetchButton::fetch_buttons()
 
 		if( !pbq || !pua ) {
 			continue;
-		}		
+		}
+
+		if( pbq->action.data == ACTION_PING ) {
+			to_delete.emplace_back( std::move( *pbq ) );
+			continue;
+		}
 
 		if( !pbq->file.data.empty() ) {
 
