@@ -83,6 +83,7 @@ void FetchButton::fetch_buttons()
 
 			if( it == m_users_actions_by_username.end() ) {				
 				CPPDEBUG( Tools::format( "couldn't find USERS_ACTIONS for user: '%s'", username) );
+				to_delete.emplace_back( std::move( button_queue[i] ) );
 				continue;			
 			}
 
@@ -192,7 +193,7 @@ void FetchButton::fetch_buttons()
 
 		}
     }
-
+	
 	for( auto & to_del : to_delete ) {
 		delete_button_queue_entry( to_del );
 	}
