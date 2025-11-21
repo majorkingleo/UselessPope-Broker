@@ -7,6 +7,7 @@
 #include "string_utils.h"
 #include "range.h"
 #include "format.h"
+#include <expected>
 
 #ifdef TOOLS_USE_DB
 
@@ -315,6 +316,8 @@ class DBTypeDateTime : public DBType
     DBTypeDateTime & operator=( const std::string & d ) { data = d; return *this; }
 
     unsigned get_size() { return size; }
+
+    std::expected<time_t,std::string> get_time() const;
 };
 
 template<class T> int StdSqlSelect( Database &db, const std::string &table_name, 

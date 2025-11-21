@@ -23,6 +23,8 @@ broker_SOURCES=\
 		src/FetchAnswers.cc \
 		src/FetchStats.h \
 		src/FetchStats.cc \
+		src/AutoStopFog.h \
+		src/AutoStopFog.cc \
 		tools_config.h
 		
 AM_CPPFLAGS = -I$(top_srcdir)/tools \

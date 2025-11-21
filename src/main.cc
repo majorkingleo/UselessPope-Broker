@@ -22,6 +22,7 @@
 #include "FetchAnimation.h"
 #include "FetchAnswers.h"
 #include "FetchStats.h"
+#include "AutoStopFog.h"
 
 using namespace Tools;
 using namespace std::chrono_literals;
@@ -398,6 +399,12 @@ int main( int argc, char **argv )
 			auto token = APP.db.get_dispose_token();
 			FetchStats 	stats {};
 			stats.run();
+		});
+
+		threads.emplace_back([]() {
+			auto token = APP.db.get_dispose_token();
+			AutoStopFog auto_stop_fog {};
+			auto_stop_fog.run();
 		});
 
 		while (!SDL_QuitRequested()) {

@@ -3,6 +3,7 @@
 #include "db.h"
 #include "dbi.h"
 #include "CpputilsDebug.h"
+#include <cstring>
 
 #ifdef TOOLS_USE_DB
 
@@ -56,6 +57,43 @@ void DBTypeDateTime::load_from_db( const std::string &data_ )
 std::string DBTypeDateTime::save_to_db() const
 {
   return data;
+}
+
+std::expected<time_t,std::string> DBTypeDateTime::get_time() const
+{
+  auto sl = split_and_strip_simple(data," ", 2);
+
+  if( sl.size() != 2 ) {
+    return std::unexpected( Tools::format( "invalid date format: '%s'", data ) );
+  }
+
+  auto sl_date = split_and_strip_simple(sl[0],"-");
+
+  if( sl_date.size() != 3 ) {
+    return std::unexpected( Tools::format( "invalid date format: '%s'", sl[0] ) );
+  }
+  
+  struct tm tm {};
+
+  tm.tm_year  = s2x<unsigned>(sl_date[0], 0) - 1900;
+  tm.tm_mon   = s2x<unsigned>(sl_date[1], 0) - 1;
+  tm.tm_mday  = s2x<unsigned>(sl_date[2], 0);
+
+  auto sl_time = split_and_strip_simple(sl[1],":");
+
+  tm.tm_hour = s2x<unsigned>(sl_time[0], 0);
+  tm.tm_min  = s2x<unsigned>(sl_time[1], 0);
+  tm.tm_sec  = s2x<unsigned>(sl_time[2], 0);
+
+  tm.tm_isdst = -1;
+
+  time_t timestamp = mktime(&tm);
+
+  if( timestamp == (time_t)(-1) ) {
+    return std::unexpected( Tools::format( "cannot convert time: %s", strerror(errno) ) );
+  }
+
+  return timestamp;
 }
 
 bool DBBindType::load_from_db( const DBRow &row )
