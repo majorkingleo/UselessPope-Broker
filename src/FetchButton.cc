@@ -123,6 +123,7 @@ void FetchButton::fetch_buttons()
 			}
 
 			if( file.empty() ) {
+				to_delete.emplace_back( std::move( *pbq ) );
 				continue;
 			}
 
