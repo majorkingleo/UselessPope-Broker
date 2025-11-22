@@ -125,10 +125,12 @@ static void insert_default_values()
 	insert_config( "animation0", "/home/papst/UselessPope-raspi/python/pope_default_rotating_color_wheel.py" );
 	insert_config( "animation1", "/home/papst/UselessPope-raspi/python/pope_red_eyes.py" );
 	insert_config( "animation2", "/home/papst/UselessPope-raspi/python/matrix_rain.py" );
+	insert_config( "animation3", "/home/papst/UselessPope-raspi/python/snake_duel.py" );
 
 	insert_config( "animation0_title", "Johannes Paul II" );
 	insert_config( "animation1_title", "Johannes Diabolo III" );
 	insert_config( "animation2_title", "Matrix" );
+	insert_config( "animation3_title", "Snake" );
 
 
 	insert_stats( FetchStats::MOST_PLAYED_SOUND, "" );
