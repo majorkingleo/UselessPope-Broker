@@ -50,7 +50,10 @@ private:
 		{
 			std::string_view data( m_recv_buffer.data(), bytes_transferred );
 			auto v_data = strip_view( data );
-			CPPDEBUG( Tools::format( "rec: %s", v_data ) );
+
+			//std::string ip = m_socket.remote_endpoint().address().to_string();
+
+			CPPDEBUG( Tools::format( "rec(%s): %s", m_remote_endpoint, v_data ) );
 			m_received_data( std::string(v_data) );
 		}
 
