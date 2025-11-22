@@ -52,7 +52,7 @@ void FetchStats::fetch_total_actions()
 	total_count += count_table( P_PLAY_QUEUE_CHUNKS{} );
 	total_count += count_table( P_PLAY_QUEUE_MUSIC{} );
 	total_count += count_table( P_PLAY_QUEUE_ANIMATION{} );
-	total_count += count_table( P_BUTTON_QUEUE{} );
+	// total_count += count_table( P_BUTTON_QUEUE{} );
 
 	STATS stats = fetch_stats( TOTAL_ACTIONS );
 	stats.value.data = Tools::format( "%d", total_count );
