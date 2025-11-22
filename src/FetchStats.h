@@ -14,6 +14,8 @@ public:
 	static constexpr const char* TOP_USER_2 		= "user2";
 	static constexpr const char* TOP_USER_3 		= "user3";
 	static constexpr const char* TOTAL_ACTIONS 		= "totalactions";
+	static constexpr const char* SNAKE_P1_WINS 		= "snake_p1_wins";
+	static constexpr const char* SNAKE_P2_WINS 		= "snake_p2_wins";
 
 public:
     FetchStats();

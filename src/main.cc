@@ -141,6 +141,8 @@ static void insert_default_values()
 	insert_stats( FetchStats::TOP_USER_2, "der.mucki (97 actions)");
 	insert_stats( FetchStats::TOP_USER_3, "der.mucki (97 actions)");
 	insert_stats( FetchStats::TOTAL_ACTIONS, "666" );
+	insert_stats( FetchStats::SNAKE_P1_WINS, "0" );
+	insert_stats( FetchStats::SNAKE_P2_WINS, "0" );
 }
 
 int main( int argc, char **argv )
