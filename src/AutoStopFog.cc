@@ -50,7 +50,7 @@ void AutoStopFog::auto_deactivate()
         config.value.get_name() ),
         DBInList<DBBindType>() >> config );
 
-    CPPDEBUG( Tools::format( "count: %d %s", count, APP.db->get_sql()  ));
+    // CPPDEBUG( Tools::format( "count: %d %s", count, APP.db->get_sql()  ));
 
     if( count > 0 ) {
         auto res = config.hist_ae_zeit.get_time();
@@ -63,11 +63,11 @@ void AutoStopFog::auto_deactivate()
         time_t now = time(NULL);
 
         if( last_change + 60 < now ) {
-            APP.db->exec( Tools::format( "update `%s` set `%s` = '0' where `%s` != '0' "
-                            " and `%s` ",
+            APP.db->exec( Tools::format( "update `%s` set `%s` = '0' where `%s` = %d ",
                             config.get_table_name(),
                             config.value.get_name(),
-                            config.key.get_name() ) );
+                            config.idx.get_name(),
+                            config.idx.data ) );
             APP.db->commit();
         }
     }
