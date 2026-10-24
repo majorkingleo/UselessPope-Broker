@@ -1,6 +1,7 @@
 #include "Bf1942Discover.h"
 
 #include <boost/asio.hpp>
+#include <algorithm>
 #include <array>
 #include <cstring>
 #include <ctime>
@@ -30,9 +31,65 @@ struct Beacon
 	std::string guid;
 };
 
+// Keep only valid UTF-8, drop control bytes, and never exceed max_bytes (so the
+// value fits the VARCHAR column without splitting a multi-byte sequence).
+std::string sanitize_utf8( const std::string & in, std::size_t max_bytes )
+{
+	std::string out;
+	out.reserve( std::min( in.size(), max_bytes ) );
+
+	for( std::size_t i = 0; i < in.size() && out.size() < max_bytes; ) {
+		const unsigned char c = static_cast<unsigned char>( in[i] );
+		std::size_t n = 0;
+
+		if( c < 0x80 ) n = 1;
+		else if( ( c & 0xE0 ) == 0xC0 ) n = 2;
+		else if( ( c & 0xF0 ) == 0xE0 ) n = 3;
+		else if( ( c & 0xF8 ) == 0xF0 ) n = 4;
+		else { ++i; continue; }          // invalid lead byte: drop
+
+		if( i + n > in.size() ) break;
+		if( out.size() + n > max_bytes ) break;   // don't split a sequence
+
+		bool ok = true;
+		for( std::size_t k = 1; k < n; ++k ) {
+			if( ( static_cast<unsigned char>( in[i + k] ) & 0xC0 ) != 0x80 ) {
+				ok = false;
+				break;
+			}
+		}
+		if( !ok ) { ++i; continue; }     // invalid continuation: resync
+
+		if( n == 1 && c < 0x20 ) { ++i; continue; }  // drop control chars
+
+		out.append( in, i, n );
+		i += n;
+	}
+
+	return out;
+}
+
+bool looks_like_guid( const char * s, std::size_t len )
+{
+	if( len != 36 )
+		return false;
+
+	for( std::size_t i = 0; i < len; ++i ) {
+		const char c = s[i];
+		const bool hex = ( c >= '0' && c <= '9' ) ||
+		                 ( c >= 'a' && c <= 'f' ) ||
+		                 ( c >= 'A' && c <= 'F' );
+		if( !hex && c != '-' )
+			return false;
+	}
+	return true;
+}
+
 // The LAN announce (UDP 54915 -> 255.255.255.255) is a NUL-terminated server
 // name starting at byte 1, followed by opaque binary data that happens to
-// contain the server GUID as a "{...}" string.
+// contain the server GUID as a "{<36 hex/dash>}" string. The opaque part can
+// contain stray '{' bytes (leaked pointers), so pick the first brace pair whose
+// body actually looks like a GUID instead of trusting the first '{'.
 bool parse_beacon( const char * data, std::size_t len, Beacon & out )
 {
 	if( len < 2 )
@@ -42,14 +99,23 @@ bool parse_beacon( const char * data, std::size_t len, Beacon & out )
 	std::size_t i = 0;
 	while( i < name_max && data[1 + i] != '\0' )
 		++i;
-	out.name.assign( data + 1, i );
+	out.name = sanitize_utf8( std::string( data + 1, i ), BF1942_SERVER_NAME_LEN );
 
-	const char * g = static_cast<const char *>( std::memchr( data, '{', len ) );
-	if( g != nullptr ) {
-		const char * e = static_cast<const char *>( std::memchr( g, '}', len - static_cast<std::size_t>( g - data ) ) );
-		if( e != nullptr )
-			out.guid.assign( g, static_cast<std::size_t>( e - g ) + 1 );
+	for( std::size_t p = 0; p + 1 < len; ++p ) {
+		if( data[p] != '{' )
+			continue;
+
+		const char * e = static_cast<const char *>( std::memchr( data + p, '}', len - p ) );
+		if( e == nullptr )
+			continue;
+
+		const std::size_t body_len = static_cast<std::size_t>( e - ( data + p ) ) - 1;
+		if( looks_like_guid( data + p + 1, body_len ) ) {
+			out.guid.assign( data + p, body_len + 2 );
+			break;
+		}
 	}
+
 	return !out.name.empty();
 }
 
@@ -113,7 +179,9 @@ void Bf1942Discover::received_data( const std::string & data, const std::string 
 	log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
 		format( "BF1942 beacon: name='%s' guid=%s at %s", b.name, b.guid, source_ip ) );
 
-	const std::string key = !b.guid.empty() ? b.guid : ( b.name + "@" + source_ip );
+	const std::string key = !b.guid.empty()
+		? b.guid
+		: sanitize_utf8( b.name + "@" + source_ip, BF1942_GUID_LEN );
 	const std::string now = now_string();
 
 	BF1942_SERVER existing;

@@ -47,7 +47,7 @@ Started from `main.cc`; each is a `BasicThread` that loops on `APP.quit_request`
 | Answers | `FetchAnswers` | Loads `papst_answers.txt`; every 1 min matches recently played chunks → writes `SERMON` reaction rows, links via `P_PLAY_QUEUE_CHUNKS.sermon_reaction_idx`. |
 | UDP listener | `ButtonListener` | Boost.Asio UDP server on `[network].UDPListenPort` (default 22000); parses remote-button datagrams into `BUTTON_QUEUE`. |
 | BF1942 discovery | `Bf1942Discover` | Passive UDP listener on `[network].BF1942DiscoverPort` (default 54915) for BF1942 LAN beacons; parses server name + GUID and upserts into the `BF1942_SERVER` registry (keyed by `guid`, `last_seen` refreshed). Disable with `[network].BF1942DiscoverEnabled=0`. |
-| BF1942 query | `Bf1942Query` | Polls configured/discovered servers' GameSpy/ASE UDP port (`[network].BF1942QueryPort`, default 22000), parses the `\status\` scoreboard and upserts `BF1942_STATUS` + `BF1942_PLAYER` (keyed by `server_ip`). Targets come from `BF1942QueryHosts` plus every `BF1942_SERVER.ip_address`. Disable with `[network].BF1942QueryEnabled=0`. |
+| BF1942 query | `Bf1942Query` | Polls configured/discovered servers' GameSpy/ASE UDP port (`[network].BF1942QueryPort`, default 22000), parses the `\status\` + `\players\` scoreboard and upserts `BF1942_STATUS` + `BF1942_PLAYER` (keyed by `server_ip`). On round end (map change / round-time reset / tickets reset) it archives the final roster into `BF1942_GAME` (map, winner, tickets) + `P_BF1942_PLAYER` (`game_id`, map, winner, player fields) and clears the live roster. Targets come from `BF1942QueryHosts` plus every `BF1942_SERVER.ip_address`. Disable with `[network].BF1942QueryEnabled=0`. |
 | Button worker | `FetchButton` | Polls `BUTTON_QUEUE`, maps MAC/username → `USERS_ACTION`, resolves audio file, enqueues `PLAY_QUEUE_CHUNKS`, archives to `P_BUTTON_QUEUE`. Physical-button clicks are counted (1–5) and select the N-th case-insensitively sorted `audio_main` file. |
 | Sound player | `PlaySound` | Owns SDL2_mixer; plays music + chunks from in-memory lists. |
 | Sound fetcher | `FetchSound` | Polls `PLAY_QUEUE_MUSIC` + `PLAY_QUEUE_CHUNKS` → `PlaySound`, archives to `P_*`. |
@@ -211,7 +211,9 @@ static libraries linked into `broker`.
   `LOG_TIMING`.
 - **Schema is authoritative in `create.sql`** and must stay in sync with
   `bindtypes.h` (`create_sql()` in `bindtypes.cc`) and the `uselesspope-database`
-  skill in the `UselessPope-www` repo.
+  skill in the `UselessPope-www` repo. The local **`uselesspope-database` skill**
+  (`.pi/skills/uselesspope-database/SKILL.md`) maps how all tables relate
+  (FK vs. logical joins, active→archive pairs, the BF1942 chain).
 
 ## Common tasks
 

@@ -17,6 +17,7 @@ const unsigned BF1942_HOSTNAME_LEN=128;
 const unsigned BF1942_MAPNAME_LEN=64;
 const unsigned BF1942_GAMETYPE_LEN=32;
 const unsigned BF1942_PLAYER_NAME_LEN=64;
+const unsigned BF1942_VICTORY_TYPE_LEN=16;
 const unsigned ACTION_LEN=50;
 const unsigned CONFIG_KEY_LEN=50;
 const unsigned CONFIG_VALUE_LEN=FILE_LEN;
@@ -397,6 +398,11 @@ public:
 	DBTypeInt		hostport;
 	DBTypeInt		numplayers;
 	DBTypeInt		maxplayers;
+	DBTypeInt		round_time_remain;	// resets => new round
+	DBTypeInt		tickets1;
+	DBTypeInt		tickets2;
+	DBTypeInt		status;
+	DBTypeDateTime	round_started_at;
 	DBTypeDateTime	last_seen;
 
 public:
@@ -436,6 +442,56 @@ public:
 	}
 
 	BF1942_PLAYER & operator=( const BF1942_PLAYER & b )
+	{
+	  BASE::operator=(b);
+	  return *this;
+	}
+};
+
+class BF1942_GAME : public BASE
+{
+public:
+	DBTypeVarChar	server_ip;
+	DBTypeVarChar	mapname;
+	DBTypeVarChar	gametype;
+	DBTypeDateTime	started_at;
+	DBTypeDateTime	ended_at;
+	DBTypeInt		winning_team;	// 1 or 2; 0 = draw/unknown
+	DBTypeInt		tickets1;		// final observed
+	DBTypeInt		tickets2;
+	DBTypeVarChar	victory_type;
+
+public:
+	BF1942_GAME();
+	BF1942_GAME( const BF1942_GAME & b )
+	: BF1942_GAME()
+	{
+		BASE::operator=(b);
+	}
+
+	BF1942_GAME & operator=( const BF1942_GAME & b )
+	{
+	  BASE::operator=(b);
+	  return *this;
+	}
+};
+
+class P_BF1942_PLAYER : public BF1942_PLAYER
+{
+public:
+	DBTypeInt		game_id;		// -> BF1942_GAME.idx
+	DBTypeVarChar	mapname;		// denormalized
+	DBTypeInt		winning_team;	// denormalized
+
+public:
+	P_BF1942_PLAYER();
+	P_BF1942_PLAYER( const P_BF1942_PLAYER & b )
+	: P_BF1942_PLAYER()
+	{
+		BASE::operator=(b);
+	}
+
+	P_BF1942_PLAYER & operator=( const BF1942_PLAYER & b )
 	{
 	  BASE::operator=(b);
 	  return *this;

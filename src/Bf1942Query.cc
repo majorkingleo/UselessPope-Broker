@@ -31,6 +31,11 @@ using namespace std::chrono_literals;
 
 namespace {
 
+// Round-boundary detection thresholds.
+constexpr int kRoundResetMargin = 60;   // roundTimeRemain jumped up => round reset
+constexpr int kTicketsNearZero  = 5;    // previous tickets effectively 0
+constexpr int kTicketsFreshMin  = 50;   // a fresh round's tickets sit well above this
+
 int to_int( const std::string & s )
 {
 	try { return std::stoi( s ); } catch( ... ) { return 0; }
@@ -288,8 +293,35 @@ void Bf1942Query::query_and_store( const Target & target )
 			return;
 		}
 
-		store_status( target.host, *fields );
+		// Previous snapshot (persistent across restarts).
+		BF1942_STATUS old;
+		const bool has_old = StdSqlSelect( *APP.db,
+			format( "select %%%s from %s where `server_ip` = '%s' ",
+				old.get_table_name(), old.get_table_name(), escape( target.host ) ),
+			DBInList<DBBindType>() >> old ) > 0;
+
+		const std::string new_map = get_field( *fields, "mapname" );
+		const int new_rtr = to_int( get_field( *fields, "roundTimeRemain" ) );
+
+		bool round_ended = false;
+		if( has_old && !old.mapname.data.empty() ) {
+			const int t1 = to_int( get_field( *fields, "tickets1" ) );
+			const int t2 = to_int( get_field( *fields, "tickets2" ) );
+
+			round_ended =
+				( !new_map.empty() && new_map != old.mapname.data ) ||
+				( new_rtr > old.round_time_remain.data + kRoundResetMargin ) ||
+				( ( old.tickets1.data + old.tickets2.data ) <= kTicketsNearZero &&
+				  ( t1 + t2 ) > kTicketsFreshMin );
+		}
+
+		if( round_ended ) {
+			finalize_round( target.host, old );
+		}
+
+		store_status( target.host, *fields, old, has_old, round_ended );
 		store_players( target.host, *fields );
+
 		APP.db->commit();
 
 		log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
@@ -305,47 +337,110 @@ void Bf1942Query::query_and_store( const Target & target )
 	}
 }
 
+void Bf1942Query::finalize_round( const std::string & server_ip, const BF1942_STATUS & old )
+{
+	const int winner = ( old.tickets1.data > old.tickets2.data ) ? 1
+	                 : ( old.tickets2.data > old.tickets1.data ) ? 2 : 0;
+
+	std::string victory_type = "unknown";
+	if( old.tickets1.data <= 0 || old.tickets2.data <= 0 ) {
+		victory_type = "tickets";
+	} else if( old.round_time_remain.data <= 0 ) {
+		victory_type = "time";
+	}
+
+	const std::string now = now_string();
+
+	BF1942_GAME game {};
+	game.server_ip = server_ip;
+	game.mapname = old.mapname.data;
+	game.gametype = old.gametype.data;
+	game.started_at = old.round_started_at.data.empty() ? old.last_seen.data : old.round_started_at.data;
+	game.ended_at = now;
+	game.winning_team = winner;
+	game.tickets1 = old.tickets1.data;
+	game.tickets2 = old.tickets2.data;
+	game.victory_type = victory_type;
+	game.setHist( BASE::HIST_TYPE::HIST_AN, "broker" );
+	game.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
+	game.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
+
+	if( !StdSqlInsert( *APP.db, game ) ) {
+		throw STDERR_EXCEPTION( format( "cannot insert into BF1942_GAME: %s", APP.db->get_error() ) );
+	}
+
+	const int game_id = APP.db->get_insert_id();
+
+	// Archive every live player of the ended round.
+	BF1942_PLAYER live;
+	DBInLimit limit {};
+	while( StdSqlSelect( *APP.db,
+		format( "select %%%s from %s where `server_ip` = '%s' order by idx",
+			live.get_table_name(), live.get_table_name(), escape( server_ip ) ),
+		DBInList<DBBindType>() >> live, limit ) > 0 )
+	{
+		P_BF1942_PLAYER p {};
+		p = live;
+		p.game_id = game_id;
+		p.mapname = old.mapname.data;
+		p.winning_team = winner;
+		p.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
+		p.idx.data = 0;
+
+		if( !StdSqlInsert( *APP.db, p ) ) {
+			throw STDERR_EXCEPTION( format( "cannot insert into P_BF1942_PLAYER: %s", APP.db->get_error() ) );
+		}
+	}
+
+	// The new round starts with an empty roster.
+	APP.db->exec( format( "delete from %s where `server_ip` = '%s'",
+		live.get_table_name(), escape( server_ip ) ) );
+
+	log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
+		format( "BF1942 round archived: %s map=%s winner=team %d (%s) tickets %d:%d game_id=%d",
+			server_ip, old.mapname.data, winner, victory_type,
+			old.tickets1.data, old.tickets2.data, game_id ) );
+}
+
 void Bf1942Query::store_status( const std::string & server_ip,
-                                const std::map<std::string,std::string> & fields )
+                                const std::map<std::string,std::string> & fields,
+                                const BF1942_STATUS & old,
+                                bool has_old,
+                                bool round_ended )
 {
 	const std::string now = now_string();
 
-	BF1942_STATUS existing;
-	const bool found = StdSqlSelect( *APP.db,
-		format( "select %%%s from %s where `server_ip` = '%s' ",
-			existing.get_table_name(),
-			existing.get_table_name(),
-			escape( server_ip ) ),
-		DBInList<DBBindType>() >> existing ) > 0;
+	BF1942_STATUS s = old;   // copies idx + hist + all live fields by name
+	if( !has_old ) {
+		s.server_ip = server_ip;
+	}
 
-	if( found ) {
-		existing.hostname = get_field( fields, "hostname" );
-		existing.mapname = get_field( fields, "mapname" );
-		existing.gametype = get_field( fields, "gametype" );
-		existing.hostport = to_int( get_field( fields, "hostport" ) );
-		existing.numplayers = to_int( get_field( fields, "numplayers" ) );
-		existing.maxplayers = to_int( get_field( fields, "maxplayers" ) );
-		existing.last_seen = now;
-		existing.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
+	s.hostname = get_field( fields, "hostname" );
+	s.mapname = get_field( fields, "mapname" );
+	s.gametype = get_field( fields, "gametype" );
+	s.hostport = to_int( get_field( fields, "hostport" ) );
+	s.numplayers = to_int( get_field( fields, "numplayers" ) );
+	s.maxplayers = to_int( get_field( fields, "maxplayers" ) );
+	s.round_time_remain = to_int( get_field( fields, "roundTimeRemain" ) );
+	s.tickets1 = to_int( get_field( fields, "tickets1" ) );
+	s.tickets2 = to_int( get_field( fields, "tickets2" ) );
+	s.status = to_int( get_field( fields, "status" ) );
+	s.last_seen = now;
 
-		if( !StdSqlUpdate( *APP.db, existing,
-				format( "where `%s` = '%d'", existing.idx.get_name(), existing.idx.data ) ) ) {
+	if( !has_old || round_ended ) {
+		s.round_started_at = now;   // a new round starts now
+	}
+
+	if( has_old ) {
+		s.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
+		if( !StdSqlUpdate( *APP.db, s,
+				format( "where `%s` = '%d'", s.idx.get_name(), s.idx.data ) ) ) {
 			throw STDERR_EXCEPTION( format( "cannot update BF1942_STATUS: %s", APP.db->get_error() ) );
 		}
 	} else {
-		BF1942_STATUS s {};
-		s.server_ip = server_ip;
-		s.hostname = get_field( fields, "hostname" );
-		s.mapname = get_field( fields, "mapname" );
-		s.gametype = get_field( fields, "gametype" );
-		s.hostport = to_int( get_field( fields, "hostport" ) );
-		s.numplayers = to_int( get_field( fields, "numplayers" ) );
-		s.maxplayers = to_int( get_field( fields, "maxplayers" ) );
-		s.last_seen = now;
 		s.setHist( BASE::HIST_TYPE::HIST_AN, "broker" );
 		s.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
 		s.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
-
 		if( !StdSqlInsert( *APP.db, s ) ) {
 			throw STDERR_EXCEPTION( format( "cannot insert into BF1942_STATUS: %s", APP.db->get_error() ) );
 		}

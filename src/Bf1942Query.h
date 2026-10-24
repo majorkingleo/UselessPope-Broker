@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BasicThread.h"
+#include "bindtypes.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -29,8 +30,13 @@ public:
 private:
 	std::vector<Target> targets_from_db();
 	void query_and_store( const Target & target );
+	void finalize_round( const std::string & server_ip, const BF1942_STATUS & old );
 
-	void store_status( const std::string & server_ip, const std::map<std::string,std::string> & fields );
+	void store_status( const std::string & server_ip,
+	                   const std::map<std::string,std::string> & fields,
+	                   const BF1942_STATUS & old,
+	                   bool has_old,
+	                   bool round_ended );
 	void store_players( const std::string & server_ip, const std::map<std::string,std::string> & fields );
 
 	void log_message( const char * file, unsigned line, const char * function, const std::string & message );

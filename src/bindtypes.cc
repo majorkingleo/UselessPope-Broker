@@ -191,6 +191,11 @@ BF1942_STATUS::BF1942_STATUS()
   hostport( this, "hostport" ),
   numplayers( this, "numplayers" ),
   maxplayers( this, "maxplayers" ),
+  round_time_remain( this, "round_time_remain" ),
+  tickets1( this, "tickets1" ),
+  tickets2( this, "tickets2" ),
+  status( this, "status" ),
+  round_started_at( this, "round_started_at" ),
   last_seen( this, "last_seen" )
 {
 
@@ -209,6 +214,30 @@ BF1942_PLAYER::BF1942_PLAYER()
   last_seen( this, "last_seen" )
 {
 
+}
+
+BF1942_GAME::BF1942_GAME()
+: BASE( "BF1942_GAME", this ),
+  server_ip( this, "server_ip", IP_ADDRESS_LEN ),
+  mapname( this, "mapname", BF1942_MAPNAME_LEN ),
+  gametype( this, "gametype", BF1942_GAMETYPE_LEN ),
+  started_at( this, "started_at" ),
+  ended_at( this, "ended_at" ),
+  winning_team( this, "winning_team" ),
+  tickets1( this, "tickets1" ),
+  tickets2( this, "tickets2" ),
+  victory_type( this, "victory_type", BF1942_VICTORY_TYPE_LEN )
+{
+
+}
+
+P_BF1942_PLAYER::P_BF1942_PLAYER()
+: BF1942_PLAYER(),
+  game_id( this, "game_id" ),
+  mapname( this, "mapname", BF1942_MAPNAME_LEN ),
+  winning_team( this, "winning_team" )
+{
+	set_table_name( "P_BF1942_PLAYER" );
 }
 
 static std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > & forkeys, bool add_drop_table )
@@ -327,6 +356,8 @@ std::string create_sql( bool add_drop_table )
   BF1942_SERVER				bf1942_server;
   BF1942_STATUS				bf1942_status;
   BF1942_PLAYER				bf1942_player;
+  BF1942_GAME				bf1942_game;
+  P_BF1942_PLAYER			p_bf1942_player;
 
   P_PLAY_QUEUE_CHUNKS 		p_play_queue_chunks;
   P_PLAY_QUEUE_MUSIC 		p_play_queue_music;
@@ -346,9 +377,14 @@ std::string create_sql( bool add_drop_table )
   s += create_sql_statement( &bf1942_server,			forkeys, add_drop_table );
   s += create_sql_statement( &bf1942_status,			forkeys, add_drop_table );
   s += create_sql_statement( &bf1942_player,			forkeys, add_drop_table );
+  s += create_sql_statement( &bf1942_game,			forkeys, add_drop_table );
+  s += create_sql_statement( &p_bf1942_player,		forkeys, add_drop_table );
   s += "ALTER TABLE `BF1942_SERVER` ADD INDEX IF NOT EXISTS `idx_BF1942_SERVER_guid`(`guid`);\n";
   s += "ALTER TABLE `BF1942_STATUS` ADD INDEX IF NOT EXISTS `idx_BF1942_STATUS_server_ip`(`server_ip`);\n";
   s += "ALTER TABLE `BF1942_PLAYER` ADD INDEX IF NOT EXISTS `idx_BF1942_PLAYER_server_player`(`server_ip`,`player_name`);\n";
+  s += "ALTER TABLE `BF1942_GAME` ADD INDEX IF NOT EXISTS `idx_BF1942_GAME_server_ip`(`server_ip`);\n";
+  s += "ALTER TABLE `P_BF1942_PLAYER` ADD INDEX IF NOT EXISTS `idx_P_BF1942_PLAYER_game`(`game_id`);\n";
+  s += "ALTER TABLE `P_BF1942_PLAYER` ADD INDEX IF NOT EXISTS `idx_P_BF1942_PLAYER_game_player`(`game_id`,`player_name`);\n";
 
   s += create_sql_statement( &p_play_queue_chunks, 		forkeys, add_drop_table );
   s += create_sql_statement( &p_play_queue_music,		forkeys, add_drop_table );
