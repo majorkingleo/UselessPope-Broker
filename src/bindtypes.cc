@@ -158,6 +158,16 @@ SERMON::SERMON()
 
 }
 
+BF1942_SERVER::BF1942_SERVER()
+: BASE( "BF1942_SERVER", this ),
+  name( this, "name", BF1942_SERVER_NAME_LEN ),
+  guid( this, "guid", BF1942_GUID_LEN ),
+  ip_address( this, "ip_address", IP_ADDRESS_LEN ),
+  last_seen( this, "last_seen" )
+{
+
+}
+
 static std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > & forkeys, bool add_drop_table )
 {
   std::string s;
@@ -271,6 +281,7 @@ std::string create_sql( bool add_drop_table )
   CONFIG					config;
   STATS						stats;
   SERMON					sermon;
+  BF1942_SERVER				bf1942_server;
 
   P_PLAY_QUEUE_CHUNKS 		p_play_queue_chunks;
   P_PLAY_QUEUE_MUSIC 		p_play_queue_music;
@@ -287,6 +298,8 @@ std::string create_sql( bool add_drop_table )
   s += create_sql_statement( &config,					forkeys, add_drop_table );
   s += create_sql_statement( &stats,					forkeys, add_drop_table );
   s += create_sql_statement( &sermon,					forkeys, add_drop_table );
+  s += create_sql_statement( &bf1942_server,			forkeys, add_drop_table );
+  s += "ALTER TABLE `BF1942_SERVER` ADD INDEX IF NOT EXISTS `idx_BF1942_SERVER_guid`(`guid`);\n";
 
   s += create_sql_statement( &p_play_queue_chunks, 		forkeys, add_drop_table );
   s += create_sql_statement( &p_play_queue_music,		forkeys, add_drop_table );

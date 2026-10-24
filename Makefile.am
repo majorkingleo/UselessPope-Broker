@@ -13,6 +13,8 @@ broker_SOURCES=\
 		src/FetchSound.cc \
 		src/ButtonListener.h \
 		src/ButtonListener.cc \
+		src/Bf1942Discover.h \
+		src/Bf1942Discover.cc \
 		src/FetchButton.h \
 		src/FetchButton.cc \
 		src/PlayAnimation.h \

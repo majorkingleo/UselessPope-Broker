@@ -38,7 +38,7 @@ and the queue-draining logic.
 | Schema source | `create.sql` | Authoritative `CREATE TABLE` script (also printed by `./broker -create-sql`). |
 | Answers file | `papst_answers.txt` | Song-title → pope reaction mapping (consumed by `FetchAnswers`). |
 
-## The nine worker threads
+## The ten worker threads
 
 Started from `main.cc`; each is a `BasicThread` that loops on `APP.quit_request`:
 
@@ -46,6 +46,7 @@ Started from `main.cc`; each is a `BasicThread` that loops on `APP.quit_request`
 |------------------|-------|--------------|
 | Answers | `FetchAnswers` | Loads `papst_answers.txt`; every 1 min matches recently played chunks → writes `SERMON` reaction rows, links via `P_PLAY_QUEUE_CHUNKS.sermon_reaction_idx`. |
 | UDP listener | `ButtonListener` | Boost.Asio UDP server on `[network].UDPListenPort` (default 22000); parses remote-button datagrams into `BUTTON_QUEUE`. |
+| BF1942 discovery | `Bf1942Discover` | Passive UDP listener on `[network].BF1942DiscoverPort` (default 54915) for BF1942 LAN beacons; parses server name + GUID and upserts into the `BF1942_SERVER` registry (keyed by `guid`, `last_seen` refreshed). Disable with `[network].BF1942DiscoverEnabled=0`. |
 | Button worker | `FetchButton` | Polls `BUTTON_QUEUE`, maps MAC/username → `USERS_ACTION`, resolves audio file, enqueues `PLAY_QUEUE_CHUNKS`, archives to `P_BUTTON_QUEUE`. Physical-button clicks are counted (1–5) and select the N-th case-insensitively sorted `audio_main` file. |
 | Sound player | `PlaySound` | Owns SDL2_mixer; plays music + chunks from in-memory lists. |
 | Sound fetcher | `FetchSound` | Polls `PLAY_QUEUE_MUSIC` + `PLAY_QUEUE_CHUNKS` → `PlaySound`, archives to `P_*`. |
@@ -96,6 +97,8 @@ Defaults are defined in `config/*.cc` and overridden by the INI file:
 | `database` | `instance` | `pope` | database name (live: `papst`) |
 | `database` | `retry_db_timeout` | `60` | seconds to keep retrying DB logon |
 | `network` | `UDPListenPort` | `22000` | remote-button UDP port |
+| `network` | `BF1942DiscoverPort` | `54915` | BF1942 LAN beacon port (passive discovery) |
+| `network` | `BF1942DiscoverEnabled` | `true` | enable/disable the BF1942 discovery thread |
 | `animations` | `python` | `/home/papst/ypy/bin/python` | interpreter used to launch animations |
 | `pope_reacts` | `answers` | `/home/papst/UselessPope-Broker/papst_answers.txt` | pope reaction mapping |
 
@@ -109,7 +112,7 @@ Defaults are defined in `config/*.cc` and overridden by the INI file:
 ./broker -help                 show usage
 ./broker -version              show version
 ./broker -debug                print CPPDEBUG messages
-./broker -log-file FILE       append debug output to a timestamped log file
+./broker -log-file FILE       override the log file (default ~/.broker/broker.log)
 ./broker -enqueue-music FILE   insert FILE into PLAY_QUEUE_MUSIC (then exit)
 ./broker -enqueue-chunk FILE   insert FILE into PLAY_QUEUE_CHUNKS (then exit)
 ./broker -enqueue-animation F  insert FILE into PLAY_QUEUE_ANIMATION (then exit)
@@ -193,8 +196,10 @@ static libraries linked into `broker`.
   backend (timestamped `[YYYY-MM-DD HH:MM:SS] file:line message`). Wired once in
   `main.cc` via `logInit(logFile, console)` + a `LogSession` guard (which drains
   and joins the logger thread on every exit path). `-debug` mirrors to stdout;
-  `-log-file` enables the file backend. `common/diag.h` adds per-thread
-  `Heartbeat`/`threadCpuMs` diagnostics behind `LOG_TIMING`.
+  the file backend is always on and writes to `~/.broker/broker.log` (the
+  `~/.broker` directory is created on startup), rotating the active file to
+  `broker.log.1` at 10 MB. `-log-file` overrides the path. `common/diag.h` adds
+  per-thread `Heartbeat`/`threadCpuMs` diagnostics behind `LOG_TIMING`.
 - **Schema is authoritative in `create.sql`** and must stay in sync with
   `bindtypes.h` (`create_sql()` in `bindtypes.cc`) and the `uselesspope-database`
   skill in the `UselessPope-www` repo.

@@ -4,6 +4,9 @@
 #include <ColoredOutput.h>
 #include <DetectLocale.h>
 #include <format.h>
+#include <cstdlib>
+#include <pwd.h>
+#include <unistd.h>
 #include "PlaySound.h"
 #include "App.h"
 #include <filesystem>
@@ -16,6 +19,7 @@
 #include <dbi.h>
 #include "FetchSound.h"
 #include "ButtonListener.h"
+#include "Bf1942Discover.h"
 #include "FetchButton.h"
 #include <thread>
 #include <chrono>
@@ -150,6 +154,33 @@ static void insert_default_values()
 	insert_stats( FetchStats::SNAKE_P2_WINS, "0" );
 }
 
+// Default log location: ~/.broker/broker.log, with the directory created on
+// startup. Falls back to ./.broker if the home directory cannot be determined.
+static std::string default_broker_log_file()
+{
+	std::string home;
+
+	if( const char * env = std::getenv( "HOME" ); env != nullptr && *env != '\0' ) {
+		home = env;
+	} else if( struct passwd * pw = getpwuid( getuid() ); pw != nullptr && pw->pw_dir != nullptr ) {
+		home = pw->pw_dir;
+	}
+
+	std::filesystem::path dir = home.empty()
+		? std::filesystem::path( ".broker" )
+		: std::filesystem::path( home ) / ".broker";
+
+	std::error_code ec;
+	std::filesystem::create_directories( dir, ec );
+
+	if( ec ) {
+		std::cerr << "warning: cannot create log directory '" << dir.string()
+		          << "': " << ec.message() << std::endl;
+	}
+
+	return ( dir / "broker.log" ).string();
+}
+
 int main( int argc, char **argv )
 {
 	Co co;
@@ -263,7 +294,7 @@ int main( int argc, char **argv )
 
 		const std::string log_file = o_log_file.isSet() && !o_log_file.getValues()->empty()
 			? o_log_file.getValues()->front()
-			: std::string();
+			: default_broker_log_file();
 
 		logInit( log_file, o_debug.getState() );
 		LogSession log_session;
@@ -401,6 +432,15 @@ int main( int argc, char **argv )
 			ButtonListener listener( cfg_net.UDPListenPort );
 			auto token = APP.db.get_dispose_token();
 			listener.run();
+		});
+
+		threads.emplace_back([&cfg_net]() {
+			if( !cfg_net.isBF1942DiscoverEnabled() ) {
+				return;
+			}
+			auto token = APP.db.get_dispose_token();
+			Bf1942Discover discover( cfg_net.BF1942DiscoverPort );
+			discover.run();
 		});
 
 		threads.emplace_back([]() {

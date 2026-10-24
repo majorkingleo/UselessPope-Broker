@@ -9,9 +9,13 @@ Configfile2::SectionKey<ConfigSectionNetwork> ConfigSectionNetwork::KEY( "networ
 
 ConfigSectionNetwork::ConfigSectionNetwork( const std::string & name_, Configfile2 *config_file_ )
 : Section( name_, config_file_ ),
-  UDPListenPort( "UDPListenPort", 22000 )
+  UDPListenPort( "UDPListenPort", 22000 ),
+  BF1942DiscoverPort( "BF1942DiscoverPort", 54915 ),
+  BF1942DiscoverEnabled( "BF1942DiscoverEnabled", true )
 {
 	registerValue( &UDPListenPort );
+	registerValue( &BF1942DiscoverPort );
+	registerValue( &BF1942DiscoverEnabled );
 }
 
 void ConfigSectionNetwork::registerSection( Configfile2 *config_file )

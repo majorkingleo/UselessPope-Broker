@@ -11,6 +11,8 @@ const unsigned NAME_LEN=20;
 const unsigned FILE_LEN=1024;
 const unsigned MAC_ADDRESS_LEN=17;
 const unsigned IP_ADDRESS_LEN=15;
+const unsigned BF1942_GUID_LEN=64;
+const unsigned BF1942_SERVER_NAME_LEN=128;
 const unsigned ACTION_LEN=50;
 const unsigned CONFIG_KEY_LEN=50;
 const unsigned CONFIG_VALUE_LEN=FILE_LEN;
@@ -353,4 +355,27 @@ public:
 };
 
 std::string create_sql( bool add_drop_table = false );
+
+class BF1942_SERVER : public BASE
+{
+public:
+	DBTypeVarChar	name;		// server name (beacon byte 1..NUL)
+	DBTypeVarChar	guid;		// "{...}" identifier (unique key)
+	DBTypeVarChar	ip_address;	// source IP of the beacon
+	DBTypeDateTime	last_seen;	// most recent beacon timestamp
+
+public:
+	BF1942_SERVER();
+	BF1942_SERVER( const BF1942_SERVER & b )
+	: BF1942_SERVER()
+	{
+		BASE::operator=(b);
+	}
+
+	BF1942_SERVER & operator=( const BF1942_SERVER & b )
+	{
+	  BASE::operator=(b);
+	  return *this;
+	}
+};
 
