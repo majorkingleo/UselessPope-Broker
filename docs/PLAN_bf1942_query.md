@@ -51,6 +51,11 @@ Gotchas verified in §5 of the protocol doc:
   not the classic GameSpy 23000; a server with querying disabled times out.
 - The response may arrive in multiple datagrams; accumulate until `\final\` /
   `\queryid\`.
+- **Not every server returns players in `\status\`.** The live server
+  (`lan 2.1`, FH mod) answers `\status\` with server + rules only and exposes
+  the player list under `\players\`. The client requests **both** and merges the
+  player fields, so servers that include players in `\status\` (the reference
+  server) keep working.
 
 ## 3. Decisions (recommendations)
 
@@ -204,9 +209,12 @@ private:
 Key pieces (port of `bf1942_query.cc`, Windows branches dropped):
 
 - `parse_fields()` — verbatim backslash parser.
-- `query(host, port, timeout_s)` — UDP `\status\`, accumulate datagrams until
-  `\final\`/`\queryid\` or the `SO_RCVTIMEO` timeout; return the field map, or
-  `std::nullopt` on timeout/no response.
+- `query_fields(host, port, timeout_s, request)` — one UDP request, accumulate
+  datagrams until `\final\`/`\queryid\` or the `SO_RCVTIMEO` timeout; return the
+  field map, or `std::nullopt` on timeout/no response.
+- `fetch_snapshot(host, port, timeout_s)` — sends `\status\` (server + rules),
+  then `\players\` (player rows), and folds the player fields in. Some server
+  builds answer only server/rules for `\status\`; others include players there.
 - `run()` — loop on `APP.quit_request`; each cycle build the target list
   (static ∪ `SELECT ip_address FROM BF1942_SERVER`), then `query_and_store()` each.
   Sleep `m_interval_s` in small slices so quit stays responsive.
@@ -305,6 +313,8 @@ Parsing rules:
 2. A trailing key with no value is stored with an empty value.
 3. Accumulate datagrams until `\final\` or `\queryid\` is seen, or the timeout.
 4. Ignore keys that are not `playername_*`/`*_<n>` when building player rows.
+5. Request `\status\` **and** `\players\`; merge the player fields only when the
+   `\players\` reply contains `playername_0` (see §2).
 
 ## 7. Upsert logic
 

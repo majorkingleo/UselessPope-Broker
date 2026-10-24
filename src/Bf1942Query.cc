@@ -95,9 +95,10 @@ std::map<std::string,std::string> parse_fields( const std::string & response )
 	return fields;
 }
 
-std::optional<std::map<std::string,std::string>> query_status( const std::string & host,
+std::optional<std::map<std::string,std::string>> query_fields( const std::string & host,
                                                               int port,
-                                                              int timeout_s )
+                                                              int timeout_s,
+                                                              const std::string & request )
 {
 	addrinfo hints = {};
 	hints.ai_family = AF_INET;
@@ -128,9 +129,8 @@ std::optional<std::map<std::string,std::string>> query_status( const std::string
 	timeval tv = { t, 0 };
 	setsockopt( sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof( tv ) );
 
-	const char request[] = "\\status\\";
-	const int sent = static_cast<int>( sendto( sock, request,
-		static_cast<int>( std::strlen( request ) ), 0,
+	const int sent = static_cast<int>( sendto( sock, request.data(),
+		static_cast<int>( request.size() ), 0,
 		ai->ai_addr, static_cast<socklen_t>( ai->ai_addrlen ) ) );
 	if( sent < 0 ) {
 		close( sock );
@@ -159,6 +159,27 @@ std::optional<std::map<std::string,std::string>> query_status( const std::string
 		return std::nullopt;
 
 	return parse_fields( response );
+}
+
+// Some server builds answer only server/rules for \status\ and expose the
+// player list under \players\; others (the reference server) include the
+// players in \status\ itself. Ask for both and fold the player fields in, so
+// one code path works for either kind.
+std::optional<std::map<std::string,std::string>> fetch_snapshot( const std::string & host,
+                                                                 int port,
+                                                                 int timeout_s )
+{
+	auto status = query_fields( host, port, timeout_s, "\\status\\" );
+	if( !status )
+		return std::nullopt;
+
+	auto players = query_fields( host, port, timeout_s, "\\players\\" );
+	if( players && players->count( "playername_0" ) ) {
+		for( const auto & kv : *players )
+			(*status)[kv.first] = kv.second;
+	}
+
+	return status;
 }
 
 } // namespace
@@ -259,7 +280,7 @@ std::vector<Bf1942Query::Target> Bf1942Query::targets_from_db()
 void Bf1942Query::query_and_store( const Target & target )
 {
 	try {
-		auto fields = query_status( target.host, target.port, m_timeout_s );
+		auto fields = fetch_snapshot( target.host, target.port, m_timeout_s );
 		if( !fields ) {
 			log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
 				format( "BF1942 query: no response from %s:%d (query disabled or wrong port?)",
@@ -407,7 +428,7 @@ void Bf1942Query::log_message( const char * file, unsigned line, const char * fu
 
 bool Bf1942Query::query_once( const std::string & host, int port, int timeout_s )
 {
-	auto fields = query_status( host, port, timeout_s );
+	auto fields = fetch_snapshot( host, port, timeout_s );
 	if( !fields ) {
 		std::cerr << "error: no response from " << host << ':' << port
 		          << " (query disabled or wrong port?)" << std::endl;
