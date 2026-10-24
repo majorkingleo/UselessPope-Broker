@@ -21,6 +21,10 @@ broker_SOURCES=\
 		src/FetchAnimation.cc \
 		src/FetchAnswers.h \
 		src/FetchAnswers.cc \
+		src/UsernameResolver.h \
+		src/UsernameResolver.cc \
+		src/ResolveUsernames.h \
+		src/ResolveUsernames.cc \
 		src/FetchStats.h \
 		src/FetchStats.cc \
 		src/AutoStopFog.h \

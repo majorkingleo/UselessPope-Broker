@@ -7,6 +7,7 @@
 #include <utf8_util.h>
 #include <chrono>
 #include "App.h"
+#include "UsernameResolver.h"
 #include <thread>
 #include <list>
 #include <stderr_exception.h>
@@ -244,7 +245,14 @@ void FetchAnswers::fetch_last_played_chunks()
 						  sql,
 						  DBInList<DBBindType>() >> chunk, limit ) > 0 ) {
 
-			auto o_sermon = get_reaction_from_song( chunk.file.data, chunk.hist_an_user.data );
+			const std::string username = UsernameResolver::resolve(
+					chunk.file.data, chunk.hist_an_user.data );
+
+			// Also fix the archived chunk, so later reporting sees the same
+			// actor that is written into the protocol entry.
+			chunk.hist_an_user.data = username;
+
+			auto o_sermon = get_reaction_from_song( chunk.file.data, username );
 
 			if( !o_sermon ) {
 				continue;

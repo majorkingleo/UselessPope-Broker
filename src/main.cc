@@ -23,6 +23,8 @@
 #include "FetchAnswers.h"
 #include "FetchStats.h"
 #include "AutoStopFog.h"
+#include "ResolveUsernames.h"
+#include "UsernameResolver.h"
 
 using namespace Tools;
 using namespace std::chrono_literals;
@@ -220,6 +222,11 @@ int main( int argc, char **argv )
 		o_enqueue_animation.setMaxValues(1);
 		oc_main.addOptionR( &o_enqueue_animation );
 
+		Arg::FlagOption o_resolve_usernames("resolve-usernames");
+		o_resolve_usernames.setDescription("fill missing usernames in archived chunks and SERMON");
+		o_resolve_usernames.setRequired(false);
+		oc_main.addOptionR( &o_resolve_usernames );
+
 		DetectLocale dl;
 
 		const unsigned int console_width = 80;
@@ -288,17 +295,25 @@ int main( int argc, char **argv )
 			}
 		}
 
+		if( o_resolve_usernames.getState() ) {
+			resolve_protocol_usernames();
+			return 0;
+		}
+
 		if( o_enqueue_chunk.isSet() ) {
 			for( const auto & file : *o_enqueue_chunk.getValues() ) {
 				if( !std::filesystem::exists(file) ) {
 					throw STDERR_EXCEPTION( Tools::format( "file '%s' does not exists", file ) );
 				}
 
+				const std::string abs_file = std::filesystem::absolute( file ).string();
+				const std::string username = UsernameResolver::from_file( abs_file );
+
 				PLAY_QUEUE_CHUNKS pqc {};
-				pqc.file = std::filesystem::absolute( file ).string();
-				pqc.setHist(BASE::HIST_TYPE::HIST_AN);
-				pqc.setHist(BASE::HIST_TYPE::HIST_AE);
-				pqc.setHist(BASE::HIST_TYPE::HIST_LO);
+				pqc.file = abs_file;
+				pqc.setHist(BASE::HIST_TYPE::HIST_AN, username);
+				pqc.setHist(BASE::HIST_TYPE::HIST_AE, username);
+				pqc.setHist(BASE::HIST_TYPE::HIST_LO, username);
 
 				if( !StdSqlInsert( *APP.db, pqc ) ) {
 					throw STDERR_EXCEPTION( Tools::format( "cannot enqueue file '%s' '%s'", file, APP.db->get_error() ) );
@@ -315,11 +330,14 @@ int main( int argc, char **argv )
 					throw STDERR_EXCEPTION( Tools::format( "file '%s' does not exists", file ) );
 				}
 
+				const std::string abs_file = std::filesystem::absolute( file ).string();
+				const std::string username = UsernameResolver::from_file( abs_file );
+
 				PLAY_QUEUE_MUSIC pqm {};
-				pqm.file = std::filesystem::absolute( file ).string();
-				pqm.setHist(BASE::HIST_TYPE::HIST_AN);
-				pqm.setHist(BASE::HIST_TYPE::HIST_AE);
-				pqm.setHist(BASE::HIST_TYPE::HIST_LO);
+				pqm.file = abs_file;
+				pqm.setHist(BASE::HIST_TYPE::HIST_AN, username);
+				pqm.setHist(BASE::HIST_TYPE::HIST_AE, username);
+				pqm.setHist(BASE::HIST_TYPE::HIST_LO, username);
 
 				if( !StdSqlInsert( *APP.db, pqm ) ) {
 					throw STDERR_EXCEPTION( Tools::format( "cannot enqueue file '%s' '%s'", file, APP.db->get_error() ) );
@@ -336,11 +354,14 @@ int main( int argc, char **argv )
 					throw STDERR_EXCEPTION( Tools::format( "file '%s' does not exists", file ) );
 				}
 
+				const std::string abs_file = std::filesystem::absolute( file ).string();
+				const std::string username = UsernameResolver::from_file( abs_file );
+
 				PLAY_QUEUE_ANIMATION pqa {};
-				pqa.file = std::filesystem::absolute( file ).string();
-				pqa.setHist(BASE::HIST_TYPE::HIST_AN);
-				pqa.setHist(BASE::HIST_TYPE::HIST_AE);
-				pqa.setHist(BASE::HIST_TYPE::HIST_LO);
+				pqa.file = abs_file;
+				pqa.setHist(BASE::HIST_TYPE::HIST_AN, username);
+				pqa.setHist(BASE::HIST_TYPE::HIST_AE, username);
+				pqa.setHist(BASE::HIST_TYPE::HIST_LO, username);
 
 				if( !StdSqlInsert( *APP.db, pqa ) ) {
 					throw STDERR_EXCEPTION( Tools::format( "cannot enqueue file '%s' '%s'", file, APP.db->get_error() ) );

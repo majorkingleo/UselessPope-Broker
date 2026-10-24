@@ -112,6 +112,7 @@ Defaults are defined in `config/*.cc` and overridden by the INI file:
 ./broker -enqueue-music FILE   insert FILE into PLAY_QUEUE_MUSIC (then exit)
 ./broker -enqueue-chunk FILE   insert FILE into PLAY_QUEUE_CHUNKS (then exit)
 ./broker -enqueue-animation F  insert FILE into PLAY_QUEUE_ANIMATION (then exit)
+./broker -resolve-usernames    backfill missing usernames in archived chunks and SERMON (then exit)
 ./broker -create-sql           print the CREATE TABLE schema
 ./broker -with-drop-table      (with -create-sql) prepend DROP TABLE
 ```
@@ -198,6 +199,13 @@ static libraries linked into `broker`.
 - **Add a reaction keyword:** edit `papst_answers.txt` — song title on a line,
   indented reaction lines below it (see `FetchAnswers::fetch_from_file`).
 - **Enqueue a sound without the web UI:** `./broker -enqueue-chunk /path/file.wav`.
+  The missing audit user is taken from the file path (`/home/<user>/…`) or the
+  file owner, so CLI/cron enqueues (e.g. the hourly clock) show up as `papst`
+  instead of an empty actor in the protocol.
+- **Backfill protocol actors:** run `./broker -resolve-usernames`. It resolves
+  `P_PLAY_QUEUE_CHUNKS.hist_an_user` from the stored file path/owner and rewrites
+  `SERMON.action` entries that still start with `" hat …"`. `FetchAnswers` applies
+  the same resolution to new chunks, so the task is only needed for old rows.
 
 ## Cross-repo relationship (summary)
 

@@ -27,11 +27,17 @@ Link libraries: `SDL2_mixer` + `mysqlclient` (via `pkg-config`), Boost.Asio.
 4. Connect to MariaDB, retrying up to `retry_db_timeout` seconds (500 ms sleep
    between attempts) — `APP.reconnect_db` uses `Database::DB_MYSQL`.
 5. If any `-enqueue-*` flag is set, insert the row and **exit** (one-shot mode).
-6. `insert_default_values()` — seeds missing `CONFIG`/`STATS` keys (idempotent:
+   The audit user is resolved by `UsernameResolver` from the file path
+   (`/home/<user>/…`) or the file/directory owner, so cron enqueues are not
+   stored with an empty `hist_*_user`.
+6. If `-resolve-usernames` is set, run the one-shot `ResolveUsernames` task and
+   exit. It fills `P_PLAY_QUEUE_CHUNKS.hist_an_user` for old rows and rewrites
+   `SERMON.action` entries whose actor is still empty.
+7. `insert_default_values()` — seeds missing `CONFIG`/`STATS` keys (idempotent:
    existing keys are left alone, except `fog` which is force-updated).
-7. Validate `pope_reacts.answers` file exists.
-8. Start the 9 worker threads (see SKILL.md table).
-9. Busy-wait on `SDL_QuitRequested()` every 250 ms; then set
+8. Validate `pope_reacts.answers` file exists.
+9. Start the 9 worker threads (see SKILL.md table).
+10. Busy-wait on `SDL_QuitRequested()` every 250 ms; then set
    `APP.quit_request = true` and join all threads.
 
 ## Global state (`src/App.h`)
@@ -93,7 +99,9 @@ that is also stored in `create.sql`.
     `hist_an_zeit >= NOW() - 10 MINUTE`.
   - For each, `get_reaction_from_song(file, hist_an_user)` matches the played
     file's title keywords against the answer file; best keyword match wins (ties
-    broken randomly).
+    broken randomly). Before that, `UsernameResolver::resolve(file, user)` fills
+    an empty actor from the file path/owner, so the chunk and the protocol entry
+    both carry a username.
   - Writes a `SERMON` row (`action` = "`<user>` hat `<title>` abgespielt.",
     `reaction` = random intro + matched answer), then updates
     `chunk.sermon_reaction_idx` to the new SERMON `idx`.
