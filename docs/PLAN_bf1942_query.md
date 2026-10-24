@@ -208,7 +208,7 @@ Key pieces (port of `bf1942_query.cc`, Windows branches dropped):
   `\final\`/`\queryid\` or the `SO_RCVTIMEO` timeout; return the field map, or
   `std::nullopt` on timeout/no response.
 - `run()` — loop on `APP.quit_request`; each cycle build the target list
-  (static ∪ `SELECT server_ip FROM BF1942_SERVER`), then `query_and_store()` each.
+  (static ∪ `SELECT ip_address FROM BF1942_SERVER`), then `query_and_store()` each.
   Sleep `m_interval_s` in small slices so quit stays responsive.
 - `query_and_store()` — parse fields → `store_status()` + `store_players()`;
   wrap in `try/catch` so a DB error is logged, never fatal.
@@ -224,7 +224,7 @@ positionally and would mismatch a single-column SELECT). Use the raw per-thread
 select instead:
 
 ```cpp
-auto erg = APP.db->select( "SELECT `server_ip` FROM `BF1942_SERVER`" );
+auto erg = APP.db->select( "SELECT `ip_address` FROM `BF1942_SERVER`" );
 if( !erg ) return {};
 std::vector<Target> out;
 for( const auto & row : erg.row_list.values )   // vector<vector<string>>
@@ -348,7 +348,8 @@ upsert runs — the stale player rows stay until the consumer filters them by
 - **Duplicate player names** on one server would merge under the
   `(server_ip, player_name)` key; `slot` is stored for order. Acceptable edge
   case; note it for the www side.
-- **No GUID in the query response** — link to discovery by `server_ip`.
+- **No GUID in the query response** — link to discovery by IP
+  (`BF1942_STATUS.server_ip` ↔ `BF1942_SERVER.ip_address`).
 - **Timeouts are normal** (query disabled or wrong port): log at `CPPDEBUG`, skip
   the target, keep the loop running.
 - **Untrusted strings** (hostnames, player names) go through the DB bind layer

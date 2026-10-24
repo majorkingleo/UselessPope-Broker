@@ -16,8 +16,6 @@
 
 #include "App.h"
 #include "bindtypes.h"
-#include "AsyncFileLogger.h"
-#include "AsyncOutDebug.h"
 #include "logging.h"
 
 using namespace Tools;
@@ -55,41 +53,13 @@ bool parse_beacon( const char * data, std::size_t len, Beacon & out )
 	return !out.name.empty();
 }
 
-// Same timestamp format BASE::setHist() writes into the hist_* columns, which
-// MariaDB accepts for a DATETIME column.
-std::string now_string()
-{
-	std::time_t t = std::time( nullptr );
-	std::tm * tm = std::localtime( &t );
-
-	return format( "%d-%02d-%02d %02d:%02d:%02d",
-		tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday,
-		tm->tm_hour, tm->tm_min, tm->tm_sec );
-}
-
 } // namespace
 
 Bf1942Discover::Bf1942Discover( unsigned port )
 : BasicThread( "Bf1942Discover" ),
   m_port( port )
 {
-	// Dedicated log for the BF network tasks, separate from broker.log.
-	try {
-		m_file_log = std::make_unique<AsyncOut::FileLogger>( broker_log_path( "bf-network.log" ) );
-		m_debug = std::make_unique<AsyncOut::Debug>();
-		m_debug->subscribe( m_file_log.get() );
-	} catch( const std::exception & ) {
-		// Backend first, then the frontend that owns the subscriber registry.
-		m_file_log.reset();
-		m_debug.reset();
-	}
-}
 
-Bf1942Discover::~Bf1942Discover()
-{
-	// Backend first (it unsubscribes), then the frontend.
-	m_file_log.reset();
-	m_debug.reset();
 }
 
 void Bf1942Discover::run()
@@ -130,18 +100,6 @@ void Bf1942Discover::run()
 
 	while( !APP.quit_request ) {
 		io_context.run_for( 300ms );
-
-		// This thread produces the messages, so draining its own log here needs
-		// no second thread. Messages are queued by received_data() above.
-		if( m_file_log ) {
-			m_file_log->log();
-			m_file_log->flush();
-		}
-	}
-
-	if( m_file_log ) {
-		m_file_log->log();
-		m_file_log->flush();
 	}
 }
 
@@ -196,10 +154,10 @@ void Bf1942Discover::received_data( const std::string & data, const std::string 
 
 void Bf1942Discover::log_message( const char * file, unsigned line, const char * function, const std::string & message )
 {
-	if( m_debug ) {
-		m_debug->add( file, line, function, message );
+	if( Tools::Debug * bf = bf_network_log() ) {
+		bf->add( file, line, function, message );
 	} else if( Tools::x_debug ) {
-		// Dedicated log could not be opened: fall back to the main logger.
+		// Dedicated log unavailable: fall back to the main logger.
 		Tools::x_debug->add( file, line, function, message );
 	}
 }

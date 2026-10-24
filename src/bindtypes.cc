@@ -1,5 +1,19 @@
 #include "bindtypes.h"
 
+std::string now_string()
+{
+  time_t t = time( NULL );
+  struct tm * tm = localtime( &t );
+
+  return format( "%d-%02d-%02d %02d:%02d:%02d",
+                 tm->tm_year + 1900,
+                 tm->tm_mon + 1,
+                 tm->tm_mday,
+                 tm->tm_hour,
+                 tm->tm_min,
+                 tm->tm_sec );
+}
+
 const std::string JANEIN::STYPES[] = { "NEIN", "JA" };
 
 Forkey::Forkey( DBBindType *base, 
@@ -168,6 +182,35 @@ BF1942_SERVER::BF1942_SERVER()
 
 }
 
+BF1942_STATUS::BF1942_STATUS()
+: BASE( "BF1942_STATUS", this ),
+  server_ip( this, "server_ip", IP_ADDRESS_LEN ),
+  hostname( this, "hostname", BF1942_HOSTNAME_LEN ),
+  mapname( this, "mapname", BF1942_MAPNAME_LEN ),
+  gametype( this, "gametype", BF1942_GAMETYPE_LEN ),
+  hostport( this, "hostport" ),
+  numplayers( this, "numplayers" ),
+  maxplayers( this, "maxplayers" ),
+  last_seen( this, "last_seen" )
+{
+
+}
+
+BF1942_PLAYER::BF1942_PLAYER()
+: BASE( "BF1942_PLAYER", this ),
+  server_ip( this, "server_ip", IP_ADDRESS_LEN ),
+  player_name( this, "player_name", BF1942_PLAYER_NAME_LEN ),
+  slot( this, "slot" ),
+  score( this, "score" ),
+  kills( this, "kills" ),
+  deaths( this, "deaths" ),
+  ping( this, "ping" ),
+  team( this, "team" ),
+  last_seen( this, "last_seen" )
+{
+
+}
+
 static std::string create_sql_statement( DBBindType *table, std::vector< Ref<Forkey> > & forkeys, bool add_drop_table )
 {
   std::string s;
@@ -282,6 +325,8 @@ std::string create_sql( bool add_drop_table )
   STATS						stats;
   SERMON					sermon;
   BF1942_SERVER				bf1942_server;
+  BF1942_STATUS				bf1942_status;
+  BF1942_PLAYER				bf1942_player;
 
   P_PLAY_QUEUE_CHUNKS 		p_play_queue_chunks;
   P_PLAY_QUEUE_MUSIC 		p_play_queue_music;
@@ -299,7 +344,11 @@ std::string create_sql( bool add_drop_table )
   s += create_sql_statement( &stats,					forkeys, add_drop_table );
   s += create_sql_statement( &sermon,					forkeys, add_drop_table );
   s += create_sql_statement( &bf1942_server,			forkeys, add_drop_table );
+  s += create_sql_statement( &bf1942_status,			forkeys, add_drop_table );
+  s += create_sql_statement( &bf1942_player,			forkeys, add_drop_table );
   s += "ALTER TABLE `BF1942_SERVER` ADD INDEX IF NOT EXISTS `idx_BF1942_SERVER_guid`(`guid`);\n";
+  s += "ALTER TABLE `BF1942_STATUS` ADD INDEX IF NOT EXISTS `idx_BF1942_STATUS_server_ip`(`server_ip`);\n";
+  s += "ALTER TABLE `BF1942_PLAYER` ADD INDEX IF NOT EXISTS `idx_BF1942_PLAYER_server_player`(`server_ip`,`player_name`);\n";
 
   s += create_sql_statement( &p_play_queue_chunks, 		forkeys, add_drop_table );
   s += create_sql_statement( &p_play_queue_music,		forkeys, add_drop_table );

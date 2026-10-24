@@ -13,6 +13,10 @@ const unsigned MAC_ADDRESS_LEN=17;
 const unsigned IP_ADDRESS_LEN=15;
 const unsigned BF1942_GUID_LEN=64;
 const unsigned BF1942_SERVER_NAME_LEN=128;
+const unsigned BF1942_HOSTNAME_LEN=128;
+const unsigned BF1942_MAPNAME_LEN=64;
+const unsigned BF1942_GAMETYPE_LEN=32;
+const unsigned BF1942_PLAYER_NAME_LEN=64;
 const unsigned ACTION_LEN=50;
 const unsigned CONFIG_KEY_LEN=50;
 const unsigned CONFIG_VALUE_LEN=FILE_LEN;
@@ -356,6 +360,10 @@ public:
 
 std::string create_sql( bool add_drop_table = false );
 
+// Current local time in the "YYYY-MM-DD HH:MM:SS" format the DATETIME columns
+// (and BASE::setHist) use.
+std::string now_string();
+
 class BF1942_SERVER : public BASE
 {
 public:
@@ -373,6 +381,61 @@ public:
 	}
 
 	BF1942_SERVER & operator=( const BF1942_SERVER & b )
+	{
+	  BASE::operator=(b);
+	  return *this;
+	}
+};
+
+class BF1942_STATUS : public BASE
+{
+public:
+	DBTypeVarChar	server_ip;	// query target IP (join key)
+	DBTypeVarChar	hostname;
+	DBTypeVarChar	mapname;
+	DBTypeVarChar	gametype;
+	DBTypeInt		hostport;
+	DBTypeInt		numplayers;
+	DBTypeInt		maxplayers;
+	DBTypeDateTime	last_seen;
+
+public:
+	BF1942_STATUS();
+	BF1942_STATUS( const BF1942_STATUS & b )
+	: BF1942_STATUS()
+	{
+		BASE::operator=(b);
+	}
+
+	BF1942_STATUS & operator=( const BF1942_STATUS & b )
+	{
+	  BASE::operator=(b);
+	  return *this;
+	}
+};
+
+class BF1942_PLAYER : public BASE
+{
+public:
+	DBTypeVarChar	server_ip;	// join key to BF1942_STATUS / BF1942_SERVER
+	DBTypeVarChar	player_name;
+	DBTypeInt		slot;		// scoreboard index <i>
+	DBTypeInt		score;		// may be negative
+	DBTypeInt		kills;
+	DBTypeInt		deaths;
+	DBTypeInt		ping;
+	DBTypeInt		team;
+	DBTypeDateTime	last_seen;
+
+public:
+	BF1942_PLAYER();
+	BF1942_PLAYER( const BF1942_PLAYER & b )
+	: BF1942_PLAYER()
+	{
+		BASE::operator=(b);
+	}
+
+	BF1942_PLAYER & operator=( const BF1942_PLAYER & b )
 	{
 	  BASE::operator=(b);
 	  return *this;

@@ -1,0 +1,442 @@
+#include "Bf1942Query.h"
+
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <chrono>
+#include <cstring>
+#include <exception>
+#include <iostream>
+#include <optional>
+#include <string>
+#include <thread>
+#include <utility>
+
+#include <CpputilsDebug.h>
+#include <format.h>
+#include <string_utils.h>
+#include <stderr_exception.h>
+#include <dbi.h>
+
+#include "App.h"
+#include "bindtypes.h"
+#include "logging.h"
+
+using namespace Tools;
+using namespace std::chrono_literals;
+
+namespace {
+
+int to_int( const std::string & s )
+{
+	try { return std::stoi( s ); } catch( ... ) { return 0; }
+}
+
+std::string get_field( const std::map<std::string,std::string> & f, const std::string & key )
+{
+	auto it = f.find( key );
+	return it == f.end() ? std::string() : it->second;
+}
+
+std::string trim_copy( const std::string & s )
+{
+	const auto b = s.find_first_not_of( " \t\r\n" );
+	if( b == std::string::npos )
+		return {};
+	const auto e = s.find_last_not_of( " \t\r\n" );
+	return s.substr( b, e - b + 1 );
+}
+
+// The response is a backslash-delimited stream: \key\value\key\value\...
+// It may start with a single leading byte on some implementations, so find the
+// first backslash rather than assuming index 0.
+std::map<std::string,std::string> parse_fields( const std::string & response )
+{
+	std::map<std::string,std::string> fields;
+
+	std::size_t i = response.find( '\\' );
+	if( i == std::string::npos )
+		return fields;
+	++i;   // skip the opening backslash
+
+	while( i < response.size() ) {
+		std::size_t key_end = response.find( '\\', i );
+		std::string key;
+		if( key_end == std::string::npos ) {
+			key = response.substr( i );
+			i = response.size();
+		} else {
+			key = response.substr( i, key_end - i );
+			i = key_end + 1;
+		}
+
+		if( i >= response.size() ) {
+			if( !key.empty() )
+				fields[key] = "";
+			break;
+		}
+
+		std::size_t val_end = response.find( '\\', i );
+		std::string val;
+		if( val_end == std::string::npos ) {
+			val = response.substr( i );
+			i = response.size();
+		} else {
+			val = response.substr( i, val_end - i );
+			i = val_end + 1;
+		}
+		fields[key] = val;
+	}
+
+	return fields;
+}
+
+std::optional<std::map<std::string,std::string>> query_status( const std::string & host,
+                                                              int port,
+                                                              int timeout_s )
+{
+	addrinfo hints = {};
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_DGRAM;
+	hints.ai_protocol = IPPROTO_UDP;
+
+	const std::string port_str = std::to_string( port );
+	addrinfo * result = nullptr;
+	if( getaddrinfo( host.c_str(), port_str.c_str(), &hints, &result ) != 0 ) {
+		return std::nullopt;
+	}
+
+	addrinfo * ai = result;
+	while( ai != nullptr && ai->ai_family != AF_INET )
+		ai = ai->ai_next;
+	if( ai == nullptr ) {
+		freeaddrinfo( result );
+		return std::nullopt;
+	}
+
+	int sock = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP );
+	if( sock < 0 ) {
+		freeaddrinfo( result );
+		return std::nullopt;
+	}
+
+	const int t = timeout_s > 0 ? timeout_s : 3;
+	timeval tv = { t, 0 };
+	setsockopt( sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof( tv ) );
+
+	const char request[] = "\\status\\";
+	const int sent = static_cast<int>( sendto( sock, request,
+		static_cast<int>( std::strlen( request ) ), 0,
+		ai->ai_addr, static_cast<socklen_t>( ai->ai_addrlen ) ) );
+	if( sent < 0 ) {
+		close( sock );
+		freeaddrinfo( result );
+		return std::nullopt;
+	}
+
+	std::string response;
+	char buf[4096];
+	for( ;; ) {
+		const int n = static_cast<int>( recvfrom( sock, buf, sizeof( buf ), 0, nullptr, nullptr ) );
+		if( n <= 0 )
+			break;   // timeout, closed, or error
+		response.append( buf, static_cast<std::size_t>( n ) );
+		if( response.find( "\\queryid\\" ) != std::string::npos ||
+		    response.find( "\\final\\" ) != std::string::npos )
+			break;
+		if( response.size() > 64 * 1024 )
+			break;
+	}
+
+	close( sock );
+	freeaddrinfo( result );
+
+	if( response.empty() )
+		return std::nullopt;
+
+	return parse_fields( response );
+}
+
+} // namespace
+
+Bf1942Query::Bf1942Query( int default_port, int interval_s, int timeout_s, const std::string & hosts )
+: BasicThread( "Bf1942Query" ),
+  m_default_port( default_port > 0 ? default_port : 22000 ),
+  m_interval_s( interval_s > 0 ? interval_s : 15 ),
+  m_timeout_s( timeout_s > 0 ? timeout_s : 3 )
+{
+	// BF1942QueryHosts is comma-separated "host[:port]".
+	std::string::size_type start = 0;
+	while( start <= hosts.size() ) {
+		const std::string::size_type comma = hosts.find( ',', start );
+		std::string entry = trim_copy( hosts.substr( start,
+			comma == std::string::npos ? std::string::npos : comma - start ) );
+
+		if( !entry.empty() ) {
+			std::string h = entry;
+			int p = m_default_port;
+
+			const std::string::size_type colon = entry.rfind( ':' );
+			if( colon != std::string::npos ) {
+				h = trim_copy( entry.substr( 0, colon ) );
+				const int parsed = to_int( trim_copy( entry.substr( colon + 1 ) ) );
+				if( parsed > 0 )
+					p = parsed;
+			}
+
+			if( !h.empty() )
+				m_static_targets.push_back( { h, p } );
+		}
+
+		if( comma == std::string::npos )
+			break;
+		start = comma + 1;
+	}
+}
+
+void Bf1942Query::run()
+{
+	while( !APP.quit_request ) {
+		const auto cycle_end = std::chrono::steady_clock::now() + std::chrono::seconds( m_interval_s );
+
+		// Static hosts first, then everything discovery has seen (deduped).
+		std::vector<Target> targets = m_static_targets;
+
+		try {
+			for( const auto & t : targets_from_db() ) {
+				bool duplicate = false;
+				for( const auto & s : targets ) {
+					if( s.host == t.host && s.port == t.port ) {
+						duplicate = true;
+						break;
+					}
+				}
+				if( !duplicate )
+					targets.push_back( t );
+			}
+		} catch( const std::exception & e ) {
+			log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
+				format( "BF1942 query: cannot read targets: %s", e.what() ) );
+		}
+
+		for( const auto & t : targets ) {
+			if( APP.quit_request )
+				break;
+			query_and_store( t );
+		}
+
+		// Sleep in small slices so quit stays responsive.
+		while( !APP.quit_request && std::chrono::steady_clock::now() < cycle_end ) {
+			std::this_thread::sleep_for( 200ms );
+		}
+	}
+}
+
+std::vector<Bf1942Query::Target> Bf1942Query::targets_from_db()
+{
+	std::vector<Target> out;
+
+	// BF1942_SERVER (written by the discovery task) stores the server IP in
+	// `ip_address`, not `server_ip` (that is the column name in STATUS/PLAYER).
+	auto erg = APP.db->select( "SELECT `ip_address` FROM `BF1942_SERVER`" );
+	if( !erg ) {
+		return out;
+	}
+
+	for( const auto & row : erg.row_list.values ) {
+		if( !row.empty() && !row[0].empty() ) {
+			out.push_back( { row[0], m_default_port } );
+		}
+	}
+
+	return out;
+}
+
+void Bf1942Query::query_and_store( const Target & target )
+{
+	try {
+		auto fields = query_status( target.host, target.port, m_timeout_s );
+		if( !fields ) {
+			log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
+				format( "BF1942 query: no response from %s:%d (query disabled or wrong port?)",
+					target.host, target.port ) );
+			return;
+		}
+
+		store_status( target.host, *fields );
+		store_players( target.host, *fields );
+		APP.db->commit();
+
+		log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
+			format( "BF1942 query: %s:%d -> %s | map=%s | %s/%s players",
+				target.host, target.port,
+				get_field( *fields, "hostname" ),
+				get_field( *fields, "mapname" ),
+				get_field( *fields, "numplayers" ),
+				get_field( *fields, "maxplayers" ) ) );
+	} catch( const std::exception & e ) {
+		log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
+			format( "BF1942 query error for %s:%d: %s", target.host, target.port, e.what() ) );
+	}
+}
+
+void Bf1942Query::store_status( const std::string & server_ip,
+                                const std::map<std::string,std::string> & fields )
+{
+	const std::string now = now_string();
+
+	BF1942_STATUS existing;
+	const bool found = StdSqlSelect( *APP.db,
+		format( "select %%%s from %s where `server_ip` = '%s' ",
+			existing.get_table_name(),
+			existing.get_table_name(),
+			escape( server_ip ) ),
+		DBInList<DBBindType>() >> existing ) > 0;
+
+	if( found ) {
+		existing.hostname = get_field( fields, "hostname" );
+		existing.mapname = get_field( fields, "mapname" );
+		existing.gametype = get_field( fields, "gametype" );
+		existing.hostport = to_int( get_field( fields, "hostport" ) );
+		existing.numplayers = to_int( get_field( fields, "numplayers" ) );
+		existing.maxplayers = to_int( get_field( fields, "maxplayers" ) );
+		existing.last_seen = now;
+		existing.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
+
+		if( !StdSqlUpdate( *APP.db, existing,
+				format( "where `%s` = '%d'", existing.idx.get_name(), existing.idx.data ) ) ) {
+			throw STDERR_EXCEPTION( format( "cannot update BF1942_STATUS: %s", APP.db->get_error() ) );
+		}
+	} else {
+		BF1942_STATUS s {};
+		s.server_ip = server_ip;
+		s.hostname = get_field( fields, "hostname" );
+		s.mapname = get_field( fields, "mapname" );
+		s.gametype = get_field( fields, "gametype" );
+		s.hostport = to_int( get_field( fields, "hostport" ) );
+		s.numplayers = to_int( get_field( fields, "numplayers" ) );
+		s.maxplayers = to_int( get_field( fields, "maxplayers" ) );
+		s.last_seen = now;
+		s.setHist( BASE::HIST_TYPE::HIST_AN, "broker" );
+		s.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
+		s.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
+
+		if( !StdSqlInsert( *APP.db, s ) ) {
+			throw STDERR_EXCEPTION( format( "cannot insert into BF1942_STATUS: %s", APP.db->get_error() ) );
+		}
+	}
+}
+
+void Bf1942Query::store_players( const std::string & server_ip,
+                                 const std::map<std::string,std::string> & fields )
+{
+	const int maxplayers = to_int( get_field( fields, "maxplayers" ) );
+	const int cap = maxplayers > 0 ? maxplayers : 128;
+	const std::string now = now_string();
+
+	for( int i = 0; i < cap; ++i ) {
+		const std::string name = get_field( fields, "playername_" + std::to_string( i ) );
+		if( name.empty() )
+			break;
+
+		const std::string score  = get_field( fields, "score_" + std::to_string( i ) );
+		const std::string kills  = get_field( fields, "kills_" + std::to_string( i ) );
+		const std::string deaths = get_field( fields, "deaths_" + std::to_string( i ) );
+		const std::string ping   = get_field( fields, "ping_" + std::to_string( i ) );
+		const std::string team   = get_field( fields, "team_" + std::to_string( i ) );
+
+		BF1942_PLAYER existing;
+		const bool found = StdSqlSelect( *APP.db,
+			format( "select %%%s from %s where `server_ip` = '%s' and `player_name` = '%s' ",
+				existing.get_table_name(),
+				existing.get_table_name(),
+				escape( server_ip ),
+				escape( name ) ),
+			DBInList<DBBindType>() >> existing ) > 0;
+
+		if( found ) {
+			existing.slot = i;
+			existing.score = to_int( score );
+			existing.kills = to_int( kills );
+			existing.deaths = to_int( deaths );
+			existing.ping = to_int( ping );
+			existing.team = to_int( team );
+			existing.last_seen = now;
+			existing.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
+
+			if( !StdSqlUpdate( *APP.db, existing,
+					format( "where `%s` = '%d'", existing.idx.get_name(), existing.idx.data ) ) ) {
+				throw STDERR_EXCEPTION( format( "cannot update BF1942_PLAYER: %s", APP.db->get_error() ) );
+			}
+		} else {
+			BF1942_PLAYER p {};
+			p.server_ip = server_ip;
+			p.player_name = name;
+			p.slot = i;
+			p.score = to_int( score );
+			p.kills = to_int( kills );
+			p.deaths = to_int( deaths );
+			p.ping = to_int( ping );
+			p.team = to_int( team );
+			p.last_seen = now;
+			p.setHist( BASE::HIST_TYPE::HIST_AN, "broker" );
+			p.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
+			p.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
+
+			if( !StdSqlInsert( *APP.db, p ) ) {
+				throw STDERR_EXCEPTION( format( "cannot insert into BF1942_PLAYER: %s", APP.db->get_error() ) );
+			}
+		}
+	}
+}
+
+void Bf1942Query::log_message( const char * file, unsigned line, const char * function,
+                               const std::string & message )
+{
+	if( Tools::Debug * bf = bf_network_log() ) {
+		bf->add( file, line, function, message );
+	} else if( Tools::x_debug ) {
+		// Dedicated log unavailable: fall back to the main logger.
+		Tools::x_debug->add( file, line, function, message );
+	}
+}
+
+bool Bf1942Query::query_once( const std::string & host, int port, int timeout_s )
+{
+	auto fields = query_status( host, port, timeout_s );
+	if( !fields ) {
+		std::cerr << "error: no response from " << host << ':' << port
+		          << " (query disabled or wrong port?)" << std::endl;
+		return false;
+	}
+
+	const auto & f = *fields;
+	const int numplayers = to_int( get_field( f, "numplayers" ) );
+	const int maxplayers = to_int( get_field( f, "maxplayers" ) );
+
+	std::cout << get_field( f, "hostname" )
+	          << " | map=" << ( get_field( f, "mapname" ).empty() ? "?" : get_field( f, "mapname" ) )
+	          << " | type=" << ( get_field( f, "gametype" ).empty() ? "?" : get_field( f, "gametype" ) )
+	          << " | " << numplayers << "/" << maxplayers << " players\n";
+
+	const int cap = maxplayers > 0 ? maxplayers : 128;
+	for( int i = 0; i < cap; ++i ) {
+		const std::string name = get_field( f, "playername_" + std::to_string( i ) );
+		if( name.empty() )
+			break;
+
+		std::cout << name
+		          << "  score=" << get_field( f, "score_" + std::to_string( i ) )
+		          << " kills=" << get_field( f, "kills_" + std::to_string( i ) )
+		          << " deaths=" << get_field( f, "deaths_" + std::to_string( i ) )
+		          << " ping=" << get_field( f, "ping_" + std::to_string( i ) )
+		          << " team=" << get_field( f, "team_" + std::to_string( i ) )
+		          << "\n";
+	}
+
+	return true;
+}

@@ -17,6 +17,7 @@
 #include "FetchSound.h"
 #include "ButtonListener.h"
 #include "Bf1942Discover.h"
+#include "Bf1942Query.h"
 #include "FetchButton.h"
 #include <thread>
 #include <chrono>
@@ -236,6 +237,13 @@ int main( int argc, char **argv )
 		o_resolve_usernames.setRequired(false);
 		oc_main.addOptionR( &o_resolve_usernames );
 
+		Arg::StringOption o_query_bf1942("query-bf1942");
+		o_query_bf1942.setDescription("query a BF1942 server (HOST[:PORT]) and print the scoreboard");
+		o_query_bf1942.setRequired(false);
+		o_query_bf1942.setMinValues(1);
+		o_query_bf1942.setMaxValues(1);
+		oc_main.addOptionR( &o_query_bf1942 );
+
 		DetectLocale dl;
 
 		const unsigned int console_width = 80;
@@ -278,6 +286,25 @@ int main( int argc, char **argv )
 		const ConfigSectionNetwork  	& cfg_net 			= Configfile2::get(ConfigSectionNetwork::KEY);
 		const ConfigSectionPopeReacts  	& cfg_pope_reacts	= Configfile2::get(ConfigSectionPopeReacts::KEY);
 	
+		if( o_query_bf1942.isSet() ) {
+			std::string spec = o_query_bf1942.getValues()->front();
+			std::string host = spec;
+			int port = cfg_net.BF1942QueryPort;
+
+			const std::string::size_type colon = spec.rfind( ':' );
+			if( colon != std::string::npos ) {
+				host = spec.substr( 0, colon );
+				try {
+					port = std::stoi( spec.substr( colon + 1 ) );
+				} catch( ... ) {
+					port = cfg_net.BF1942QueryPort;
+				}
+			}
+
+			const bool ok = Bf1942Query::query_once( host, port, cfg_net.BF1942QueryTimeout );
+			return ok ? 0 : 1;
+		}
+
 		std::chrono::steady_clock::time_point retry_logon_until{};
 
 		retry_logon_until = std::chrono::steady_clock::now() + std::chrono::seconds(cfg_db.retry_db_timeout.value);
@@ -411,6 +438,18 @@ int main( int argc, char **argv )
 			auto token = APP.db.get_dispose_token();
 			Bf1942Discover discover( cfg_net.BF1942DiscoverPort );
 			discover.run();
+		});
+
+		threads.emplace_back([&cfg_net]() {
+			if( !cfg_net.isBF1942QueryEnabled() ) {
+				return;
+			}
+			auto token = APP.db.get_dispose_token();
+			Bf1942Query query( cfg_net.BF1942QueryPort,
+			                   cfg_net.BF1942QueryInterval,
+			                   cfg_net.BF1942QueryTimeout,
+			                   cfg_net.BF1942QueryHosts );
+			query.run();
 		});
 
 		threads.emplace_back([]() {

@@ -30,6 +30,9 @@ constexpr std::chrono::seconds kFlushInterval{3};
 std::unique_ptr<AsyncOut::Debug> g_frontend;
 std::unique_ptr<AsyncOut::FileLogger> g_file;
 std::unique_ptr<AsyncOut::Logger> g_console;
+// Dedicated BF1942 network log (discovery + query), drained by the same thread.
+std::unique_ptr<AsyncOut::Debug> g_bf_frontend;
+std::unique_ptr<AsyncOut::FileLogger> g_bf_file;
 std::thread g_thread;
 std::atomic<bool> g_quit{false};
 
@@ -67,6 +70,26 @@ void flushFile() {
     }
 }
 
+void drainBfFile() {
+    if (!g_bf_file) {
+        return;
+    }
+    try {
+        g_bf_file->log();
+    } catch (...) {
+    }
+}
+
+void flushBfFile() {
+    if (!g_bf_file) {
+        return;
+    }
+    try {
+        g_bf_file->flush();
+    } catch (...) {
+    }
+}
+
 // The backend loop. A backend's semaphore is released by every message, so
 // waiting on one of them is enough to know that anything arrived. On Linux
 // std::counting_semaphore really blocks (futex), so this is the correct wake
@@ -90,9 +113,11 @@ void run() {
 
         drainConsole();
         drainFile();
+        drainBfFile();
 
         if (std::chrono::steady_clock::now() > next_flush) {
             flushFile();
+            flushBfFile();
             next_flush = std::chrono::steady_clock::now() + kFlushInterval;
         }
 
@@ -108,6 +133,7 @@ void run() {
     // Final drain, while the backends are still alive.
     drainConsole();
     drainFile();
+    drainBfFile();
 }
 
 }  // namespace
@@ -168,6 +194,17 @@ void logInit( const std::string & logFile, bool console ) {
     // From here on CPPDEBUG has somewhere to go.
     Tools::x_debug = g_frontend.get();
 
+    // Dedicated log for the BF1942 network tasks (discovery + query), drained
+    // by the same logger thread. Independent of Tools::x_debug / broker.log.
+    try {
+        g_bf_file = std::make_unique<AsyncOut::FileLogger>(broker_log_path("bf-network.log"));
+        g_bf_frontend = std::make_unique<AsyncOut::Debug>();
+        g_bf_frontend->subscribe(g_bf_file.get());
+    } catch (const std::exception&) {
+        g_bf_file.reset();
+        g_bf_frontend.reset();
+    }
+
     g_quit = false;
     g_thread = std::thread(run);
 }
@@ -183,8 +220,15 @@ void logShutdown() {
     Tools::x_debug = nullptr;
 
     // Destroying a backend unsubscribes it and closes (flushes) the log file.
-    // The frontend must outlive both.
+    // The frontend must outlive its backends.
     g_file.reset();
     g_console.reset();
     g_frontend.reset();
+    g_bf_file.reset();
+    g_bf_frontend.reset();
+}
+
+Tools::Debug * bf_network_log()
+{
+    return g_bf_frontend.get();
 }

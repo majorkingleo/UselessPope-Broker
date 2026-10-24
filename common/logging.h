@@ -20,6 +20,11 @@ void logShutdown();
 // Used for the main log and for per-subsystem logs (e.g. bf-network.log).
 std::string broker_log_path( const std::string & file_name );
 
+// Dedicated log for the BF1942 network tasks (discovery + query), written to
+// ~/.broker/bf-network.log. Returns nullptr if logging is not initialised or
+// the file could not be opened.
+Tools::Debug * bf_network_log();
+
 // RAII: shuts the logger down on scope exit, so an early return or an
 // exception from main() still drains and joins the logger thread (a joinable
 // std::thread left behind would call std::terminate at static destruction).
