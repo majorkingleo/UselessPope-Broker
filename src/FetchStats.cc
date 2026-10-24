@@ -105,18 +105,24 @@ STATS FetchStats::fetch_stats( const std::string & key )
 
 void FetchStats::fetch_top_user_actions()
 {
-	static std::string sql = "SELECT count(hist_an_user), hist_an_user FROM `P_BUTTON_QUEUE` "
-			" where hist_an_user not like '' "
-			" and YEAR(hist_an_zeit) = YEAR(NOW()) "
-			" group by hist_an_user "
-			" order by 1 desc";
+	// Physical button events reach the broker without a hist_an_user (the user
+	// is resolved from the MAC address), so attribute them via USERS_ACTIONS.
+	// Only ButtonReleased is counted: ButtonPressed + ButtonReleased belong to
+	// the same click. Website requests (PLAYSOUND) are already attributed.
+	static std::string sql =
+			"SELECT count(*), COALESCE( NULLIF(b.hist_an_user, ''), ua.username ) AS user_name "
+			"FROM P_BUTTON_QUEUE b "
+			"LEFT JOIN USERS_ACTIONS ua ON ua.button_mac_address = b.mac_address "
+			"WHERE b.action IN ('PLAYSOUND', 'ButtonReleased') "
+			"AND YEAR(b.hist_an_zeit) = YEAR(NOW()) "
+			"AND COALESCE( NULLIF(b.hist_an_user, ''), ua.username ) <> '' "
+			"GROUP BY user_name "
+			"ORDER BY 1 DESC";
 
 	DBTypeInt 		count {};
 	DBTypeVarChar 	user  {};
 	DBInLimit		limit {};
 	const unsigned 	TOP_USER_COUNT = 3;
-
-	int res = 0;
 
 	std::vector<std::pair<unsigned,std::string>> data {};
 

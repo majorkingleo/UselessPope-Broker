@@ -145,6 +145,15 @@ void FetchButton::fetch_buttons()
 			continue;
 		}
 
+		// Attribute physical button events to the resolved user before they are
+		// archived to P_BUTTON_QUEUE. The raw UDP datagram only carries the MAC
+		// address, so without this the archived row has an empty hist_an_user and
+		// is invisible to the top-user statistics. Do not use setHist() here: it
+		// would overwrite the original receive timestamp.
+		if( pbq->hist_an_user.data.empty() ) {
+			pbq->hist_an_user.data = pua->username.data;
+		}
+
 		// The remote button sends every datagram twice (broadcast + unicast).
 		// Both copies are identical, so (MAC, SEQ, TIME) identifies one physical
 		// event. Drop the second copy instead of counting it as another click.

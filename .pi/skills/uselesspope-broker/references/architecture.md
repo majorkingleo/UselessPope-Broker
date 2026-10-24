@@ -178,7 +178,9 @@ that is also stored in `create.sql`.
 - Every 1 min recomputes:
   - `totalactions` = sum of `count(idx)` over `P_PLAY_QUEUE_CHUNKS`,
     `P_PLAY_QUEUE_MUSIC`, `P_PLAY_QUEUE_ANIMATION`.
-  - `user1..3` = top `hist_an_user` by count in `P_BUTTON_QUEUE`.
+  - `user1..3` = top user by count in `P_BUTTON_QUEUE` for `PLAYSOUND`
+    (website) and `ButtonReleased` (physical clicks). Rows without a
+    `hist_an_user` are attributed through `USERS_ACTIONS.button_mac_address`.
   - `mostplayedsound` = most frequent `file` basename in `P_PLAY_QUEUE_CHUNKS`.
 - Stat keys are the `FetchStats::*` constants (e.g. `TOTAL_ACTIONS =
   "totalactions"`).
