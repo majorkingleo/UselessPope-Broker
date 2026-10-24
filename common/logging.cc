@@ -13,6 +13,11 @@
 #include <memory>
 #include <thread>
 #include <pthread.h>
+#include <filesystem>
+#include <cstdlib>
+#include <iostream>
+#include <pwd.h>
+#include <unistd.h>
 
 namespace {
 
@@ -106,6 +111,31 @@ void run() {
 }
 
 }  // namespace
+
+std::string broker_log_path( const std::string & file_name )
+{
+    std::string home;
+
+    if (const char* env = std::getenv("HOME"); env != nullptr && *env != '\0') {
+        home = env;
+    } else if (struct passwd* pw = getpwuid(getuid()); pw != nullptr && pw->pw_dir != nullptr) {
+        home = pw->pw_dir;
+    }
+
+    std::filesystem::path dir = home.empty()
+        ? std::filesystem::path(".broker")
+        : std::filesystem::path(home) / ".broker";
+
+    std::error_code ec;
+    std::filesystem::create_directories(dir, ec);
+
+    if (ec) {
+        std::cerr << "warning: cannot create log directory '" << dir.string()
+                  << "': " << ec.message() << std::endl;
+    }
+
+    return (dir / file_name).string();
+}
 
 void logInit( const std::string & logFile, bool console ) {
     if (!logFile.empty()) {

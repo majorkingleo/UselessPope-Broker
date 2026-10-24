@@ -198,8 +198,11 @@ static libraries linked into `broker`.
   and joins the logger thread on every exit path). `-debug` mirrors to stdout;
   the file backend is always on and writes to `~/.broker/broker.log` (the
   `~/.broker` directory is created on startup), rotating the active file to
-  `broker.log.1` at 10 MB. `-log-file` overrides the path. `common/diag.h` adds
-  per-thread `Heartbeat`/`threadCpuMs` diagnostics behind `LOG_TIMING`.
+  `broker.log.1` at 10 MB. The BF1942 network tasks (`Bf1942Discover`, later
+  `Bf1942Query`) write their own `~/.broker/bf-network.log` (same 10 MB
+  rotation) instead of `broker.log`. `-log-file` overrides the main path.
+  `common/diag.h` adds per-thread `Heartbeat`/`threadCpuMs` diagnostics behind
+  `LOG_TIMING`.
 - **Schema is authoritative in `create.sql`** and must stay in sync with
   `bindtypes.h` (`create_sql()` in `bindtypes.cc`) and the `uselesspope-database`
   skill in the `UselessPope-www` repo.

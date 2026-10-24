@@ -16,6 +16,9 @@
 
 #include "App.h"
 #include "bindtypes.h"
+#include "AsyncFileLogger.h"
+#include "AsyncOutDebug.h"
+#include "logging.h"
 
 using namespace Tools;
 using boost::asio::ip::udp;
@@ -70,7 +73,23 @@ Bf1942Discover::Bf1942Discover( unsigned port )
 : BasicThread( "Bf1942Discover" ),
   m_port( port )
 {
+	// Dedicated log for the BF network tasks, separate from broker.log.
+	try {
+		m_file_log = std::make_unique<AsyncOut::FileLogger>( broker_log_path( "bf-network.log" ) );
+		m_debug = std::make_unique<AsyncOut::Debug>();
+		m_debug->subscribe( m_file_log.get() );
+	} catch( const std::exception & ) {
+		// Backend first, then the frontend that owns the subscriber registry.
+		m_file_log.reset();
+		m_debug.reset();
+	}
+}
 
+Bf1942Discover::~Bf1942Discover()
+{
+	// Backend first (it unsubscribes), then the frontend.
+	m_file_log.reset();
+	m_debug.reset();
 }
 
 void Bf1942Discover::run()
@@ -99,7 +118,8 @@ void Bf1942Discover::run()
 							std::string( buffer.data(), bytes_transferred ),
 							remote.address().to_string() );
 					} catch( const std::exception & e ) {
-						CPPDEBUG( format( "BF1942 discovery error: %s", e.what() ) );
+						log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
+							format( "BF1942 discovery error: %s", e.what() ) );
 					}
 				}
 				start_receive();
@@ -110,6 +130,18 @@ void Bf1942Discover::run()
 
 	while( !APP.quit_request ) {
 		io_context.run_for( 300ms );
+
+		// This thread produces the messages, so draining its own log here needs
+		// no second thread. Messages are queued by received_data() above.
+		if( m_file_log ) {
+			m_file_log->log();
+			m_file_log->flush();
+		}
+	}
+
+	if( m_file_log ) {
+		m_file_log->log();
+		m_file_log->flush();
 	}
 }
 
@@ -120,7 +152,8 @@ void Bf1942Discover::received_data( const std::string & data, const std::string 
 		return;
 	}
 
-	CPPDEBUG( format( "BF1942 beacon: name='%s' guid=%s at %s", b.name, b.guid, source_ip ) );
+	log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
+		format( "BF1942 beacon: name='%s' guid=%s at %s", b.name, b.guid, source_ip ) );
 
 	const std::string key = !b.guid.empty() ? b.guid : ( b.name + "@" + source_ip );
 	const std::string now = now_string();
@@ -159,4 +192,14 @@ void Bf1942Discover::received_data( const std::string & data, const std::string 
 	}
 
 	APP.db->commit();
+}
+
+void Bf1942Discover::log_message( const char * file, unsigned line, const char * function, const std::string & message )
+{
+	if( m_debug ) {
+		m_debug->add( file, line, function, message );
+	} else if( Tools::x_debug ) {
+		// Dedicated log could not be opened: fall back to the main logger.
+		Tools::x_debug->add( file, line, function, message );
+	}
 }

@@ -15,6 +15,11 @@
 void logInit( const std::string & logFile, bool console );
 void logShutdown();
 
+// Returns <home>/.broker/<file_name>, creating the ~/.broker directory on first
+// use (falls back to ./.broker if the home directory cannot be determined).
+// Used for the main log and for per-subsystem logs (e.g. bf-network.log).
+std::string broker_log_path( const std::string & file_name );
+
 // RAII: shuts the logger down on scope exit, so an early return or an
 // exception from main() still drains and joins the logger thread (a joinable
 // std::thread left behind would call std::terminate at static destruction).
