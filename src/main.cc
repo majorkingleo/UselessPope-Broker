@@ -1,6 +1,7 @@
 #include <iostream>
 #include <arg.h>
-#include <OutDebug.h>
+#include "logging.h"
+#include <ColoredOutput.h>
 #include <DetectLocale.h>
 #include <format.h>
 #include "PlaySound.h"
@@ -191,6 +192,13 @@ int main( int argc, char **argv )
 		o_debug.setRequired(false);
 		oc_main.addOptionR( &o_debug );
 
+		Arg::StringOption o_log_file("log-file");
+		o_log_file.setDescription("append debug output to a log file");
+		o_log_file.setRequired(false);
+		o_log_file.setMinValues(1);
+		o_log_file.setMaxValues(1);
+		oc_main.addOptionR( &o_log_file );
+
 		Arg::StringOption o_enqueue_music("enqueue-music");
 		o_enqueue_music.setDescription("add music to queue");
 		o_enqueue_music.setRequired(false);
@@ -253,9 +261,12 @@ int main( int argc, char **argv )
 		}
 
 
-		if( o_debug.getState() ) {
-			Tools::x_debug = new OutDebug();
-		}
+		const std::string log_file = o_log_file.isSet() && !o_log_file.getValues()->empty()
+			? o_log_file.getValues()->front()
+			: std::string();
+
+		logInit( log_file, o_debug.getState() );
+		LogSession log_session;
 
 		if( o_create_sql.getState() ) {			
 			std::cout << create_sql( o_with_drop_table.getState() ) << std::endl;

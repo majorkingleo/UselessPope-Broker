@@ -149,7 +149,14 @@ cpputils_cpputilsshared_cpputilsformat_libcpputilsformat_a_SOURCES= \
 	
 common_libcommon_a_SOURCES=\
 	common/ColBuilder.h \
-	common/ColBuilder.cc
+	common/ColBuilder.cc \
+	common/AsyncOutDebug.h \
+	common/AsyncOutDebug.cc \
+	common/AsyncFileLogger.h \
+	common/AsyncFileLogger.cc \
+	common/logging.h \
+	common/logging.cc \
+	common/diag.h
 
 broker_LDADD = \
 	common/libcommon.a \

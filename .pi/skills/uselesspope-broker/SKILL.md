@@ -109,6 +109,7 @@ Defaults are defined in `config/*.cc` and overridden by the INI file:
 ./broker -help                 show usage
 ./broker -version              show version
 ./broker -debug                print CPPDEBUG messages
+./broker -log-file FILE       append debug output to a timestamped log file
 ./broker -enqueue-music FILE   insert FILE into PLAY_QUEUE_MUSIC (then exit)
 ./broker -enqueue-chunk FILE   insert FILE into PLAY_QUEUE_CHUNKS (then exit)
 ./broker -enqueue-animation F  insert FILE into PLAY_QUEUE_ANIMATION (then exit)
@@ -186,6 +187,14 @@ static libraries linked into `broker`.
   and swaps in the next pending one, killing the previous via `SIGTERM`.
 - **Chunk drop logic** in `PlaySound::run()` drops queued sound effects in the
   first 5 s of the current chunk, after 30 s, or when interrupted — edit carefully.
+- **Async logging.** `CPPDEBUG` goes through an async fan-out (`common/AsyncOutDebug.*`):
+  `Tools::x_debug` is an `AsyncOut::Debug` frontend that distributes to an
+  `AsyncOut::Logger` console backend and/or an `AsyncOut::FileLogger` file
+  backend (timestamped `[YYYY-MM-DD HH:MM:SS] file:line message`). Wired once in
+  `main.cc` via `logInit(logFile, console)` + a `LogSession` guard (which drains
+  and joins the logger thread on every exit path). `-debug` mirrors to stdout;
+  `-log-file` enables the file backend. `common/diag.h` adds per-thread
+  `Heartbeat`/`threadCpuMs` diagnostics behind `LOG_TIMING`.
 - **Schema is authoritative in `create.sql`** and must stay in sync with
   `bindtypes.h` (`create_sql()` in `bindtypes.cc`) and the `uselesspope-database`
   skill in the `UselessPope-www` repo.
