@@ -67,7 +67,7 @@ void FetchStats::fetch_total_actions()
 
 unsigned FetchStats::count_table( const BASE & table )
 {
-	std::string sql = Tools::format( "select count(idx) from %s", table.get_table_name() );
+	std::string sql = Tools::format( "select count(idx) from %s where YEAR(hist_an_zeit) = YEAR(NOW())", table.get_table_name() );
 
 	DBTypeInt count;
 
@@ -107,6 +107,7 @@ void FetchStats::fetch_top_user_actions()
 {
 	static std::string sql = "SELECT count(hist_an_user), hist_an_user FROM `P_BUTTON_QUEUE` "
 			" where hist_an_user not like '' "
+			" and YEAR(hist_an_zeit) = YEAR(NOW()) "
 			" group by hist_an_user "
 			" order by 1 desc";
 
@@ -144,7 +145,8 @@ void FetchStats::fetch_top_user_actions()
 
 void FetchStats::fetch_mostplayed_sound()
 {
-	static std::string sql = "SELECT `file` FROM `P_PLAY_QUEUE_CHUNKS`";
+	static std::string sql = "SELECT `file` FROM `P_PLAY_QUEUE_CHUNKS` "
+			" where YEAR(hist_an_zeit) = YEAR(NOW())";
 
 	DBTypeVarChar 	file  {};
 	DBInLimit		limit {};
