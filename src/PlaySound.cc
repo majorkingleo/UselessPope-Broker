@@ -120,13 +120,16 @@ bool PlaySound::Chunk::finished()
 		return false;
 	}
 
-	int ret = Mix_Playing(m_channel);
-
-	if( ret == -1) {
+	// Mix_Playing() returns 1 while the channel is playing and 0 once the
+	// chunk has finished.  (For channel -1 it returns the number of currently
+	// playing channels, so a chunk that never got a channel must be treated as
+	// finished explicitly.)  Previously only -1 was handled, which left every
+	// played chunk in the queue until the drop heuristic removed it later.
+	if( m_channel < 0 ) {
 		return true;
 	}
 
-	return false;
+	return Mix_Playing( m_channel ) == 0;
 }
 
 /*
