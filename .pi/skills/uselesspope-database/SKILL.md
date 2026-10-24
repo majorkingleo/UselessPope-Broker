@@ -99,7 +99,7 @@ does not `CREATE TABLE USERS` — that table belongs to `UselessPope-www`.
    │server_ip 1:1 │  │server_ip N:1   │  │ server_ip N:1   │
    │round state   │  │live roster     │  │ idx = game_id   │
    └──────────────┘  └───────┬────────┘  │ map, winner     │
-                             │ snapshot  │ tickets, times  │
+                             │ snapshot  │ tickets, idle   │
                              │ at round  └────────┬────────┘
                              │ end               │ logical 1:N
                              ▼                   ▼
@@ -232,6 +232,16 @@ ORDER BY g.idx DESC, p.slot;
   after its rows are archived into `P_BF1942_PLAYER`.
 - **Denormalization in `P_BF1942_PLAYER`.** `mapname` and `winning_team` are
   copied per row (canonical values live in `BF1942_GAME`).
+- **Reconnects and player totals.** `BF1942_PLAYER.score`/`kills`/`deaths` are
+  cumulative for the current round. A BF1942 client owns its counters, so a
+  crash/rejoin reports `0/0/0`; `Bf1942Query` keeps the earlier totals in
+  `score_offset`/`kills_offset`/`deaths_offset` and adds the new session on top.
+  The offsets are reset with the live roster at round end. They are copied into
+  `P_BF1942_PLAYER` for reference; use the effective columns for results.
+- **Idle games.** `BF1942_GAME.idle = 1` marks a round whose archived roster had
+  no players or almost no activity (total `score` and `kills` both ≤ 20). The
+  server ran while nobody was effectively logged in; the row is kept for the
+  record but is not a real played game.
 - **Not broker-owned:** `USERPROPERTIES`, `USERRIGHTS`, `STATUS_LEDS` exist in
   the live DB but are outside `create.sql`; treat them as `UselessPope-www` /
   `UselessPope-raspi` concerns.

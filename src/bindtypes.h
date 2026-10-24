@@ -426,11 +426,18 @@ public:
 	DBTypeVarChar	server_ip;	// join key to BF1942_STATUS / BF1942_SERVER
 	DBTypeVarChar	player_name;
 	DBTypeInt		slot;		// scoreboard index <i>
-	DBTypeInt		score;		// may be negative
-	DBTypeInt		kills;
-	DBTypeInt		deaths;
+	DBTypeInt		score;		// may be negative; round total incl. reconnects
+	DBTypeInt		kills;		// round total incl. reconnects
+	DBTypeInt		deaths;		// round total incl. reconnects
 	DBTypeInt		ping;
 	DBTypeInt		team;
+	// Totals carried over from earlier client sessions in the same round.
+	// A BF1942 client owns its scoreboard counters, so after a crash/rejoin the
+	// server reports 0/0/0 again. The effective value is the current session's
+	// counter plus these offsets.
+	DBTypeInt		score_offset;
+	DBTypeInt		kills_offset;
+	DBTypeInt		deaths_offset;
 	DBTypeDateTime	last_seen;
 
 public:
@@ -460,6 +467,7 @@ public:
 	DBTypeInt		tickets1;		// final observed
 	DBTypeInt		tickets2;
 	DBTypeVarChar	victory_type;
+	DBTypeInt		idle;			// 1 = no meaningful activity (server ran unattended)
 
 public:
 	BF1942_GAME();

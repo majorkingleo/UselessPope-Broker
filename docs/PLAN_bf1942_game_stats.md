@@ -2,7 +2,9 @@
 
 > Status: implemented (unit = one round; winner from final tickets with
 > `winning_team = 0` fallback; denormalized map/winner in `P_BF1942_PLAYER`;
-> always-on; 15 s poll).
+> always-on; 15 s poll). Rounds with almost no score or kills are flagged as
+> `BF1942_GAME.idle` (the server ran but nobody really played). Client
+> reconnects within the same round keep their points (see §7a).
 > Goal: keep `BF1942_PLAYER` as the **live** scoreboard, and automatically
 > archive every finished game into `P_BF1942_PLAYER` with a game id, the map,
 > the player fields and the winning team. The final result is **mandatory** —
@@ -86,6 +88,7 @@ winning_team INT             // 1 or 2; 0 = draw/unknown
 tickets1     INT             // final observed
 tickets2     INT
 victory_type VARCHAR(16)     // "tickets" | "time" | "unknown" (best effort)
+idle         INT             // 1 = almost no score/kills, server ran unattended
 + BASE audit columns
 ```
 
@@ -123,9 +126,14 @@ Per target, inside `Bf1942Query::query_and_store()` (currently upsert-only):
    a. Determine `winning_team` from **`old`**: `tickets1 > tickets2` → 1,
       `tickets2 > tickets1` → 2, else 0. `victory_type` from whether a team hit 0
       (`tickets`) or time ran out (`time`), else `unknown`.
+   a2. Aggregate the live roster: `count(*)`, `sum(score)`, `sum(kills)`. Set
+      `idle = 1` when there are no players or when both the total score and the
+      total kills are at/below the idle thresholds (20 each). Such a round ran
+      while nobody was actually playing (nobody logged in / everyone AFK) and is
+      kept only as an "idle game".
    b. `INSERT` a `BF1942_GAME` row (server_ip, `old.mapname`, gametype,
       `old.round_started_at` → `started_at`, now → `ended_at`, winning_team,
-      `old.tickets1/2`, victory_type). Read back the auto `idx` = `game_id`.
+      `old.tickets1/2`, victory_type, idle). Read back the auto `idx` = `game_id`.
    c. `SELECT` all `BF1942_PLAYER` rows for `server_ip`; for each, `INSERT` into
       `P_BF1942_PLAYER` with `game_id`, `mapname = old.mapname`,
       `winning_team`, copied player fields, `idx` reset to 0, `HIST_LO` stamped.
@@ -152,6 +160,31 @@ finalize — just insert.
   If a round ends and the next map starts within one poll window, the previous
   snapshot's tickets are used — usually correct, but a 15 s window can see a
   team's tickets tick a few points off. Acceptable; see §8.
+
+## 7a. Reconnects within the same round
+
+BF1942 keeps `score`/`kills`/`deaths` per **client connection**, not per round.
+If the player's game crashes and the player rejoins while the round is still
+running, the server reports a fresh `0/0/0` session, which would erase the
+points earned earlier in the round.
+
+`Bf1942Query` therefore stores three extra columns in `BF1942_PLAYER`:
+`score_offset`, `kills_offset`, `deaths_offset` (the archive table inherits
+them). The visible `score`/`kills`/`deaths` are the cumulative round totals:
+
+```
+effective = current client session counter + offset
+```
+
+When an already known player's raw session counters regress — `kills` or
+`deaths` decrease, all three values fall back to `0/0/0`, or `score` drops by
+more than one suicide (`-2`) without kills/deaths increasing — the previous
+totals are moved into the offsets and the new session's values are added on top.
+This also survives a broker restart (the offsets are persistent DB state) and
+works across repeated reconnects.
+
+At round end `finalize_round()` archives the cumulative values and deletes the
+live roster, so the offsets are gone and a new round starts at zero.
 
 ## 8. Robustness & gotchas
 
@@ -223,6 +256,10 @@ Automated checks (loopback responder, like the query plan's tests):
       `P_BF1942_PLAYER` row per player, with `game_id`, `mapname`, `winning_team`.
 - [ ] `winning_team` is correct from the final tickets; unknown only when tickets
       are absent/equal (and still archived).
+- [ ] A round with no players, or with total score and kills at/below 20, is
+      archived with `idle = 1`; a played round has `idle = 0`.
+- [ ] A player who reconnects during a round keeps the points earned before the
+      reconnect (score/kills/deaths are summed across client sessions).
 - [ ] A round that ends while the broker is down is recovered on the next poll.
 - [ ] `./broker -create-sql` matches `create.sql`.
 - [ ] No build warnings; `make` clean.

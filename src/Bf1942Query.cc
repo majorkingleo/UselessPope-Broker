@@ -36,6 +36,19 @@ constexpr int kRoundResetMargin = 60;   // roundTimeRemain jumped up => round re
 constexpr int kTicketsNearZero  = 5;    // previous tickets effectively 0
 constexpr int kTicketsFreshMin  = 50;   // a fresh round's tickets sit well above this
 
+// A finished round whose players collectively produced almost no score and
+// almost no kills was not actually played: the server ran unattended (nobody
+// logged in, or everybody was AFK). Mark such archives as idle games.
+constexpr int kIdleMaxTotalScore = 20;
+constexpr int kIdleMaxTotalKills = 20;
+
+// A BF1942 client connection keeps its own scoreboard counters. If the client
+// dies and rejoins the same round, the server reports a fresh 0/0/0 session even
+// though the round is still running. Score may legitimately drop by 2 points
+// (one suicide) between two polls, so only a larger regression is treated as a
+// new session.
+constexpr int kScoreRegressionTolerance = 2;
+
 int to_int( const std::string & s )
 {
 	try { return std::stoi( s ); } catch( ... ) { return 0; }
@@ -351,6 +364,24 @@ void Bf1942Query::finalize_round( const std::string & server_ip, const BF1942_ST
 
 	const std::string now = now_string();
 
+	// Aggregate the ended round's roster before it is archived. A server that
+	// ran with nobody logged in still ends rounds, but with (almost) no score or
+	// kills. Those are recorded as idle games, not real results.
+	DBTypeInt player_count {};
+	DBTypeInt score_sum {};
+	DBTypeInt kill_sum {};
+	if( StdSqlSelect( *APP.db,
+		format( "select count(*), coalesce(sum(`score`),0), coalesce(sum(`kills`),0) "
+			"from `BF1942_PLAYER` where `server_ip` = '%s'",
+			escape( server_ip ) ),
+		DBInList<DBType>() >> player_count >> score_sum >> kill_sum ) <= 0 )
+	{
+		throw STDERR_EXCEPTION( format( "cannot read BF1942_PLAYER totals: %s", APP.db->get_error() ) );
+	}
+
+	const bool idle = player_count.data == 0 ||
+		( score_sum.data <= kIdleMaxTotalScore && kill_sum.data <= kIdleMaxTotalKills );
+
 	BF1942_GAME game {};
 	game.server_ip = server_ip;
 	game.mapname = old.mapname.data;
@@ -361,6 +392,7 @@ void Bf1942Query::finalize_round( const std::string & server_ip, const BF1942_ST
 	game.tickets1 = old.tickets1.data;
 	game.tickets2 = old.tickets2.data;
 	game.victory_type = victory_type;
+	game.idle = idle ? 1 : 0;
 	game.setHist( BASE::HIST_TYPE::HIST_AN, "broker" );
 	game.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
 	game.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
@@ -397,9 +429,11 @@ void Bf1942Query::finalize_round( const std::string & server_ip, const BF1942_ST
 		live.get_table_name(), escape( server_ip ) ) );
 
 	log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
-		format( "BF1942 round archived: %s map=%s winner=team %d (%s) tickets %d:%d game_id=%d",
+		format( "BF1942 round archived: %s map=%s winner=team %d (%s) tickets %d:%d "
+			"players=%d score=%d kills=%d idle=%d game_id=%d",
 			server_ip, old.mapname.data, winner, victory_type,
-			old.tickets1.data, old.tickets2.data, game_id ) );
+			old.tickets1.data, old.tickets2.data,
+			player_count.data, score_sum.data, kill_sum.data, idle ? 1 : 0, game_id ) );
 }
 
 void Bf1942Query::store_status( const std::string & server_ip,
@@ -474,11 +508,45 @@ void Bf1942Query::store_players( const std::string & server_ip,
 				escape( name ) ),
 			DBInList<DBBindType>() >> existing ) > 0;
 
+		const int raw_score = to_int( score );
+		const int raw_kills = to_int( kills );
+		const int raw_deaths = to_int( deaths );
+
 		if( found ) {
+			// The stored score/kills/deaths are round totals; derive the current
+			// client session's raw counters by removing the carried offsets.
+			const int prev_raw_score = existing.score.data - existing.score_offset.data;
+			const int prev_raw_kills = existing.kills.data - existing.kills_offset.data;
+			const int prev_raw_deaths = existing.deaths.data - existing.deaths_offset.data;
+
+			const bool counters_decreased =
+				raw_kills < prev_raw_kills || raw_deaths < prev_raw_deaths;
+			const bool back_to_zero =
+				raw_score == 0 && raw_kills == 0 && raw_deaths == 0 &&
+				( prev_raw_score != 0 || prev_raw_kills != 0 || prev_raw_deaths != 0 );
+			const bool score_regressed =
+				raw_score + kScoreRegressionTolerance < prev_raw_score &&
+				raw_kills <= prev_raw_kills && raw_deaths <= prev_raw_deaths;
+
+			if( counters_decreased || back_to_zero || score_regressed ) {
+				// Same round, new client session: keep everything the player
+				// earned before the reconnect and start adding from zero again.
+				existing.score_offset = existing.score.data;
+				existing.kills_offset = existing.kills.data;
+				existing.deaths_offset = existing.deaths.data;
+
+				log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
+					format( "BF1942 player %s on %s reconnected: carrying score=%d kills=%d deaths=%d",
+						name, server_ip,
+						existing.score_offset.data,
+						existing.kills_offset.data,
+						existing.deaths_offset.data ) );
+			}
+
 			existing.slot = i;
-			existing.score = to_int( score );
-			existing.kills = to_int( kills );
-			existing.deaths = to_int( deaths );
+			existing.score = raw_score + existing.score_offset.data;
+			existing.kills = raw_kills + existing.kills_offset.data;
+			existing.deaths = raw_deaths + existing.deaths_offset.data;
 			existing.ping = to_int( ping );
 			existing.team = to_int( team );
 			existing.last_seen = now;
@@ -493,9 +561,12 @@ void Bf1942Query::store_players( const std::string & server_ip,
 			p.server_ip = server_ip;
 			p.player_name = name;
 			p.slot = i;
-			p.score = to_int( score );
-			p.kills = to_int( kills );
-			p.deaths = to_int( deaths );
+			p.score = raw_score;
+			p.kills = raw_kills;
+			p.deaths = raw_deaths;
+			p.score_offset = 0;
+			p.kills_offset = 0;
+			p.deaths_offset = 0;
 			p.ping = to_int( ping );
 			p.team = to_int( team );
 			p.last_seen = now;
