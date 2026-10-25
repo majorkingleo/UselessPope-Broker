@@ -259,7 +259,7 @@ void Bf1942Query::run()
 			}
 		} catch( const std::exception & e ) {
 			log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
-				format( "BF1942 query: cannot read targets: %s", e.what() ) );
+				Tools::format( "BF1942 query: cannot read targets: %s", e.what() ) );
 		}
 
 		for( const auto & t : targets ) {
@@ -301,7 +301,7 @@ void Bf1942Query::query_and_store( const Target & target )
 		auto fields = fetch_snapshot( target.host, target.port, m_timeout_s );
 		if( !fields ) {
 			log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
-				format( "BF1942 query: no response from %s:%d (query disabled or wrong port?)",
+				Tools::format( "BF1942 query: no response from %s:%d (query disabled or wrong port?)",
 					target.host, target.port ) );
 			return;
 		}
@@ -309,7 +309,7 @@ void Bf1942Query::query_and_store( const Target & target )
 		// Previous snapshot (persistent across restarts).
 		BF1942_STATUS old;
 		const bool has_old = StdSqlSelect( *APP.db,
-			format( "select %%%s from %s where `server_ip` = '%s' ",
+			Tools::format( "select %%%s from %s where `server_ip` = '%s' ",
 				old.get_table_name(), old.get_table_name(), escape( target.host ) ),
 			DBInList<DBBindType>() >> old ) > 0;
 
@@ -338,7 +338,7 @@ void Bf1942Query::query_and_store( const Target & target )
 		APP.db->commit();
 
 		log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
-			format( "BF1942 query: %s:%d -> %s | map=%s | %s/%s players",
+			Tools::format( "BF1942 query: %s:%d -> %s | map=%s | %s/%s players",
 				target.host, target.port,
 				get_field( *fields, "hostname" ),
 				get_field( *fields, "mapname" ),
@@ -346,7 +346,7 @@ void Bf1942Query::query_and_store( const Target & target )
 				get_field( *fields, "maxplayers" ) ) );
 	} catch( const std::exception & e ) {
 		log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
-			format( "BF1942 query error for %s:%d: %s", target.host, target.port, e.what() ) );
+			Tools::format( "BF1942 query error for %s:%d: %s", target.host, target.port, e.what() ) );
 	}
 }
 
@@ -371,12 +371,12 @@ void Bf1942Query::finalize_round( const std::string & server_ip, const BF1942_ST
 	DBTypeInt score_sum {};
 	DBTypeInt kill_sum {};
 	if( StdSqlSelect( *APP.db,
-		format( "select count(*), coalesce(sum(`score`),0), coalesce(sum(`kills`),0) "
+		Tools::format( "select count(*), coalesce(sum(`score`),0), coalesce(sum(`kills`),0) "
 			"from `BF1942_PLAYER` where `server_ip` = '%s'",
 			escape( server_ip ) ),
 		DBInList<DBType>() >> player_count >> score_sum >> kill_sum ) <= 0 )
 	{
-		throw STDERR_EXCEPTION( format( "cannot read BF1942_PLAYER totals: %s", APP.db->get_error() ) );
+		throw STDERR_EXCEPTION( Tools::format( "cannot read BF1942_PLAYER totals: %s", APP.db->get_error() ) );
 	}
 
 	const bool idle = player_count.data == 0 ||
@@ -398,7 +398,7 @@ void Bf1942Query::finalize_round( const std::string & server_ip, const BF1942_ST
 	game.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
 
 	if( !StdSqlInsert( *APP.db, game ) ) {
-		throw STDERR_EXCEPTION( format( "cannot insert into BF1942_GAME: %s", APP.db->get_error() ) );
+		throw STDERR_EXCEPTION( Tools::format( "cannot insert into BF1942_GAME: %s", APP.db->get_error() ) );
 	}
 
 	const int game_id = APP.db->get_insert_id();
@@ -407,7 +407,7 @@ void Bf1942Query::finalize_round( const std::string & server_ip, const BF1942_ST
 	BF1942_PLAYER live;
 	DBInLimit limit {};
 	while( StdSqlSelect( *APP.db,
-		format( "select %%%s from %s where `server_ip` = '%s' order by idx",
+		Tools::format( "select %%%s from %s where `server_ip` = '%s' order by idx",
 			live.get_table_name(), live.get_table_name(), escape( server_ip ) ),
 		DBInList<DBBindType>() >> live, limit ) > 0 )
 	{
@@ -420,16 +420,16 @@ void Bf1942Query::finalize_round( const std::string & server_ip, const BF1942_ST
 		p.idx.data = 0;
 
 		if( !StdSqlInsert( *APP.db, p ) ) {
-			throw STDERR_EXCEPTION( format( "cannot insert into P_BF1942_PLAYER: %s", APP.db->get_error() ) );
+			throw STDERR_EXCEPTION( Tools::format( "cannot insert into P_BF1942_PLAYER: %s", APP.db->get_error() ) );
 		}
 	}
 
 	// The new round starts with an empty roster.
-	APP.db->exec( format( "delete from %s where `server_ip` = '%s'",
+	APP.db->exec( Tools::format( "delete from %s where `server_ip` = '%s'",
 		live.get_table_name(), escape( server_ip ) ) );
 
 	log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
-		format( "BF1942 round archived: %s map=%s winner=team %d (%s) tickets %d:%d "
+		Tools::format( "BF1942 round archived: %s map=%s winner=team %d (%s) tickets %d:%d "
 			"players=%d score=%d kills=%d idle=%d game_id=%d",
 			server_ip, old.mapname.data, winner, victory_type,
 			old.tickets1.data, old.tickets2.data,
@@ -468,15 +468,15 @@ void Bf1942Query::store_status( const std::string & server_ip,
 	if( has_old ) {
 		s.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
 		if( !StdSqlUpdate( *APP.db, s,
-				format( "where `%s` = '%d'", s.idx.get_name(), s.idx.data ) ) ) {
-			throw STDERR_EXCEPTION( format( "cannot update BF1942_STATUS: %s", APP.db->get_error() ) );
+				Tools::format( "where `%s` = '%d'", s.idx.get_name(), s.idx.data ) ) ) {
+			throw STDERR_EXCEPTION( Tools::format( "cannot update BF1942_STATUS: %s", APP.db->get_error() ) );
 		}
 	} else {
 		s.setHist( BASE::HIST_TYPE::HIST_AN, "broker" );
 		s.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
 		s.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
 		if( !StdSqlInsert( *APP.db, s ) ) {
-			throw STDERR_EXCEPTION( format( "cannot insert into BF1942_STATUS: %s", APP.db->get_error() ) );
+			throw STDERR_EXCEPTION( Tools::format( "cannot insert into BF1942_STATUS: %s", APP.db->get_error() ) );
 		}
 	}
 }
@@ -501,7 +501,7 @@ void Bf1942Query::store_players( const std::string & server_ip,
 
 		BF1942_PLAYER existing;
 		const bool found = StdSqlSelect( *APP.db,
-			format( "select %%%s from %s where `server_ip` = '%s' and `player_name` = '%s' ",
+			Tools::format( "select %%%s from %s where `server_ip` = '%s' and `player_name` = '%s' ",
 				existing.get_table_name(),
 				existing.get_table_name(),
 				escape( server_ip ),
@@ -536,7 +536,7 @@ void Bf1942Query::store_players( const std::string & server_ip,
 				existing.deaths_offset = existing.deaths.data;
 
 				log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
-					format( "BF1942 player %s on %s reconnected: carrying score=%d kills=%d deaths=%d",
+					Tools::format( "BF1942 player %s on %s reconnected: carrying score=%d kills=%d deaths=%d",
 						name, server_ip,
 						existing.score_offset.data,
 						existing.kills_offset.data,
@@ -553,8 +553,8 @@ void Bf1942Query::store_players( const std::string & server_ip,
 			existing.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
 
 			if( !StdSqlUpdate( *APP.db, existing,
-					format( "where `%s` = '%d'", existing.idx.get_name(), existing.idx.data ) ) ) {
-				throw STDERR_EXCEPTION( format( "cannot update BF1942_PLAYER: %s", APP.db->get_error() ) );
+					Tools::format( "where `%s` = '%d'", existing.idx.get_name(), existing.idx.data ) ) ) {
+				throw STDERR_EXCEPTION( Tools::format( "cannot update BF1942_PLAYER: %s", APP.db->get_error() ) );
 			}
 		} else {
 			BF1942_PLAYER p {};
@@ -575,7 +575,7 @@ void Bf1942Query::store_players( const std::string & server_ip,
 			p.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
 
 			if( !StdSqlInsert( *APP.db, p ) ) {
-				throw STDERR_EXCEPTION( format( "cannot insert into BF1942_PLAYER: %s", APP.db->get_error() ) );
+				throw STDERR_EXCEPTION( Tools::format( "cannot insert into BF1942_PLAYER: %s", APP.db->get_error() ) );
 			}
 		}
 	}

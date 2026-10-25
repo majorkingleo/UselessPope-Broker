@@ -155,7 +155,7 @@ void Bf1942Discover::run()
 							remote.address().to_string() );
 					} catch( const std::exception & e ) {
 						log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
-							format( "BF1942 discovery error: %s", e.what() ) );
+							Tools::format( "BF1942 discovery error: %s", e.what() ) );
 					}
 				}
 				start_receive();
@@ -177,7 +177,7 @@ void Bf1942Discover::received_data( const std::string & data, const std::string 
 	}
 
 	log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
-		format( "BF1942 beacon: name='%s' guid=%s at %s", b.name, b.guid, source_ip ) );
+		Tools::format( "BF1942 beacon: name='%s' guid=%s at %s", b.name, b.guid, source_ip ) );
 
 	const std::string key = !b.guid.empty()
 		? b.guid
@@ -186,7 +186,7 @@ void Bf1942Discover::received_data( const std::string & data, const std::string 
 
 	BF1942_SERVER existing;
 	const bool found = StdSqlSelect( *APP.db,
-		format( "select %%%s from %s where `guid` = '%s' ",
+		Tools::format( "select %%%s from %s where `guid` = '%s' ",
 			existing.get_table_name(),
 			existing.get_table_name(),
 			escape( key ) ),
@@ -199,8 +199,8 @@ void Bf1942Discover::received_data( const std::string & data, const std::string 
 		existing.setHist( BASE::HIST_TYPE::HIST_AE, "broker" );
 
 		if( !StdSqlUpdate( *APP.db, existing,
-				format( "where `%s` = '%d'", existing.idx.get_name(), existing.idx.data ) ) ) {
-			throw STDERR_EXCEPTION( format( "cannot update BF1942_SERVER: %s", APP.db->get_error() ) );
+				Tools::format( "where `%s` = '%d'", existing.idx.get_name(), existing.idx.data ) ) ) {
+			throw STDERR_EXCEPTION( Tools::format( "cannot update BF1942_SERVER: %s", APP.db->get_error() ) );
 		}
 	} else {
 		BF1942_SERVER srv {};
@@ -213,7 +213,7 @@ void Bf1942Discover::received_data( const std::string & data, const std::string 
 		srv.setHist( BASE::HIST_TYPE::HIST_LO, "broker" );
 
 		if( !StdSqlInsert( *APP.db, srv ) ) {
-			throw STDERR_EXCEPTION( format( "cannot insert into BF1942_SERVER: %s", APP.db->get_error() ) );
+			throw STDERR_EXCEPTION( Tools::format( "cannot insert into BF1942_SERVER: %s", APP.db->get_error() ) );
 		}
 	}
 
