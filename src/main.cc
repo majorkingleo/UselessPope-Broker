@@ -279,6 +279,7 @@ int main( int argc, char **argv )
 
 		if( o_create_sql.getState() ) {			
 			std::cout << create_sql( o_with_drop_table.getState() ) << std::endl;
+			return 0;
 		}
 
 		Configfile2::createDefaultInstaceWithAllModules()->read(true);

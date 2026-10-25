@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <chrono>
 #include <cstring>
 #include <exception>
@@ -48,6 +49,14 @@ constexpr int kIdleMaxTotalKills = 20;
 // (one suicide) between two polls, so only a larger regression is treated as a
 // new session.
 constexpr int kScoreRegressionTolerance = 2;
+
+// BF1942_PLAYER intentionally keeps rows of players who left, so a crash/rejoin
+// can carry the earlier score. A long-running round may therefore accumulate
+// rows from players who joined, never did anything and left hours ago. When the
+// round is archived, a stale row is only kept if it has some score/kills/deaths:
+// that player actually took part. Stale zero rows are ghosts and must not be
+// written to P_BF1942_PLAYER.
+constexpr int kPlayerPresenceGraceSeconds = 60;
 
 int to_int( const std::string & s )
 {
@@ -364,6 +373,19 @@ void Bf1942Query::finalize_round( const std::string & server_ip, const BF1942_ST
 
 	const std::string now = now_string();
 
+	// BF1942_PLAYER keeps rows of players who left so a reconnect can carry
+	// their totals. A stale row with score/kills/deaths still belongs to the
+	// ended round (the player took part and left), but a stale row with all
+	// counters at zero is a ghost of someone who never played and must not be
+	// archived. Recent rows are always kept, even with 0/0/0.
+	const int presence_grace_s = std::max( 2 * m_interval_s, kPlayerPresenceGraceSeconds );
+	const std::string presence_filter =
+		old.last_seen.data.empty()
+			? std::string()
+			: Tools::format( " and ( `last_seen` >= date_sub('%s', interval %d second) "
+				"or `score` <> 0 or `kills` <> 0 or `deaths` <> 0 )",
+				escape( old.last_seen.data ), presence_grace_s );
+
 	// Aggregate the ended round's roster before it is archived. A server that
 	// ran with nobody logged in still ends rounds, but with (almost) no score or
 	// kills. Those are recorded as idle games, not real results.
@@ -372,8 +394,8 @@ void Bf1942Query::finalize_round( const std::string & server_ip, const BF1942_ST
 	DBTypeInt kill_sum {};
 	if( StdSqlSelect( *APP.db,
 		Tools::format( "select count(*), coalesce(sum(`score`),0), coalesce(sum(`kills`),0) "
-			"from `BF1942_PLAYER` where `server_ip` = '%s'",
-			escape( server_ip ) ),
+			"from `BF1942_PLAYER` where `server_ip` = '%s'%s",
+			escape( server_ip ), presence_filter ),
 		DBInList<DBType>() >> player_count >> score_sum >> kill_sum ) <= 0 )
 	{
 		throw STDERR_EXCEPTION( Tools::format( "cannot read BF1942_PLAYER totals: %s", APP.db->get_error() ) );
@@ -382,12 +404,21 @@ void Bf1942Query::finalize_round( const std::string & server_ip, const BF1942_ST
 	const bool idle = player_count.data == 0 ||
 		( score_sum.data <= kIdleMaxTotalScore && kill_sum.data <= kIdleMaxTotalKills );
 
+	// GameSpy reports the configured round length (`roundTime`) and the time
+	// left (`roundTimeRemain`); their difference is the time actually played.
+	// This is the server's own clock, so it does not include broker polling
+	// lag and does not count time spent paused.
+	const int played_seconds = old.round_time.data > 0
+		? std::max( 0, old.round_time.data - old.round_time_remain.data )
+		: 0;
+
 	BF1942_GAME game {};
 	game.server_ip = server_ip;
 	game.mapname = old.mapname.data;
 	game.gametype = old.gametype.data;
 	game.started_at = old.round_started_at.data.empty() ? old.last_seen.data : old.round_started_at.data;
 	game.ended_at = now;
+	game.round_time = played_seconds;
 	game.winning_team = winner;
 	game.tickets1 = old.tickets1.data;
 	game.tickets2 = old.tickets2.data;
@@ -403,12 +434,13 @@ void Bf1942Query::finalize_round( const std::string & server_ip, const BF1942_ST
 
 	const int game_id = APP.db->get_insert_id();
 
-	// Archive every live player of the ended round.
+	// Archive the ended round's participants (including players who left after
+	// playing, but not stale 0/0/0 ghosts).
 	BF1942_PLAYER live;
 	DBInLimit limit {};
 	while( StdSqlSelect( *APP.db,
-		Tools::format( "select %%%s from %s where `server_ip` = '%s' order by idx",
-			live.get_table_name(), live.get_table_name(), escape( server_ip ) ),
+		Tools::format( "select %%%s from %s where `server_ip` = '%s'%s order by idx",
+			live.get_table_name(), live.get_table_name(), escape( server_ip ), presence_filter ),
 		DBInList<DBBindType>() >> live, limit ) > 0 )
 	{
 		P_BF1942_PLAYER p {};
@@ -430,9 +462,9 @@ void Bf1942Query::finalize_round( const std::string & server_ip, const BF1942_ST
 
 	log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
 		Tools::format( "BF1942 round archived: %s map=%s winner=team %d (%s) tickets %d:%d "
-			"players=%d score=%d kills=%d idle=%d game_id=%d",
+			"round_time=%d players=%d score=%d kills=%d idle=%d game_id=%d",
 			server_ip, old.mapname.data, winner, victory_type,
-			old.tickets1.data, old.tickets2.data,
+			old.tickets1.data, old.tickets2.data, played_seconds,
 			player_count.data, score_sum.data, kill_sum.data, idle ? 1 : 0, game_id ) );
 }
 
@@ -455,6 +487,7 @@ void Bf1942Query::store_status( const std::string & server_ip,
 	s.hostport = to_int( get_field( fields, "hostport" ) );
 	s.numplayers = to_int( get_field( fields, "numplayers" ) );
 	s.maxplayers = to_int( get_field( fields, "maxplayers" ) );
+	s.round_time = to_int( get_field( fields, "roundTime" ) );
 	s.round_time_remain = to_int( get_field( fields, "roundTimeRemain" ) );
 	s.tickets1 = to_int( get_field( fields, "tickets1" ) );
 	s.tickets2 = to_int( get_field( fields, "tickets2" ) );
@@ -488,16 +521,66 @@ void Bf1942Query::store_players( const std::string & server_ip,
 	const int cap = maxplayers > 0 ? maxplayers : 128;
 	const std::string now = now_string();
 
+	// The server occasionally lists the same player twice (a ghost slot from a
+	// reconnect). Since BF1942_PLAYER is keyed by player name, fold duplicates
+	// and keep the entry with the most progress. Otherwise a zeroed duplicate
+	// could look like a reconnect and destroy the real session's totals.
+	struct RawPlayer {
+		int slot;
+		std::string name;
+		std::string score;
+		std::string kills;
+		std::string deaths;
+		std::string ping;
+		std::string team;
+	};
+
+	std::vector<RawPlayer> players;
+	std::map<std::string, std::size_t> player_by_name;
+
+	auto progress = []( const RawPlayer & p ) {
+		return to_int( p.score ) + 2 * to_int( p.kills ) + to_int( p.deaths );
+	};
+
 	for( int i = 0; i < cap; ++i ) {
 		const std::string name = get_field( fields, "playername_" + std::to_string( i ) );
 		if( name.empty() )
 			break;
 
-		const std::string score  = get_field( fields, "score_" + std::to_string( i ) );
-		const std::string kills  = get_field( fields, "kills_" + std::to_string( i ) );
-		const std::string deaths = get_field( fields, "deaths_" + std::to_string( i ) );
-		const std::string ping   = get_field( fields, "ping_" + std::to_string( i ) );
-		const std::string team   = get_field( fields, "team_" + std::to_string( i ) );
+		RawPlayer player {
+			i,
+			name,
+			get_field( fields, "score_" + std::to_string( i ) ),
+			get_field( fields, "kills_" + std::to_string( i ) ),
+			get_field( fields, "deaths_" + std::to_string( i ) ),
+			get_field( fields, "ping_" + std::to_string( i ) ),
+			get_field( fields, "team_" + std::to_string( i ) )
+		};
+
+		auto it = player_by_name.find( name );
+		if( it == player_by_name.end() ) {
+			player_by_name[name] = players.size();
+			players.push_back( std::move( player ) );
+			continue;
+		}
+
+		RawPlayer & existing_player = players[it->second];
+		if( progress( player ) > progress( existing_player ) )
+			existing_player = std::move( player );
+
+		log_message( __FILE__, __LINE__, __PRETTY_FUNCTION__,
+			Tools::format( "BF1942 query: %s lists player %s more than once; keeping slot %d",
+				server_ip, name, players[it->second].slot ) );
+	}
+
+	for( const RawPlayer & player : players ) {
+		const int i = player.slot;
+		const std::string & name = player.name;
+		const std::string & score = player.score;
+		const std::string & kills = player.kills;
+		const std::string & deaths = player.deaths;
+		const std::string & ping = player.ping;
+		const std::string & team = player.team;
 
 		BF1942_PLAYER existing;
 		const bool found = StdSqlSelect( *APP.db,

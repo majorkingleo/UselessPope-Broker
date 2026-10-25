@@ -191,6 +191,7 @@ BF1942_STATUS::BF1942_STATUS()
   hostport( this, "hostport" ),
   numplayers( this, "numplayers" ),
   maxplayers( this, "maxplayers" ),
+  round_time( this, "round_time" ),
   round_time_remain( this, "round_time_remain" ),
   tickets1( this, "tickets1" ),
   tickets2( this, "tickets2" ),
@@ -226,6 +227,7 @@ BF1942_GAME::BF1942_GAME()
   gametype( this, "gametype", BF1942_GAMETYPE_LEN ),
   started_at( this, "started_at" ),
   ended_at( this, "ended_at" ),
+  round_time( this, "round_time" ),
   winning_team( this, "winning_team" ),
   tickets1( this, "tickets1" ),
   tickets2( this, "tickets2" ),
@@ -385,12 +387,14 @@ std::string create_sql( bool add_drop_table )
   s += create_sql_statement( &p_bf1942_player,		forkeys, add_drop_table );
   s += "ALTER TABLE `BF1942_SERVER` ADD INDEX IF NOT EXISTS `idx_BF1942_SERVER_guid`(`guid`);\n";
   s += "ALTER TABLE `BF1942_STATUS` ADD INDEX IF NOT EXISTS `idx_BF1942_STATUS_server_ip`(`server_ip`);\n";
+  s += "ALTER TABLE `BF1942_STATUS` ADD COLUMN IF NOT EXISTS `round_time` INT NOT NULL DEFAULT 0;\n";
   s += "ALTER TABLE `BF1942_PLAYER` ADD INDEX IF NOT EXISTS `idx_BF1942_PLAYER_server_player`(`server_ip`,`player_name`);\n";
   s += "ALTER TABLE `BF1942_PLAYER` ADD COLUMN IF NOT EXISTS `score_offset` INT NOT NULL DEFAULT 0;\n";
   s += "ALTER TABLE `BF1942_PLAYER` ADD COLUMN IF NOT EXISTS `kills_offset` INT NOT NULL DEFAULT 0;\n";
   s += "ALTER TABLE `BF1942_PLAYER` ADD COLUMN IF NOT EXISTS `deaths_offset` INT NOT NULL DEFAULT 0;\n";
   s += "ALTER TABLE `BF1942_GAME` ADD INDEX IF NOT EXISTS `idx_BF1942_GAME_server_ip`(`server_ip`);\n";
   s += "ALTER TABLE `BF1942_GAME` ADD COLUMN IF NOT EXISTS `idle` INT NOT NULL DEFAULT 0;\n";
+  s += "ALTER TABLE `BF1942_GAME` ADD COLUMN IF NOT EXISTS `round_time` INT NOT NULL DEFAULT 0;\n";
   s += "ALTER TABLE `P_BF1942_PLAYER` ADD INDEX IF NOT EXISTS `idx_P_BF1942_PLAYER_game`(`game_id`);\n";
   s += "ALTER TABLE `P_BF1942_PLAYER` ADD INDEX IF NOT EXISTS `idx_P_BF1942_PLAYER_game_player`(`game_id`,`player_name`);\n";
   s += "ALTER TABLE `P_BF1942_PLAYER` ADD COLUMN IF NOT EXISTS `score_offset` INT NOT NULL DEFAULT 0;\n";

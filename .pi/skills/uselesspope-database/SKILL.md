@@ -100,6 +100,7 @@ does not `CREATE TABLE USERS` — that table belongs to `UselessPope-www`.
    │round state   │  │live roster     │  │ idx = game_id   │
    └──────────────┘  └───────┬────────┘  │ map, winner     │
                              │ snapshot  │ tickets, idle   │
+                             │           │ round_time      │
                              │ at round  └────────┬────────┘
                              │ end               │ logical 1:N
                              ▼                   ▼
@@ -204,6 +205,7 @@ LEFT JOIN BF1942_STATUS st ON st.server_ip = s.ip_address;
 
 -- Finished game results
 SELECT g.idx AS game_id, g.mapname, g.winning_team, g.tickets1, g.tickets2,
+       g.round_time,
        p.player_name, p.team, p.score, p.kills, p.deaths
 FROM BF1942_GAME g
 JOIN P_BF1942_PLAYER p ON p.game_id = g.idx
@@ -229,7 +231,10 @@ ORDER BY g.idx DESC, p.slot;
   `SERMON`; `SERMON` does not store a chunk id. `0` means "no reaction yet".
 - **`BF1942_PLAYER` is a live snapshot.** Rows for players who left keep an old
   `last_seen`; consumers filter by `last_seen`. On round end the table is cleared
-  after its rows are archived into `P_BF1942_PLAYER`.
+  after its rows are archived into `P_BF1942_PLAYER`. Long-stale rows with all
+  counters at 0/0/0 (players who joined but never took part) are skipped, so
+  they do not appear in the game result; stale rows with score/kills/deaths are
+  still archived because that player did participate.
 - **Denormalization in `P_BF1942_PLAYER`.** `mapname` and `winning_team` are
   copied per row (canonical values live in `BF1942_GAME`).
 - **Reconnects and player totals.** `BF1942_PLAYER.score`/`kills`/`deaths` are
@@ -238,6 +243,10 @@ ORDER BY g.idx DESC, p.slot;
   `score_offset`/`kills_offset`/`deaths_offset` and adds the new session on top.
   The offsets are reset with the live roster at round end. They are copied into
   `P_BF1942_PLAYER` for reference; use the effective columns for results.
+- **Round time.** `BF1942_STATUS.round_time` is the server's configured round
+  length in seconds (GameSpy `roundTime`); `BF1942_GAME.round_time` is the time
+  actually played, computed as `round_time - round_time_remain` from the last
+  live poll. Both are independent of the broker's `started_at`/`ended_at`.
 - **Idle games.** `BF1942_GAME.idle = 1` marks a round whose archived roster had
   no players or almost no activity (total `score` and `kills` both ≤ 20). The
   server ran while nobody was effectively logged in; the row is kept for the

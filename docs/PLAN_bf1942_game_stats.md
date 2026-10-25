@@ -193,8 +193,17 @@ live roster, so the offsets are gone and a new round starts at zero.
   the next poll retries. No round is dropped, only deferred.
 - **Restart.** `BF1942_STATUS` persists, so a restart mid-round does not invent
   a round end (same map → no transition). If a round ended while the broker was
-  down, the first poll sees a map change and archives the stale-but-present
-  `BF1942_PLAYER` rows with their last-known scores.
+  down, the first poll sees a map change and archives the `BF1942_PLAYER` rows
+  that were refreshed in the last pre-shutdown snapshot, with their last-known
+  scores.
+- **Stale roster rows.** `BF1942_PLAYER` keeps rows of players who left so a
+  reconnect can carry their totals. Long rounds therefore accumulate rows whose
+  `last_seen` is hours old. `finalize_round()` always archives rows refreshed
+  within `max(2 * query_interval, 60s)` of the last snapshot, plus older rows
+  that have a non-zero `score`/`kills`/`deaths` (the player took part and then
+  left). Older 0/0/0 rows are ghosts and are skipped, so they neither count for
+  the `idle` decision nor appear in the result. Duplicate `playername_<n>`
+  entries are folded by name, keeping the entry with the most progress.
 - **Polling granularity.** A round that starts *and* ends entirely between two
   polls is invisible. Lower `BF1942QueryInterval` (e.g. 5 s) if needed; this
   raises DB write volume.

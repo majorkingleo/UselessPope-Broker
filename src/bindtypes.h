@@ -398,7 +398,8 @@ public:
 	DBTypeInt		hostport;
 	DBTypeInt		numplayers;
 	DBTypeInt		maxplayers;
-	DBTypeInt		round_time_remain;	// resets => new round
+	DBTypeInt		round_time;		// total configured round time (GameSpy roundTime)
+	DBTypeInt		round_time_remain;	// seconds left; resets => new round
 	DBTypeInt		tickets1;
 	DBTypeInt		tickets2;
 	DBTypeInt		status;
@@ -463,6 +464,7 @@ public:
 	DBTypeVarChar	gametype;
 	DBTypeDateTime	started_at;
 	DBTypeDateTime	ended_at;
+	DBTypeInt		round_time;		// played seconds (total - remain at last poll)
 	DBTypeInt		winning_team;	// 1 or 2; 0 = draw/unknown
 	DBTypeInt		tickets1;		// final observed
 	DBTypeInt		tickets2;
